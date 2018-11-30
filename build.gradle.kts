@@ -14,6 +14,7 @@ repositories {
 }
 
 dependencies {
+    implementation("com.google.com.gson:gson:5.3.1")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.3.1")
 }
 
