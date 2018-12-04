@@ -23,7 +23,7 @@ public class Weather {
         //String url = String.format("http://api.openweathermap.org/data/2.5/weather?id=%s&appid=%s", cityID, getApiKey());  //tiempo actual ID
         //String url = String.format("http://api.openweathermap.org/data/2.5/forecast?id=%s&appid=%s", cityID, getApiKey());   //rango 5 dias ID
         String url = String.format("http://api.openweathermap.org/data/2.5/weather?q=%s,es&APPID=%s", cityName, getApiKey()); //tiempo actual nombre
-        //String url = String.format("http://api.openweathermap.org/data/2.5/weather?q=%s,es&APPID=%s", cityName, getApiKey()); //rango 5 dias nombre
+        //String url = String.format("http://api.openweathermap.org/data/2.5/forecast?q=%s,es&APPID=%s", cityName, getApiKey()); //rango 5 dias nombre
 
         //String url = String.format("http://api.openweathermap.org/data/2.5/weather?q=benicassim,es&APPID=%s", getApiKey()); //rango 5 dias prueba
         //String url = "http://dataservice.accuweather.com/forecasts/v1/daily/1day/348735?apikey=1qnDGxmkUObV0hjDGUf8KbpWSYndly7e";  //prueba otra API

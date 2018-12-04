@@ -1,16 +1,13 @@
 package es.uji.ei1048.meteorologia.view;
 
-import es.uji.ei1048.meteorologia.IWeatherAPI;
+import es.uji.ei1048.meteorologia.api.IWeatherApi;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
-
 public class TestGetCurrentWeather {
 
-
-    IWeatherAPI api = null;
+    IWeatherApi api = null;
 
     @FXML
     private TextField searchBar;
@@ -45,15 +42,14 @@ public class TestGetCurrentWeather {
     @FXML
     private void searchCurrent() {
         String val = searchBar.getText();
-        if (val.equals("")){
+        if (val.equals("")) {
             error.setText("Input a valid city");
         } else {
             //api.search(val);
-            if ( !error.getText().equals("")){
+            if (!error.getText().equals("")) {
                 error.setText("");
             }
             System.out.println("Holi");
         }
     }
-
 }
