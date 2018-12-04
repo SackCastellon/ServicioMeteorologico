@@ -1,6 +1,9 @@
 package es.uji.ei1048.meteorologia.view;
 
 import es.uji.ei1048.meteorologia.api.IWeatherApi;
+import es.uji.ei1048.meteorologia.api.NotFoundException;
+import es.uji.ei1048.meteorologia.api.OpenWeatherApi;
+import es.uji.ei1048.meteorologia.model.WeatherData;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -29,9 +32,9 @@ public class TestGetCurrentWeather {
 
     String ns = "No city searched yet";
 
-    @FXML
+    /*@FXML
     private void initialize() {
-        //api = new OpenWeatherApi();
+        api = new OpenWeatherApi();
         error.setText("");
         city.setText(ns);
         temp.setText(ns);
@@ -49,7 +52,19 @@ public class TestGetCurrentWeather {
             if (!error.getText().equals("")) {
                 error.setText("");
             }
-            System.out.println("Holi");
+            try {
+                WeatherData wd = api.getWeather(val);
+                error.setText("");
+                city.setText(val);
+                //temp.setText(wd.getTemperature().toString());
+                rh.setText(wd.getHumidity()+"%RH");
+                status.setText(wd.getWeather().get(0).toString());
+
+            } catch (NotFoundException e) {
+                error.setText("Ciudad no encontrada");
+            }
         }
     }
+    */
 }
+
