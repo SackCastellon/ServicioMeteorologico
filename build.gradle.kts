@@ -15,6 +15,7 @@ repositories {
 
 dependencies {
     implementation("com.google.code.gson:gson:2.8.5")
+    compile(group = "org.mockito", name = "mockito-core", version = "2.23.4")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.3.1")
     // https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
     implementation("org.apache.httpcomponents:httpclient:4.5.5")
