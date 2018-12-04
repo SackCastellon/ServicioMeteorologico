@@ -4,7 +4,7 @@ import es.uji.ei1048.meteorologia.view.RootLayout;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -47,7 +47,7 @@ public class App extends Application {
 
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(App.class.getResource("/views/SearchPane.fxml"));
-            VBox searchPane = loader.load();
+            BorderPane searchPane = loader.load();
 
             rlController.addPane(searchPane);
         } catch (IOException e) {

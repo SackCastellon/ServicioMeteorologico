@@ -25,7 +25,7 @@
                </children>
             </HBox>
             <Label fx:id="error" text="Label" textFill="RED" />
-            <Button fx:id="csButton" mnemonicParsing="false" onAction="#searchCurrent" text="Search current" />
+            <Button fx:id="csButton" mnemonicParsing="false" onAction="#search" text="Search current" />
          </children>
       </VBox>
    </center>
