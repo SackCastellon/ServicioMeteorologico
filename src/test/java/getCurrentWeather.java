@@ -1,5 +1,6 @@
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import es.uji.ei1048.meteorologia.IWeatherAPI;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -8,7 +9,7 @@ import org.junit.jupiter.api.Test;
 public class getCurrentWeather {
 
     @BeforeAll
-    public void loadController(){
+    public void loadAPI(){
         IWeatherAPI api = new OpenWeatherAPI();
     }
 
