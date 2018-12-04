@@ -15,6 +15,9 @@ repositories {
 
 dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.3.1")
+    // https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
+    implementation("org.apache.httpcomponents:httpclient:4.5.5")
+
 }
 
 application {

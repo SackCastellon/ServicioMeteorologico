@@ -6,8 +6,7 @@ import javafx.stage.Stage;
 public class App extends Application {
     @Override
     public void start(final Stage primaryStage) throws Exception {
-        System.out.println("Hello World!");
-        System.out.println("Hello World!");
+
     }
 
     public static void main(final String[] args) {
