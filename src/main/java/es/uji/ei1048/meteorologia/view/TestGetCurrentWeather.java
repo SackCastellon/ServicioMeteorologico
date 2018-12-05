@@ -1,36 +1,26 @@
 package es.uji.ei1048.meteorologia.view;
 
 import es.uji.ei1048.meteorologia.api.IWeatherApi;
-import es.uji.ei1048.meteorologia.api.NotFoundException;
-import es.uji.ei1048.meteorologia.api.OpenWeatherApi;
-import es.uji.ei1048.meteorologia.model.WeatherData;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
-public class TestGetCurrentWeather {
+public final class TestGetCurrentWeather {
 
-    IWeatherApi api = null;
-
+    IWeatherApi api;
+    String ns = "No city searched yet";
     @FXML
     private TextField searchBar;
-
     @FXML
     private Label city;
-
     @FXML
     private Label temp;
-
     @FXML
     private Label rh;
-
     @FXML
     private Label status;
-
     @FXML
     private Label error;
-
-    String ns = "No city searched yet";
 
     /*@FXML
     private void initialize() {

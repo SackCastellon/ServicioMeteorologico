@@ -6,84 +6,78 @@ import es.uji.ei1048.meteorologia.view.RootLayout;
 import es.uji.ei1048.meteorologia.view.SearchPane;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 
-public class App extends Application {
+public final class App extends Application {
     private Stage primaryStage;
-    private BorderPane rootLayout;
-    private RootLayout rlController;
+    private RootLayout rootController;
 
+    public static void main(final @NotNull String[] args) {
+        Application.launch(args);
+    }
 
     @Override
-    public void start(Stage primaryStage) {
+    public void start(final Stage primaryStage) {
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("Meteorological Service");
 
         initRootLayout();
-
         showSearchPane();
     }
 
-    public void initRootLayout() {
+    private void initRootLayout() {
         try {
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(App.class.getResource("/views/RootLayout.fxml"));
-            rootLayout = loader.load();
-            rlController = loader.getController();
-            Scene scene = new Scene(rootLayout);
+            final @NotNull FXMLLoader loader = new FXMLLoader(App.class.getResource("/views/RootLayout.fxml")); //NON-NLS
+            final @NotNull Parent root = loader.load();
+
+            rootController = loader.getController();
+
+            final @NotNull Scene scene = new Scene(root);
             primaryStage.setScene(scene);
             primaryStage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (final @NotNull IOException e) {
+            e.printStackTrace(); // FIXME
         }
     }
 
-
-    public void showSearchPane() {
+    private void showSearchPane() {
         try {
-            FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(App.class.getResource("/views/SearchPane.fxml"));
-            BorderPane searchPane = loader.load();
-            SearchPane spController = loader.getController();
+            final @NotNull FXMLLoader loader = new FXMLLoader(App.class.getResource("/views/SearchPane.fxml")); //NON-NLS
+            final @NotNull Parent root = loader.load();
+            final @NotNull SearchPane spController = loader.getController();
             spController.setApp(this);
-            rlController.addPane(searchPane);
-        } catch (IOException e) {
-            e.printStackTrace();
+            rootController.addPane(root);
+        } catch (final @NotNull IOException e) {
+            e.printStackTrace(); // FIXME
         }
     }
 
-    public void showSearchResults(String city, WeatherData wd, boolean adv){
-        if (rlController.getNumPan()>1){
-            rlController.clean();
-        }
+    public void showSearchResults(final @NotNull String city, final @NotNull WeatherData wd, final boolean advanced) {
+        if (rootController.getNumPan() > 1) rootController.clean();
         try {
-            FXMLLoader loader = new FXMLLoader();
-            if (adv){
-                loader.setLocation(App.class.getResource("/views/AdvancedResults.fxml"));
-            } else{
-                loader.setLocation(App.class.getResource("/views/BasicResults.fxml"));
+            final @NotNull FXMLLoader loader = new FXMLLoader();
+            if (advanced) {
+                loader.setLocation(App.class.getResource("/views/AdvancedResults.fxml")); //NON-NLS
+            } else {
+                loader.setLocation(App.class.getResource("/views/BasicResults.fxml")); //NON-NLS
             }
-            BorderPane searchResults = loader.load();
-            ISearchResults srController = loader.getController();
-            srController.showResults(city,wd);
-            rlController.addPane(searchResults);
-        } catch (IOException e) {
-            e.printStackTrace();
+            final @NotNull BorderPane searchResults = loader.load();
+            final @NotNull ISearchResults srController = loader.getController();
+            srController.showResults(city, wd);
+            rootController.addPane(searchResults);
+        } catch (final @NotNull IOException e) {
+            e.printStackTrace(); // FIXME
         }
 
     }
 
-
-    public Stage getPrimaryStage() {
+    public @NotNull Stage getPrimaryStage() {
         return primaryStage;
-    }
-
-    public static void main(final String[] args) {
-        Application.launch(args);
     }
 }

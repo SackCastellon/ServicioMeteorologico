@@ -8,23 +8,23 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-public class TestCurrentWeather {
+class TestCurrentWeather {
 
     private static IWeatherApi api;
 
     @BeforeAll
-    public static void setup() {
+    static void setup() {
         api = new OpenWeatherApi();
     }
 
     @Test
-    public void getCurrentWeather_validCity_suc() {
+    void getCurrentWeather_validCity_suc() {
         final @NotNull String city = "Castellón de la Plana";
         Assertions.assertDoesNotThrow(() -> api.getWeather(city));
     }
 
     @Test
-    public void getCurrentWeather_notValidCity_err() {
+    void getCurrentWeather_notValidCity_err() {
         final @NotNull String city = "Wakanda";
         Assertions.assertThrows(NotFoundException.class, () -> api.getWeather(city));
     }
