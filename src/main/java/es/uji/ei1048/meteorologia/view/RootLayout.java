@@ -13,4 +13,11 @@ public class RootLayout {
         sp.getItems().add(pane);
     }
 
+    public int getNumPan(){
+        return sp.getItems().size();
+    }
+
+    public void clean() {
+        sp.getItems().remove(1);
+    }
 }

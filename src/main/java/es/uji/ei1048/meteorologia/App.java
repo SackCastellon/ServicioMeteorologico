@@ -1,12 +1,14 @@
 package es.uji.ei1048.meteorologia;
 
+import es.uji.ei1048.meteorologia.model.WeatherData;
+import es.uji.ei1048.meteorologia.view.ISearchResults;
 import es.uji.ei1048.meteorologia.view.RootLayout;
+import es.uji.ei1048.meteorologia.view.SearchPane;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -44,15 +46,36 @@ public class App extends Application {
 
     public void showSearchPane() {
         try {
-
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(App.class.getResource("/views/SearchPane.fxml"));
             BorderPane searchPane = loader.load();
-
+            SearchPane spController = loader.getController();
+            spController.setApp(this);
             rlController.addPane(searchPane);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void showSearchResults(String city, WeatherData wd, boolean adv){
+        if (rlController.getNumPan()>1){
+            rlController.clean();
+        }
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            if (adv){
+                loader.setLocation(App.class.getResource("/views/AdvancedResults.fxml"));
+            } else{
+                loader.setLocation(App.class.getResource("/views/BasicResults.fxml"));
+            }
+            BorderPane searchResults = loader.load();
+            ISearchResults srController = loader.getController();
+            srController.showResults(city,wd);
+            rlController.addPane(searchResults);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
 

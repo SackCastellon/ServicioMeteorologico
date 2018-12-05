@@ -5,11 +5,11 @@
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-
 
 <BorderPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="es.uji.ei1048.meteorologia.view.SearchPane">
    <center>
@@ -20,8 +20,11 @@
                <children>
                   <Label text="City name: " />
                   <TextField fx:id="searchBar" />
-                  <RadioButton mnemonicParsing="false" text="Basic" />
-                  <RadioButton mnemonicParsing="false" text="Advanced" />
+                  <RadioButton mnemonicParsing="false" selected="true" text="Basic">
+                     <toggleGroup>
+                        <ToggleGroup fx:id="searchMode" />
+                     </toggleGroup></RadioButton>
+                  <RadioButton mnemonicParsing="false" text="Advanced" toggleGroup="$searchMode" />
                </children>
             </HBox>
             <Label fx:id="error" text="Label" textFill="RED" />
