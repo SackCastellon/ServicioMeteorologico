@@ -24,7 +24,8 @@ final class TestSaveWeatherAdvancedResultsMock {
     @Test
     void getSaveWeather_validSave_suc() {
         final @NotNull WeatherData wd = new WeatherData(
-                city, new Weather(10, "Viento", "mucho frio"),
+                null,
+                new Weather(10, "Viento", "mucho frio"),
                 new Temperature(15.0, 10.0, 20.0, Temperature.Units.CELSIUS),
                 new Wind(20.0, 10.0),
                 10.0, 10.0);
@@ -36,7 +37,8 @@ final class TestSaveWeatherAdvancedResultsMock {
     @Test
     void getSaveWeather_notValidSave_err() {
         final @NotNull WeatherData wd = new WeatherData(
-                city, new Weather(10, "Viento", "mucho frio"),
+                null,
+                new Weather(10, "Viento", "mucho frio"),
                 new Temperature(15.0, 10.0, 20.0, Temperature.Units.CELSIUS),
                 new Wind(20.0, 10.0),
                 10.0, 10.0);
