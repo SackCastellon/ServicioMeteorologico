@@ -2,6 +2,7 @@ package es.uji.ei1048.meteorologia;
 
 import es.uji.ei1048.meteorologia.model.City;
 import es.uji.ei1048.meteorologia.model.Coordinates;
+import es.uji.ei1048.meteorologia.model.SaveWeather;
 import es.uji.ei1048.meteorologia.model.WeatherData;
 import es.uji.ei1048.meteorologia.view.ISearchResults;
 import es.uji.ei1048.meteorologia.view.RootLayout;
@@ -20,7 +21,7 @@ import java.util.List;
 public final class App extends Application {
     private Stage primaryStage;
     private RootLayout rootController;
-
+    private SaveWeather sw;
     public static void main(final @NotNull String[] args) {
         Application.launch(args);
     }
@@ -29,7 +30,7 @@ public final class App extends Application {
     public void start(final Stage primaryStage) {
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("Meteorological Service");
-
+        this.sw = new SaveWeather();
         initRootLayout();
         showSearchPane();
     }
@@ -94,6 +95,17 @@ public final class App extends Application {
             rootController.addPane(searchResults);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void save(WeatherData wd) {
+        sw.save(wd);
+    }
+
+    public void saveAll(List<WeatherData> wdList) {
+        for (WeatherData wd : wdList
+        ) {
+            save(wd);
         }
     }
 }

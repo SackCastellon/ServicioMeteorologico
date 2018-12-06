@@ -1,5 +1,6 @@
 package es.uji.ei1048.meteorologia.view;
 
+import es.uji.ei1048.meteorologia.App;
 import es.uji.ei1048.meteorologia.model.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -27,9 +28,12 @@ public class AdvancedResults implements ISearchResults {
 
     @FXML
     private Label pressureRes;
+    private App app;
+    private WeatherData wd;
 
     @Override
     public void showResults(final @NotNull City city, final @NotNull WeatherData wd) {
+        this.wd = wd;
         cityRes.setText(city.getName());
         weatherRes.setText(wd.getWeather().getDescription().toUpperCase());
         rhRes.setText(wd.getHumidity() + " RH%");
@@ -43,7 +47,13 @@ public class AdvancedResults implements ISearchResults {
 
     }
 
+    @Override
     public void save() {
-        //api.save()
+        app.save(wd);
+    }
+
+    @Override
+    public void setApp(final App app) {
+        this.app = app;
     }
 }
