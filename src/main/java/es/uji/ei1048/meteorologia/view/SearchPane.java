@@ -2,6 +2,8 @@ package es.uji.ei1048.meteorologia.view;
 
 import es.uji.ei1048.meteorologia.App;
 import es.uji.ei1048.meteorologia.api.NotFoundException;
+import es.uji.ei1048.meteorologia.model.City;
+import es.uji.ei1048.meteorologia.model.Coordinates;
 import es.uji.ei1048.meteorologia.model.WeatherData;
 import es.uji.ei1048.meteorologia.service.IWeatherService;
 import es.uji.ei1048.meteorologia.service.OpenWeather;
@@ -10,6 +12,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
@@ -18,12 +21,10 @@ public final class SearchPane {
 
     @FXML
     ToggleGroup searchMode;
-    private App app;
-
-    private IWeatherService api;
-
     @FXML
     ToggleGroup dateMode;
+    private App app;
+    private IWeatherService api;
     private boolean advanced;
     @FXML
     private TextField searchBar;
@@ -37,7 +38,7 @@ public final class SearchPane {
 
     @FXML
     private void initialize() {
-        setApi(new OpenWeather());
+        api = new OpenWeather();
         error.setText("");
         searchMode.selectedToggleProperty().addListener((ov, oldToggle, newToggle) -> {
             if (oldToggle != newToggle) {
@@ -51,7 +52,7 @@ public final class SearchPane {
         });
     }
 
-    public void setApi(IWeatherService api) {
+    public void setApi(final IWeatherService api) {
         this.api = api;
     }
 
@@ -62,10 +63,11 @@ public final class SearchPane {
     public void saveAll() {
         app.saveAll(current);
     }
+
     @FXML
     private void search() {
-        final String val = searchBar.getText();
-        if (val != null && val.isEmpty()) {
+        final String query = searchBar.getText();
+        if (query == null || query.isEmpty()) {
             error.setText("Input a valid city");
         } else {
             if (error.getText() != null && !error.getText().isEmpty()) {
@@ -73,14 +75,15 @@ public final class SearchPane {
             }
             try {
                 error.setText("");
+                final @NotNull City city = new City(-1, query, "", new Coordinates(-1.0, -1.0)); // FIXME
                 if (forecast) {
-                    final List<WeatherData> wdList = api.getForecast(Objects.requireNonNull(val), 3);
+                    final List<WeatherData> wdList = api.getForecast(Objects.requireNonNull(city), 3);
                     current = wdList;
-                    app.showForecastSearchResult(val, wdList, advanced);
+                    app.showForecastSearchResult(city.getName(), wdList, advanced);
                     saveButton.setDisable(false);
                 } else {
-                    final WeatherData wd = api.getWeather(Objects.requireNonNull(val));
-                    app.showSearchResult(val, wd, advanced);
+                    final WeatherData wd = api.getWeather(Objects.requireNonNull(city));
+                    app.showSearchResult(city.getName(), wd, advanced);
                     if (!saveButton.isDisabled()) {
                         saveButton.setDisable(true);
                     }
@@ -91,6 +94,7 @@ public final class SearchPane {
         }
     }
 
+    @FXML
     private void showLoadScreen() {
         app.showLoadScreen();
     }

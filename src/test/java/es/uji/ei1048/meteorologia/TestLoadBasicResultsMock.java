@@ -14,10 +14,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-public class TestLoadBasicResultsMock {
+final class TestLoadBasicResultsMock {
 
     @Mock
-    private WeatherManager api;
+    private WeatherManager manager;
 
     @BeforeEach
     void setUp() {
@@ -25,17 +25,17 @@ public class TestLoadBasicResultsMock {
     }
 
     @Test
-    void getLoadWeather_validCity_suc() throws Exception {
+    void getLoadWeather_validCity_suc() {
         final @NotNull String file = "Madrid.txt";
-        when(api.load(anyString())).thenReturn(any(SaveFile.class));
-        Assertions.assertDoesNotThrow(() -> api.load(file));
+        when(manager.load(anyString())).thenReturn(any(SaveFile.class));
+        Assertions.assertDoesNotThrow(() -> manager.load(file));
     }
 
     @Test
-    void getCurrentWeather_notValidCity_err() throws Exception {
+    void getCurrentWeather_notValidCity_err() {
         final @NotNull String file = "Wakanda.txt";
-        when(api.load(any(String.class))).thenThrow(NotFoundException.class);
-        Assertions.assertThrows(NotFoundException.class, () -> api.load(file));
+        when(manager.load(any(String.class))).thenThrow(NotFoundException.class);
+        Assertions.assertThrows(NotFoundException.class, () -> manager.load(file));
     }
 
 }

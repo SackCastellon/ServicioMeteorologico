@@ -1,13 +1,16 @@
 package es.uji.ei1048.meteorologia.model;
 
-public class WeatherManager {
+import org.jetbrains.annotations.NotNull;
 
-    public boolean save(WeatherData wd) {
+public enum WeatherManager {
+    INSTANCE;
+
+    public final boolean save(final @NotNull WeatherData data) {
         System.out.println("Guardado");
         return true;
     }
 
-    public SaveFile load(String sel) {
-        return null;
+    public final @NotNull SaveFile load(final @NotNull String filename) {
+        throw new UnsupportedOperationException("Not implemented!");
     }
 }

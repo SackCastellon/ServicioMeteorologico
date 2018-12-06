@@ -54,7 +54,7 @@ public final class Temperature {
         return Double.compare(that.current, current) == 0 &&
                 Double.compare(that.min, min) == 0 &&
                 Double.compare(that.max, max) == 0 &&
-                unit.equals(that.unit);
+                unit == that.unit;
     }
 
     @Override

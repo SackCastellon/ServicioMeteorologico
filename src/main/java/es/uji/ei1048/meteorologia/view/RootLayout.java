@@ -37,7 +37,7 @@ public final class RootLayout {
         searchPane.setApi(new OpenWeather());
     }
 
-    public void setSearchPane(SearchPane searchPane) {
+    public void setSearchPane(final SearchPane searchPane) {
         this.searchPane = searchPane;
     }
 }

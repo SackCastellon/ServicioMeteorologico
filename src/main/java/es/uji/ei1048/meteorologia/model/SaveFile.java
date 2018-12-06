@@ -9,7 +9,7 @@ public class SaveFile {
         return wd;
     }
 
-    public void setWd(WeatherData wd) {
+    public void setWd(final WeatherData wd) {
         this.wd = wd;
     }
 
@@ -17,7 +17,7 @@ public class SaveFile {
         return advanced;
     }
 
-    public void setAdvanced(boolean advanced) {
+    public void setAdvanced(final boolean advanced) {
         this.advanced = advanced;
     }
 }

@@ -10,7 +10,7 @@ public class LoadWeather {
     @FXML
     private ListView<SaveFile> saveList;
 
-    public void setDialogStage(Stage dialogStage) {
+    public void setDialogStage(final Stage dialogStage) {
 
     }
 

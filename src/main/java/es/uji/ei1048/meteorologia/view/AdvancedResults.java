@@ -37,11 +37,11 @@ public class AdvancedResults implements ISearchResults {
         cityRes.setText(city.getName());
         weatherRes.setText(wd.getWeather().getDescription().toUpperCase());
         rhRes.setText(wd.getHumidity() + " RH%");
-        Temperature temp = wd.getTemperature();
+        final Temperature temp = wd.getTemperature();
         tempRes.setText("Current: " + temp.getCurrent() + "°C " + "Max: " + temp.getMax() + "°C " + "Min: " + temp.getCurrent() + "°C");
-        Coordinates coords = city.getCoordinates();
+        final Coordinates coords = city.getCoordinates();
         coordsRes.setText("Latitude: " + coords.getLatitude() + " Longitude: " + coords.getLongitude());
-        Wind wind = wd.getWind();
+        final Wind wind = wd.getWind();
         windRes.setText(" " + wind.getSpeed() + " KM/h Degrees: " + wind.getDegrees());
         pressureRes.setText(wd.getPressure() + "atm");
 

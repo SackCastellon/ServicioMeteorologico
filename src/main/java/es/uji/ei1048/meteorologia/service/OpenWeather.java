@@ -6,10 +6,7 @@ import com.google.gson.stream.JsonWriter;
 import es.uji.ei1048.meteorologia.api.ApiUtils;
 import es.uji.ei1048.meteorologia.api.ConnectionFailedException;
 import es.uji.ei1048.meteorologia.api.NotFoundException;
-import es.uji.ei1048.meteorologia.model.Temperature;
-import es.uji.ei1048.meteorologia.model.Weather;
-import es.uji.ei1048.meteorologia.model.WeatherData;
-import es.uji.ei1048.meteorologia.model.Wind;
+import es.uji.ei1048.meteorologia.model.*;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -37,7 +34,7 @@ public final class OpenWeather implements IWeatherService {
     private static final @NotNull TypeAdapter<WeatherData> ADAPTER = new Adapter();
 
     /**
-     * @param cityName The name of the city to  check the weather
+     * @param cityName The name of the city to check the weather
      * @param url      The url of the weather service
      * @return The response from the weather service
      * @throws NotFoundException         If the city is not found
@@ -62,8 +59,8 @@ public final class OpenWeather implements IWeatherService {
     }
 
     @Override
-    public @NotNull WeatherData getWeather(final @NotNull String cityName) {
-        final @NotNull String response = getJsonResponse(cityName, WEATHER_URL);
+    public @NotNull WeatherData getWeather(final @NotNull City city) {
+        final @NotNull String response = getJsonResponse(city.getName(), WEATHER_URL);
         final @NotNull Gson gson = new GsonBuilder()
                 .registerTypeAdapter(WeatherData.class, ADAPTER)
                 .create();
@@ -72,10 +69,10 @@ public final class OpenWeather implements IWeatherService {
     }
 
     @Override
-    public @NotNull List<@NotNull WeatherData> getForecast(final @NotNull String cityName, final int days) {
+    public @NotNull List<@NotNull WeatherData> getForecast(final @NotNull City city, final int days) {
         if (days <= 0) throw new IllegalArgumentException("days must be greater than 0");
 
-        final @NotNull String response = getJsonResponse(cityName, FORECAST_URL);
+        final @NotNull String response = getJsonResponse(city.getName(), FORECAST_URL);
         final @NotNull JsonArray list = new JsonParser()
                 .parse(response)
                 .getAsJsonObject()
@@ -94,7 +91,7 @@ public final class OpenWeather implements IWeatherService {
         @Override
         @Contract("_, _ -> fail")
         public void write(final JsonWriter out, final WeatherData value) {
-            throw new UnsupportedOperationException("Serialization toJSON still not supported.");
+            throw new UnsupportedOperationException("This adapter is only intended to be used for deserialization");
         }
 
         @Override
@@ -108,68 +105,26 @@ public final class OpenWeather implements IWeatherService {
             double newPressure = Double.NaN;
             double newHumidity = Double.NaN;
 
-            while (in.hasNext()) {
-                switch (in.nextName()) {
-                    case "weather": //NON-NLS
-                        in.beginArray();
+            while (in.hasNext()) switch (in.nextName()) {
+                case "weather": //NON-NLS
+                    in.beginArray();
 
-                        if (in.hasNext()) { // Only save the first "weather"
-                            in.beginObject(); // Begin "weather"
+                    if (in.hasNext()) { // Only save the first "weather"
+                        in.beginObject(); // Begin "weather"
 
-                            int id = -1;
-                            String main = null;
-                            String description = null;
-                            while (in.hasNext()) {
-                                switch (in.nextName()) {
-                                    case "id": //NON-NLS
-                                        id = in.nextInt();
-                                        break;
-                                    case "main": //NON-NLS
-                                        main = in.nextString();
-                                        break;
-                                    case "description": //NON-NLS
-                                        description = in.nextString();
-                                        break;
-                                    default:
-                                        in.skipValue();
-                                        break;
-                                }
-                            }
-
-                            in.endObject(); // End "weather"
-
-                            if (id == -1) throw new IllegalStateException("No 'weather.id' was found.");
-                            if (main == null) throw new IllegalStateException("No 'weather.main' was found.");
-                            if (description == null)
-                                throw new IllegalStateException("No 'weather.description' was found.");
-                            newWeather = new Weather(id, main, description);
-                        }
-
-                        in.endArray();
-                        break;
-                    case "main": //NON-NLS
-                        in.beginObject(); // Begin "main"
-
-
-                        double temp = Double.NaN;
-                        double tempMin = Double.NaN;
-                        double tempMax = Double.NaN;
+                        int id = -1;
+                        String main = null;
+                        String description = null;
                         while (in.hasNext()) {
                             switch (in.nextName()) {
-                                case "temp": //NON-NLS
-                                    temp = in.nextDouble();
+                                case "id": //NON-NLS
+                                    id = in.nextInt();
                                     break;
-                                case "temp_min": //NON-NLS
-                                    tempMin = in.nextDouble();
+                                case "main": //NON-NLS
+                                    main = in.nextString();
                                     break;
-                                case "temp_max": //NON-NLS
-                                    tempMax = in.nextDouble();
-                                    break;
-                                case "pressure": //NON-NLS
-                                    newPressure = in.nextDouble();
-                                    break;
-                                case "humidity": //NON-NLS
-                                    newHumidity = in.nextDouble();
+                                case "description": //NON-NLS
+                                    description = in.nextString();
                                     break;
                                 default:
                                     in.skipValue();
@@ -177,43 +132,83 @@ public final class OpenWeather implements IWeatherService {
                             }
                         }
 
-                        in.endObject(); // End "main"
+                        in.endObject(); // End "weather"
 
-                        if (Double.isNaN(temp)) throw new IllegalStateException("No 'main.temp' was found.");
-                        if (Double.isNaN(tempMin)) throw new IllegalStateException("No 'main.temp_min' was found.");
-                        if (Double.isNaN(tempMax)) throw new IllegalStateException("No 'main.temp_max' was found.");
-                        if (Double.isNaN(newPressure)) throw new IllegalStateException("No 'main.pressure' was found.");
-                        if (Double.isNaN(newHumidity)) throw new IllegalStateException("No 'main.humidity' was found.");
-                        newTemperature = new Temperature(temp, tempMin, tempMax, KELVIN);
-                        break;
-                    case "wind": //NON-NLS
-                        in.beginObject(); // Begin "wind"
+                        if (id == -1) throw new IllegalStateException("No 'weather.id' was found.");
+                        if (main == null) throw new IllegalStateException("No 'weather.main' was found.");
+                        if (description == null)
+                            throw new IllegalStateException("No 'weather.description' was found.");
+                        newWeather = new Weather(id, main, description);
+                    }
 
-                        double speed = Double.NaN;
-                        double deg = -1.0;
-                        while (in.hasNext()) {
-                            switch (in.nextName()) {
-                                case "speed": //NON-NLS
-                                    speed = in.nextDouble();
-                                    break;
-                                case "deg":
-                                    deg = in.nextDouble();
-                                    break;
-                                default:
-                                    in.skipValue();
-                                    break;
-                            }
+                    in.endArray();
+                    break;
+                case "main": //NON-NLS
+                    in.beginObject(); // Begin "main"
+
+
+                    double temp = Double.NaN;
+                    double tempMin = Double.NaN;
+                    double tempMax = Double.NaN;
+                    while (in.hasNext()) {
+                        switch (in.nextName()) {
+                            case "temp": //NON-NLS
+                                temp = in.nextDouble();
+                                break;
+                            case "temp_min": //NON-NLS
+                                tempMin = in.nextDouble();
+                                break;
+                            case "temp_max": //NON-NLS
+                                tempMax = in.nextDouble();
+                                break;
+                            case "pressure": //NON-NLS
+                                newPressure = in.nextDouble();
+                                break;
+                            case "humidity": //NON-NLS
+                                newHumidity = in.nextDouble();
+                                break;
+                            default:
+                                in.skipValue();
+                                break;
                         }
+                    }
 
-                        in.endObject(); // End "wind"
+                    in.endObject(); // End "main"
 
-                        if (Double.isNaN(speed)) throw new IllegalStateException("No 'wind.speed' was found.");
-                        newWind = new Wind(speed, deg);
-                        break;
-                    default:
-                        in.skipValue();
-                        break;
-                }
+                    if (Double.isNaN(temp)) throw new IllegalStateException("No 'main.temp' was found.");
+                    if (Double.isNaN(tempMin)) throw new IllegalStateException("No 'main.temp_min' was found.");
+                    if (Double.isNaN(tempMax)) throw new IllegalStateException("No 'main.temp_max' was found.");
+                    if (Double.isNaN(newPressure)) throw new IllegalStateException("No 'main.pressure' was found.");
+                    if (Double.isNaN(newHumidity)) throw new IllegalStateException("No 'main.humidity' was found.");
+                    newTemperature = new Temperature(temp, tempMin, tempMax, KELVIN);
+                    break;
+                case "wind": //NON-NLS
+                    in.beginObject(); // Begin "wind"
+
+                    double speed = Double.NaN;
+                    double deg = -1.0;
+                    while (in.hasNext()) {
+                        switch (in.nextName()) {
+                            case "speed": //NON-NLS
+                                speed = in.nextDouble();
+                                break;
+                            case "deg":
+                                deg = in.nextDouble();
+                                break;
+                            default:
+                                in.skipValue();
+                                break;
+                        }
+                    }
+
+                    in.endObject(); // End "wind"
+
+                    if (Double.isNaN(speed)) throw new IllegalStateException("No 'wind.speed' was found.");
+                    newWind = new Wind(speed, deg);
+                    break;
+                default:
+                    in.skipValue();
+                    break;
             }
 
             in.endObject();
@@ -222,7 +217,7 @@ public final class OpenWeather implements IWeatherService {
             if (newTemperature == null) throw new IllegalStateException("No 'main' was found.");
             if (newWind == null) throw new IllegalStateException("No 'wind' was found.");
 
-            return new WeatherData(newWeather, newTemperature, newWind, newPressure, newHumidity);
+            return new WeatherData(null, newWeather, newTemperature, newWind, newPressure, newHumidity);
         }
     }
 }

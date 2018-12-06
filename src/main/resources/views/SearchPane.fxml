@@ -46,7 +46,7 @@
                             </children>
                         </VBox>
                     </children>
-            </HBox>
+                </HBox>
                 <Label fx:id="error" text="Label" textFill="RED"/>
             </children>
         </VBox>

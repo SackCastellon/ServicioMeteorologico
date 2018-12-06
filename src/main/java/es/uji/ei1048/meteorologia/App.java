@@ -24,7 +24,7 @@ import java.util.List;
 public final class App extends Application {
     private Stage primaryStage;
     private RootLayout rootController;
-    private WeatherManager sw;
+
     public static void main(final @NotNull String[] args) {
         Application.launch(args);
     }
@@ -33,7 +33,6 @@ public final class App extends Application {
     public void start(final Stage primaryStage) {
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("Meteorological Service");
-        this.sw = new WeatherManager();
         initRootLayout();
         showSearchPane();
     }
@@ -78,13 +77,13 @@ public final class App extends Application {
 
     public void showForecastSearchResult(final String city, final @NotNull List<WeatherData> wdList, final boolean advanced) {
         if (rootController.getNumPan() > 1) rootController.clean();
-        for (WeatherData wd : wdList) {
+        for (final WeatherData wd : wdList) {
             addResult(city, wd, advanced);
         }
 
     }
 
-    private void addResult(String city, WeatherData wd, boolean advanced) {
+    private void addResult(final String city, final WeatherData wd, final boolean advanced) {
         try {
             final @NotNull FXMLLoader loader = new FXMLLoader();
             if (advanced) {
@@ -94,21 +93,20 @@ public final class App extends Application {
             }
             final @NotNull BorderPane searchResults = loader.load();
             final @NotNull ISearchResults srController = loader.getController();
-            srController.showResults(new City(0, city, "España", new Coordinates(333, 333)), wd);
+            srController.showResults(new City(0, city, "España", new Coordinates(42.0, 42.0)), wd);
             srController.setApp(this);
             rootController.addPane(searchResults);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void save(WeatherData wd) {
-        sw.save(wd);
+    public void save(final WeatherData wd) {
+        WeatherManager.INSTANCE.save(wd);
     }
 
-    public void saveAll(List<WeatherData> wdList) {
-        for (WeatherData wd : wdList
-        ) {
+    public void saveAll(final List<WeatherData> wdList) {
+        for (final WeatherData wd : wdList) {
             save(wd);
         }
     }
@@ -116,17 +114,17 @@ public final class App extends Application {
     public void showLoadScreen() {
         try {
 
-            FXMLLoader loader = new FXMLLoader();
+            final FXMLLoader loader = new FXMLLoader();
             loader.setLocation(App.class.getResource("views/LoadWeather.fxml"));
-            VBox page = loader.load();
-            Stage dialogStage = new Stage();
+            final VBox page = loader.load();
+            final Stage dialogStage = new Stage();
             dialogStage.setTitle("Load weather");
             dialogStage.initModality(Modality.WINDOW_MODAL);
             dialogStage.initOwner(primaryStage);
-            Scene scene = new Scene(page);
+            final Scene scene = new Scene(page);
             dialogStage.setScene(scene);
 
-            LoadWeather controller = loader.getController();
+            final LoadWeather controller = loader.getController();
             controller.setDialogStage(dialogStage);
 
             dialogStage.showAndWait();
@@ -136,7 +134,7 @@ public final class App extends Application {
                 addResult("Castellon", sf.getWd(), sf.isAdvanced());
             }
 */
-        } catch (IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
 
         }

@@ -10,6 +10,8 @@ import java.util.StringJoiner;
 public final class WeatherData {
 
     @NonNls
+    private final @NotNull City city;
+    @NonNls
     private final @NotNull Weather weather;
     @NonNls
     private final @NotNull Temperature temperature;
@@ -20,30 +22,35 @@ public final class WeatherData {
     @NonNls
     private final double humidity;
 
+    // TODO Add timestamp
+
     public WeatherData(
+            final /*@NotNull*/ City city, // TODO Make non-nullable
             final @NotNull Weather weather,
             final @NotNull Temperature temperature,
             final @NotNull Wind wind
     ) {
-        this.weather = weather;
-        this.temperature = temperature;
-        this.wind = wind;
-        this.pressure = -1;
-        this.humidity = -1;
+        this(city, weather, temperature, wind, -1.0, -1.0);
     }
 
     public WeatherData(
+            final /*@NotNull*/ City city, // TODO Make non-nullable
             final @NotNull Weather weather,
             final @NotNull Temperature temperature,
             final @NotNull Wind wind,
             final double pressure,
             final double humidity
     ) {
+        this.city = city;
         this.weather = weather;
         this.temperature = temperature;
         this.wind = wind;
         this.pressure = pressure;
         this.humidity = humidity;
+    }
+
+    public @NotNull City getCity() {
+        return city;
     }
 
     public @NotNull Weather getWeather() {
@@ -73,6 +80,7 @@ public final class WeatherData {
         final @NotNull WeatherData that = (WeatherData) obj;
         return Double.compare(that.pressure, pressure) == 0 &&
                 Double.compare(that.humidity, humidity) == 0 &&
+                city.equals(that.city) &&
                 weather.equals(that.weather) &&
                 temperature.equals(that.temperature) &&
                 wind.equals(that.wind);
@@ -80,12 +88,13 @@ public final class WeatherData {
 
     @Override
     public int hashCode() {
-        return Objects.hash(weather, temperature, wind, pressure, humidity);
+        return Objects.hash(city, weather, temperature, wind, pressure, humidity);
     }
 
     @Override
     public @NotNull String toString() {
         return new StringJoiner(", ", WeatherData.class.getSimpleName() + "[", "]")
+                .add("city=" + city) //NON-NLS
                 .add("weather=" + weather) //NON-NLS
                 .add("temperature=" + temperature) //NON-NLS
                 .add("wind=" + wind) //NON-NLS

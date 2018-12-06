@@ -7,25 +7,25 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-public class TestLoadBasicResults {
+final class TestLoadBasicResults {
 
-    private static WeatherManager api;
+    private static WeatherManager manager;
 
     @BeforeAll
     static void setUp() {
-        api = new WeatherManager();
+        manager = WeatherManager.INSTANCE;
     }
 
     @Test
     void getLoadWeather_validCity_suc() {
         final @NotNull String file = "Madrid.txt";
-        Assertions.assertDoesNotThrow(() -> api.load(file));
+        Assertions.assertDoesNotThrow(() -> manager.load(file));
     }
 
     @Test
     void getCurrentWeather_notValidCity_err() {
         final @NotNull String file = "Wakanda.txt";
-        Assertions.assertThrows(NotFoundException.class, () -> api.load(file));
+        Assertions.assertThrows(NotFoundException.class, () -> manager.load(file));
     }
 
 }
