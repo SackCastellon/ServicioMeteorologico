@@ -3,7 +3,6 @@ package es.uji.ei1048.meteorologia;
 import es.uji.ei1048.meteorologia.model.City;
 import es.uji.ei1048.meteorologia.model.Coordinates;
 import es.uji.ei1048.meteorologia.model.WeatherData;
-import es.uji.ei1048.meteorologia.view.IForecastResults;
 import es.uji.ei1048.meteorologia.view.ISearchResults;
 import es.uji.ei1048.meteorologia.view.RootLayout;
 import es.uji.ei1048.meteorologia.view.SearchPane;
@@ -56,14 +55,32 @@ public final class App extends Application {
             final @NotNull Parent root = loader.load();
             final @NotNull SearchPane spController = loader.getController();
             spController.setApp(this);
+            rootController.setSearchPane(spController);
             rootController.addPane(root);
         } catch (final @NotNull IOException e) {
             e.printStackTrace(); // FIXME
         }
     }
 
+
     public void showSearchResults(final @NotNull String city, final @NotNull WeatherData wd, final boolean advanced) {
         if (rootController.getNumPan() > 1) rootController.clean();
+        addResult(city, wd, advanced);
+    }
+
+    public @NotNull Stage getPrimaryStage() {
+        return primaryStage;
+    }
+
+    public void showForecastSearchResult(final String city, final @NotNull List<WeatherData> wdList, final boolean advanced) {
+        if (rootController.getNumPan() > 1) rootController.clean();
+        for (WeatherData wd : wdList) {
+            addResult(city, wd, advanced);
+        }
+
+    }
+
+    private void addResult(String city, WeatherData wd, boolean advanced) {
         try {
             final @NotNull FXMLLoader loader = new FXMLLoader();
             if (advanced) {
@@ -73,33 +90,10 @@ public final class App extends Application {
             }
             final @NotNull BorderPane searchResults = loader.load();
             final @NotNull ISearchResults srController = loader.getController();
-            srController.showResults(new City(0, city, "España", new Coordinates(0, 0)), wd);
+            srController.showResults(new City(0, city, "España", new Coordinates(333, 333)), wd);
             rootController.addPane(searchResults);
-        } catch (final @NotNull IOException e) {
-            e.printStackTrace(); // FIXME
-        }
-
-    }
-
-    public @NotNull Stage getPrimaryStage() {
-        return primaryStage;
-    }
-
-    public void showForecastSearchResult(final String city, final @NotNull List<WeatherData> wdList, final boolean advanced) {
-        if (rootController.getNumPan() > 1) rootController.clean();
-        try {
-            final @NotNull FXMLLoader loader = new FXMLLoader();
-            if (advanced) {
-                loader.setLocation(App.class.getResource("/views/AdvancedForecastResults.fxml")); //NON-NLS
-            } else {
-                loader.setLocation(App.class.getResource("/views/BasicForecastResults.fxml")); //NON-NLS
-            }
-            final @NotNull BorderPane searchResults = loader.load();
-            final @NotNull IForecastResults srController = loader.getController();
-            srController.showForecastResults(new City(0, city, "España", new Coordinates(0, 0)), wdList);
-            rootController.addPane(searchResults);
-        } catch (final @NotNull IOException e) {
-            e.printStackTrace(); // FIXME
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

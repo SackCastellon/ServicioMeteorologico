@@ -17,9 +17,10 @@ public final class SearchPane {
 
     @FXML
     ToggleGroup searchMode;
-    String ns = "No city searched yet";
     private App app;
+
     private IWeatherApi api;
+
     @FXML
     ToggleGroup dateMode;
     private boolean advanced;
@@ -31,7 +32,7 @@ public final class SearchPane {
 
     @FXML
     private void initialize() {
-        api = new OpenWeatherApi();
+        setApi(new OpenWeatherApi());
         error.setText("");
         searchMode.selectedToggleProperty().addListener((ov, oldToggle, newToggle) -> {
             if (oldToggle != newToggle) {
@@ -43,6 +44,10 @@ public final class SearchPane {
                 forecast = !forecast;
             }
         });
+    }
+
+    public void setApi(IWeatherApi api) {
+        this.api = api;
     }
 
     public void setApp(final App app) {
