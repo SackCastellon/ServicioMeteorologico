@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.LocalDate;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -21,25 +22,29 @@ public final class WeatherData {
     private final double pressure;
     @NonNls
     private final double humidity;
+    @NonNls
+    private final LocalDate time;
 
     // TODO Add timestamp
 
     public WeatherData(
-            final /*@NotNull*/ City city, // TODO Make non-nullable
+            final @NotNull City city, // TODO Make non-nullable
             final @NotNull Weather weather,
             final @NotNull Temperature temperature,
-            final @NotNull Wind wind
+            final @NotNull Wind wind,
+            final LocalDate date
     ) {
-        this(city, weather, temperature, wind, -1.0, -1.0);
+        this(city, weather, temperature, wind, -1.0, -1.0, date);
     }
 
     public WeatherData(
-            final /*@NotNull*/ City city, // TODO Make non-nullable
+            final @NotNull City city, // TODO Make non-nullable
             final @NotNull Weather weather,
             final @NotNull Temperature temperature,
             final @NotNull Wind wind,
             final double pressure,
-            final double humidity
+            final double humidity,
+            final LocalDate time
     ) {
         this.city = city;
         this.weather = weather;
@@ -47,6 +52,7 @@ public final class WeatherData {
         this.wind = wind;
         this.pressure = pressure;
         this.humidity = humidity;
+        this.time = time;
     }
 
     public @NotNull City getCity() {
@@ -55,6 +61,10 @@ public final class WeatherData {
 
     public @NotNull Weather getWeather() {
         return weather;
+    }
+
+    public LocalDate getTime() {
+        return time;
     }
 
     public @NotNull Temperature getTemperature() {
@@ -83,18 +93,20 @@ public final class WeatherData {
                 city.equals(that.city) &&
                 weather.equals(that.weather) &&
                 temperature.equals(that.temperature) &&
-                wind.equals(that.wind);
+                wind.equals(that.wind) &&
+                time.equals(that.time);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(city, weather, temperature, wind, pressure, humidity);
+        return Objects.hash(city, weather, temperature, wind, pressure, humidity, time);
     }
 
     @Override
     public @NotNull String toString() {
         return new StringJoiner(", ", WeatherData.class.getSimpleName() + "[", "]")
                 .add("city=" + city) //NON-NLS
+                .add("time=" + time) //NON-NLS
                 .add("weather=" + weather) //NON-NLS
                 .add("temperature=" + temperature) //NON-NLS
                 .add("wind=" + wind) //NON-NLS

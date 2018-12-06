@@ -6,7 +6,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import org.jetbrains.annotations.NotNull;
 
-public class AdvancedResults implements ISearchResults {
+public final class AdvancedResults implements ISearchResults {
 
     @FXML
     private Label cityRes;

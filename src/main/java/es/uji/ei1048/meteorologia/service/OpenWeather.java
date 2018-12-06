@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -104,6 +105,7 @@ public final class OpenWeather implements IWeatherService {
             Wind newWind = null;
             double newPressure = Double.NaN;
             double newHumidity = Double.NaN;
+            LocalDate date = null;
 
             while (in.hasNext()) switch (in.nextName()) {
                 case "weather": //NON-NLS
@@ -206,6 +208,31 @@ public final class OpenWeather implements IWeatherService {
                     if (Double.isNaN(speed)) throw new IllegalStateException("No 'wind.speed' was found.");
                     newWind = new Wind(speed, deg);
                     break;
+
+                case "time": //NON-NLS
+                    in.beginObject(); // Begin "time"
+                    String time = null;
+
+                    while (in.hasNext()) {
+                        //NON-NLS
+                        if ("from".equals(in.nextName())) {
+                            time = in.nextString();
+                        } else {
+                            in.skipValue();
+                        }
+                    }
+
+                    in.endObject(); // End "time"
+                    if (time != null) {
+                        int year = Integer.parseInt(time.substring(0, 4));
+                        int month = Integer.parseInt(time.substring(6, 8));
+                        int day = Integer.parseInt(time.substring(10, 12));
+                        date = LocalDate.of(year, month, day);
+                    } else {
+                        date = LocalDate.now();
+                    }
+
+                    break;
                 default:
                     in.skipValue();
                     break;
@@ -217,7 +244,7 @@ public final class OpenWeather implements IWeatherService {
             if (newTemperature == null) throw new IllegalStateException("No 'main' was found.");
             if (newWind == null) throw new IllegalStateException("No 'wind' was found.");
 
-            return new WeatherData(null, newWeather, newTemperature, newWind, newPressure, newHumidity);
+            return new WeatherData(new City(0, "Madrid", "España", new Coordinates(0, 0)), newWeather, newTemperature, newWind, newPressure, newHumidity, date);
         }
     }
 }
