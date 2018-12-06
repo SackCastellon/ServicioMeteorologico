@@ -10,6 +10,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 
+import java.util.List;
+import java.util.Objects;
+
 public final class SearchPane {
 
     @FXML
@@ -17,11 +20,14 @@ public final class SearchPane {
     String ns = "No city searched yet";
     private App app;
     private IWeatherApi api;
-    private boolean mode;
+    @FXML
+    ToggleGroup dateMode;
+    private boolean advanced;
     @FXML
     private TextField searchBar;
     @FXML
     private Label error;
+    private boolean forecast;
 
     @FXML
     private void initialize() {
@@ -29,7 +35,12 @@ public final class SearchPane {
         error.setText("");
         searchMode.selectedToggleProperty().addListener((ov, oldToggle, newToggle) -> {
             if (oldToggle != newToggle) {
-                mode = !mode;
+                advanced = !advanced;
+            }
+        });
+        dateMode.selectedToggleProperty().addListener((ov, oldToggle, newToggle) -> {
+            if (oldToggle != newToggle) {
+                forecast = !forecast;
             }
         });
     }
@@ -49,11 +60,14 @@ public final class SearchPane {
                 error.setText("");
             }
             try {
-                final WeatherData wd = api.getWeather(val);
                 error.setText("");
-
-                app.showSearchResults(val, wd, mode);
-
+                if (forecast) {
+                    final WeatherData wd = api.getWeather(Objects.requireNonNull(val));
+                    app.showSearchResults(val, wd, advanced);
+                } else {
+                    final List<WeatherData> wdList = api.getForecast(Objects.requireNonNull(val), 3);
+                    app.showForecastSearchResult(val, wdList, advanced);
+                }
             } catch (final NotFoundException e) {
                 error.setText("Ciudad no encontrada");
             }

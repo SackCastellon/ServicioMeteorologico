@@ -4,46 +4,67 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-<GridPane xmlns:fx="http://javafx.com/fxml/1" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity"
-          minHeight="-Infinity"
-          minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0"
-          xmlns="http://javafx.com/javafx/8.0.171">
-    <columnConstraints>
-        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
-        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
-    </columnConstraints>
-    <rowConstraints>
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-    </rowConstraints>
-    <opaqueInsets>
-        <Insets/>
-    </opaqueInsets>
-    <Label layoutX="100.0" layoutY="100.0" prefHeight="16.0" prefWidth="74.0" text="Weather" GridPane.rowIndex="1">
-        <GridPane.margin>
-            <Insets/>
-        </GridPane.margin>
-    </Label>
-    <Label prefHeight="16.0" prefWidth="74.0" text="Humidity" GridPane.rowIndex="3"/>
-    <Label prefHeight="16.0" prefWidth="92.0" text="Temperature" GridPane.rowIndex="2"/>
-    <Label fx:id="temp" prefHeight="5.0" prefWidth="36.0" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
-    <Label fx:id="rh" prefHeight="5.0" prefWidth="36.0" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
-    <Label fx:id="weather" prefHeight="5.0" prefWidth="36.0" text="Label" GridPane.columnIndex="1"
-           GridPane.rowIndex="1"/>
-    <Label text="Pressure" GridPane.rowIndex="5"/>
-    <Label fx:id="wind" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
-    <Label text="Wind" GridPane.rowIndex="4"/>
-    <Label fx:id="pressure" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
-    <Label text="Coord" GridPane.rowIndex="6"/>
-    <Label fx:id="coord" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
-    <Label text="Advanced weather results">
-        <font>
-            <Font size="17.0"/>
-        </font>
-    </Label>
-</GridPane>
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+            minWidth="-Infinity" prefHeight="331.0" prefWidth="393.0" xmlns="http://javafx.com/javafx/10.0.1"
+            fx:controller="es.uji.ei1048.meteorologia.view.AdvancedResults">
+   <top>
+      <VBox prefHeight="73.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label text="Advanced Results">
+               <font>
+                  <Font size="29.0"/>
+               </font>
+            </Label>
+            <Separator prefWidth="200.0"/>
+         </children>
+      </VBox>
+   </top>
+   <center>
+      <GridPane prefHeight="308.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+         <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="290.0" minWidth="10.0" prefWidth="196.0"/>
+            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="399.0" minWidth="10.0"
+                               prefWidth="394.0"/>
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints maxHeight="129.0" minHeight="0.0" prefHeight="50.0" vgrow="SOMETIMES"/>
+            <RowConstraints maxHeight="164.0" minHeight="0.0" prefHeight="50.0" vgrow="SOMETIMES"/>
+            <RowConstraints maxHeight="170.0" minHeight="10.0" prefHeight="50.0" vgrow="SOMETIMES"/>
+            <RowConstraints maxHeight="190.0" minHeight="10.0" prefHeight="50.0" vgrow="SOMETIMES"/>
+            <RowConstraints maxHeight="190.0" minHeight="10.0" prefHeight="50.0" vgrow="SOMETIMES"/>
+            <RowConstraints maxHeight="190.0" minHeight="10.0" prefHeight="50.0" vgrow="SOMETIMES"/>
+            <RowConstraints maxHeight="190.0" minHeight="10.0" prefHeight="50.0" vgrow="SOMETIMES"/>
+         </rowConstraints>
+         <padding>
+            <Insets left="10.0"/>
+         </padding>
+         <children>
+            <Label text="City"/>
+            <Label text="Coordenates" GridPane.rowIndex="1"/>
+            <Label text="Weather" GridPane.rowIndex="2"/>
+            <Label text="Temperature" GridPane.rowIndex="3"/>
+            <Label fx:id="cityRes" text="Label" textFill="BLUE" GridPane.columnIndex="1"/>
+            <Label fx:id="coordsRes" text="Label" textFill="BLUE" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+            <Label fx:id="weatherRes" text="Label" textFill="BLUE" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+            <Label fx:id="tempRes" text="Label" textFill="BLUE" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+            <Label text="Humidity" GridPane.rowIndex="4"/>
+            <Label text="Wind" GridPane.rowIndex="5"/>
+            <Label text="Pressure" GridPane.rowIndex="6"/>
+            <Label fx:id="rhRes" text="Label" textFill="BLUE" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+            <Label fx:id="windRes" text="Label" textFill="BLUE" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+            <Label fx:id="pressureRes" text="Label" textFill="BLUE" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+         </children>
+      </GridPane>
+   </center>
+   <bottom>
+      <ButtonBar minHeight="-Infinity" minWidth="10.0" prefHeight="40.0" prefWidth="393.0"
+                 BorderPane.alignment="TOP_LEFT">
+         <buttons>
+            <Button fx:id="saveButton" mnemonicParsing="false" onAction="#save" text="Save"/>
+         </buttons>
+         <padding>
+            <Insets right="10.0"/>
+         </padding>
+      </ButtonBar>
+   </bottom>
+</BorderPane>

@@ -1,35 +1,70 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-<BorderPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.171"
-            fx:controller="es.uji.ei1048.meteorologia.view.SearchPane">
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="161.0" prefWidth="462.0"
+            xmlns="http://javafx.com/javafx/10.0.1" fx:controller="es.uji.ei1048.meteorologia.view.SearchPane">
+    <top>
+        <VBox prefHeight="52.0" prefWidth="424.0" BorderPane.alignment="CENTER">
+            <children>
+                <Label text="Search city weather">
+                    <font>
+                        <Font size="22.0"/>
+                    </font>
+                </Label>
+                <Separator prefWidth="200.0"/>
+            </children>
+        </VBox>
+    </top>
     <center>
-        <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
-              prefWidth="424.0">
-            <Separator prefWidth="200.0"/>
-            <HBox prefHeight="26.0" prefWidth="300.0" spacing="10.0">
-                <Label text="City name: "/>
-                <TextField fx:id="searchBar"/>
-                <RadioButton mnemonicParsing="false" selected="true" text="Basic">
-                    <toggleGroup>
-                        <ToggleGroup fx:id="searchMode"/>
-                    </toggleGroup>
-                </RadioButton>
-                <RadioButton mnemonicParsing="false" text="Advanced" toggleGroup="$searchMode"/>
+        <VBox prefHeight="62.0" prefWidth="424.0" BorderPane.alignment="CENTER">
+            <children>
+                <HBox prefHeight="26.0" prefWidth="424.0" spacing="10.0">
+                    <children>
+                        <Label text="City name: "/>
+                        <TextField fx:id="searchBar"/>
+                        <VBox prefHeight="200.0" prefWidth="100.0">
+                            <children>
+                                <RadioButton mnemonicParsing="false" selected="true" text="Basic">
+                                    <toggleGroup>
+                                        <ToggleGroup fx:id="searchMode"/>
+                                    </toggleGroup>
+                                </RadioButton>
+                                <RadioButton mnemonicParsing="false" text="Advanced" toggleGroup="$searchMode"/>
+                            </children>
+                        </VBox>
+                        <VBox prefHeight="200.0" prefWidth="100.0">
+                            <children>
+                                <RadioButton mnemonicParsing="false" selected="true" text="Actual Date">
+                                    <toggleGroup>
+                                        <ToggleGroup fx:id="dateMode"/>
+                                    </toggleGroup>
+                                </RadioButton>
+                                <RadioButton mnemonicParsing="false" text="Forecast" toggleGroup="$dateMode"/>
+                            </children>
+                        </VBox>
+                    </children>
             </HBox>
-            <Label fx:id="error" text="Label" textFill="RED"/>
-            <Button fx:id="csButton" mnemonicParsing="false" onAction="#search" text="Search current"/>
+                <Label fx:id="error" text="Label" textFill="RED"/>
+                <HBox alignment="TOP_RIGHT" prefHeight="45.0" prefWidth="424.0" spacing="10.0">
+                    <padding>
+                        <Insets bottom="10.0" top="10.0"/>
+                    </padding>
+                </HBox>
+            </children>
         </VBox>
     </center>
-    <top>
-        <Label text="Search city weather" BorderPane.alignment="TOP_LEFT">
-            <font>
-                <Font size="22.0"/>
-            </font>
-        </Label>
-    </top>
+    <bottom>
+        <HBox alignment="TOP_RIGHT" prefHeight="38.0" prefWidth="424.0">
+            <children>
+                <Button fx:id="csButton" mnemonicParsing="false" onAction="#search" text="Search current">
+                    <HBox.margin>
+                        <Insets right="10.0"/>
+                    </HBox.margin>
+                </Button>
+            </children>
+        </HBox>
+    </bottom>
 </BorderPane>
