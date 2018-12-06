@@ -18,7 +18,12 @@ public final class Temperature {
     @NonNls
     private final @NotNull Temperature.Units unit;
 
-    public Temperature(final double current, final double min, final double max, final @NotNull Temperature.Units unit) {
+    public Temperature(
+            final double current,
+            final double min,
+            final double max,
+            final @NotNull Temperature.Units unit
+    ) {
         this.current = current;
         this.min = min;
         this.max = max;

@@ -1,6 +1,6 @@
 package es.uji.ei1048.meteorologia;
 
-import es.uji.ei1048.meteorologia.api.IWeatherApi;
+import es.uji.ei1048.meteorologia.service.IWeatherService;
 import es.uji.ei1048.meteorologia.api.NotFoundException;
 import es.uji.ei1048.meteorologia.model.WeatherData;
 import org.jetbrains.annotations.NotNull;
@@ -14,10 +14,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-class TestCurrentWeatherMock {
+final class TestCurrentWeatherMock {
 
     @Mock
-    private IWeatherApi api;
+    private IWeatherService api;
 
     @BeforeEach
     void setUp() {

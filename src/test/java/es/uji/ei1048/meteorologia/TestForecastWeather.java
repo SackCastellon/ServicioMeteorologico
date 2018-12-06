@@ -1,20 +1,20 @@
 package es.uji.ei1048.meteorologia;
 
-import es.uji.ei1048.meteorologia.api.IWeatherApi;
+import es.uji.ei1048.meteorologia.service.IWeatherService;
 import es.uji.ei1048.meteorologia.api.NotFoundException;
-import es.uji.ei1048.meteorologia.api.OpenWeatherApi;
+import es.uji.ei1048.meteorologia.service.OpenWeather;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class TestForecastWeather {
+final class TestForecastWeather {
 
-    private static IWeatherApi api;
+    private static IWeatherService api;
 
     @BeforeAll
     static void setup() {
-        api = new OpenWeatherApi();
+        api = new OpenWeather();
     }
 
     @Test

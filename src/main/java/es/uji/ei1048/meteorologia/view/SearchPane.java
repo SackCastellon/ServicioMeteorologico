@@ -1,9 +1,9 @@
 package es.uji.ei1048.meteorologia.view;
 
 import es.uji.ei1048.meteorologia.App;
-import es.uji.ei1048.meteorologia.api.IWeatherApi;
+import es.uji.ei1048.meteorologia.service.IWeatherService;
 import es.uji.ei1048.meteorologia.api.NotFoundException;
-import es.uji.ei1048.meteorologia.api.OpenWeatherApi;
+import es.uji.ei1048.meteorologia.service.OpenWeather;
 import es.uji.ei1048.meteorologia.model.WeatherData;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -20,7 +20,7 @@ public final class SearchPane {
     ToggleGroup searchMode;
     private App app;
 
-    private IWeatherApi api;
+    private IWeatherService api;
 
     @FXML
     ToggleGroup dateMode;
@@ -34,7 +34,7 @@ public final class SearchPane {
     private Button saveButton;
     @FXML
     private void initialize() {
-        setApi(new OpenWeatherApi());
+        setApi(new OpenWeather());
         error.setText("");
         searchMode.selectedToggleProperty().addListener((ov, oldToggle, newToggle) -> {
             if (oldToggle != newToggle) {
@@ -48,7 +48,7 @@ public final class SearchPane {
         });
     }
 
-    public void setApi(IWeatherApi api) {
+    public void setApi(IWeatherService api) {
         this.api = api;
     }
 
