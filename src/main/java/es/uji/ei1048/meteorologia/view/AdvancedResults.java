@@ -1,7 +1,6 @@
 package es.uji.ei1048.meteorologia.view;
 
-import es.uji.ei1048.meteorologia.model.City;
-import es.uji.ei1048.meteorologia.model.WeatherData;
+import es.uji.ei1048.meteorologia.model.*;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import org.jetbrains.annotations.NotNull;
@@ -32,16 +31,19 @@ public class AdvancedResults implements ISearchResults {
     @Override
     public void showResults(final @NotNull City city, final @NotNull WeatherData wd) {
         cityRes.setText(city.getName());
+        weatherRes.setText(wd.getWeather().getDescription().toUpperCase());
         rhRes.setText(wd.getHumidity() + " RH%");
-        tempRes.setText(wd.getTemperature().toString());
-        weatherRes.setText(wd.getWeather().toString());
-        coordsRes.setText(city.getCoordinates().toString());
-        windRes.setText(wd.getWind().toString());
-        pressureRes.setText(wd.getPressure() + "KM/h");
+        Temperature temp = wd.getTemperature();
+        tempRes.setText("Current: " + temp.getCurrent() + "°C " + "Max: " + temp.getMax() + "°C " + "Min: " + temp.getCurrent() + "°C");
+        Coordinates coords = city.getCoordinates();
+        coordsRes.setText("Latitude: " + coords.getLatitude() + " Longitude: " + coords.getLongitude());
+        Wind wind = wd.getWind();
+        windRes.setText(" " + wind.getSpeed() + " KM/h Degrees: " + wind.getDegrees());
+        pressureRes.setText(wd.getPressure() + "atm");
 
     }
 
     public void save() {
-        System.out.println("Holi");
+        //api.save()
     }
 }

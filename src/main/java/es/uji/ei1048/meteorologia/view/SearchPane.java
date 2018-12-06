@@ -6,6 +6,7 @@ import es.uji.ei1048.meteorologia.api.NotFoundException;
 import es.uji.ei1048.meteorologia.api.OpenWeatherApi;
 import es.uji.ei1048.meteorologia.model.WeatherData;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
@@ -29,7 +30,8 @@ public final class SearchPane {
     @FXML
     private Label error;
     private boolean forecast;
-
+    @FXML
+    private Button saveButton;
     @FXML
     private void initialize() {
         setApi(new OpenWeatherApi());
@@ -54,24 +56,31 @@ public final class SearchPane {
         this.app = app;
     }
 
+
+    public void saveAll() {
+
+    }
     @FXML
     private void search() {
         final String val = searchBar.getText();
         if (val != null && val.isEmpty()) {
             error.setText("Input a valid city");
         } else {
-            //api.search(val);
             if (error.getText() != null && !error.getText().isEmpty()) {
                 error.setText("");
             }
             try {
                 error.setText("");
                 if (forecast) {
-                    final WeatherData wd = api.getWeather(Objects.requireNonNull(val));
-                    app.showSearchResults(val, wd, advanced);
-                } else {
                     final List<WeatherData> wdList = api.getForecast(Objects.requireNonNull(val), 3);
                     app.showForecastSearchResult(val, wdList, advanced);
+                    saveButton.setDisable(false);
+                } else {
+                    final WeatherData wd = api.getWeather(Objects.requireNonNull(val));
+                    app.showSearchResults(val, wd, advanced);
+                    if (!saveButton.isDisabled()) {
+                        saveButton.setDisable(true);
+                    }
                 }
             } catch (final NotFoundException e) {
                 error.setText("Ciudad no encontrada");

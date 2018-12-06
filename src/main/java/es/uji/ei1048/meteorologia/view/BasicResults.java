@@ -23,9 +23,9 @@ public final class BasicResults implements ISearchResults {
     @Override
     public void showResults(final @NotNull City city, final @NotNull WeatherData wd) {
         cityRes.setText(city.getName());
+        weatherRes.setText(wd.getWeather().getDescription().toUpperCase());
         humidityRes.setText(wd.getHumidity() + " RH%");
-        tempRes.setText(wd.getTemperature().toString());
-        weatherRes.setText(wd.getWeather().toString());
+        tempRes.setText(wd.getTemperature().getCurrent() + "°C");
     }
 
 
