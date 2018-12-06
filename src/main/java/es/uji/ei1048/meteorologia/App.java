@@ -1,6 +1,9 @@
 package es.uji.ei1048.meteorologia;
 
-import es.uji.ei1048.meteorologia.model.*;
+import es.uji.ei1048.meteorologia.model.City;
+import es.uji.ei1048.meteorologia.model.Coordinates;
+import es.uji.ei1048.meteorologia.model.WeatherData;
+import es.uji.ei1048.meteorologia.model.WeatherManager;
 import es.uji.ei1048.meteorologia.view.ISearchResults;
 import es.uji.ei1048.meteorologia.view.LoadWeather;
 import es.uji.ei1048.meteorologia.view.RootLayout;
@@ -127,12 +130,12 @@ public final class App extends Application {
             controller.setDialogStage(dialogStage);
 
             dialogStage.showAndWait();
-            String sel = controller.getSel();
+           /* SaveFile sel = controller.getSel();
             if (sel != null) {
                 SaveFile sf = sw.load(sel);
                 addResult("Castellon", sf.getWd(), sf.isAdvanced());
             }
-
+*/
         } catch (IOException e) {
             e.printStackTrace();
 
