@@ -16,13 +16,13 @@ public final class Temperature {
     @NonNls
     private final double max;
     @NonNls
-    private final @NotNull Temperature.Units units;
+    private final @NotNull Temperature.Units unit;
 
-    public Temperature(final double current, final double min, final double max, final @NotNull Temperature.Units units) {
+    public Temperature(final double current, final double min, final double max, final @NotNull Temperature.Units unit) {
         this.current = current;
         this.min = min;
         this.max = max;
-        this.units = units;
+        this.unit = unit;
     }
 
     public double getCurrent() {
@@ -37,8 +37,8 @@ public final class Temperature {
         return max;
     }
 
-    public @NotNull Units getUnits() {
-        return units;
+    public @NotNull Units getUnit() {
+        return unit;
     }
 
     @Override
@@ -49,49 +49,51 @@ public final class Temperature {
         return Double.compare(that.current, current) == 0 &&
                 Double.compare(that.min, min) == 0 &&
                 Double.compare(that.max, max) == 0 &&
-                units.equals(that.units);
+                unit.equals(that.unit);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(current, min, max, units);
+        return Objects.hash(current, min, max, unit);
     }
 
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return new StringJoiner(", ", Temperature.class.getSimpleName() + "[", "]")
                 .add("current=" + current) //NON-NLS
                 .add("min=" + min) //NON-NLS
                 .add("max=" + max) //NON-NLS
-                .add("units=" + units) //NON-NLS
+                .add("unit=" + unit) //NON-NLS
                 .toString();
     }
 
     public enum Units {
         CELSIUS {
             @Override
-            double convert(final double value, final @NotNull Units units) {
-                switch (units) {
+            public double convert(final double value, final @NotNull Units unit) {
+                switch (unit) {
                     case CELSIUS:
                         return value;
                     case KELVIN:
                         return value + 273.15;
                 }
-                throw new IllegalStateException();
+                return super.convert(value, unit);
             }
         }, KELVIN {
             @Override
-            double convert(final double value, final @NotNull Units units) {
-                switch (units) {
+            public double convert(final double value, final @NotNull Units unit) {
+                switch (unit) {
                     case CELSIUS:
                         return value - 273.15;
                     case KELVIN:
                         return value;
                 }
-                throw new IllegalStateException();
+                return super.convert(value, unit);
             }
         };
 
-        abstract double convert(final double value, final @NotNull Units units);
+        public double convert(final double value, @NonNls final @NotNull Units unit) {
+            throw new IllegalArgumentException("Unrecognized unit " + unit);
+        }
     }
 }
