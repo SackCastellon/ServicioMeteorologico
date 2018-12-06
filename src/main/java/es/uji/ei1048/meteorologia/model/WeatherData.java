@@ -23,6 +23,18 @@ public final class WeatherData {
     public WeatherData(
             final @NotNull Weather weather,
             final @NotNull Temperature temperature,
+            final @NotNull Wind wind
+    ) {
+        this.weather = weather;
+        this.temperature = temperature;
+        this.wind = wind;
+        this.pressure = -1;
+        this.humidity = -1;
+    }
+
+    public WeatherData(
+            final @NotNull Weather weather,
+            final @NotNull Temperature temperature,
             final @NotNull Wind wind,
             final double pressure,
             final double humidity
