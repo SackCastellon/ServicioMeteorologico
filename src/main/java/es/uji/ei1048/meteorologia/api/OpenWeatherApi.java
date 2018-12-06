@@ -16,7 +16,6 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.charset.Charset;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -34,7 +33,7 @@ public final class OpenWeatherApi implements IWeatherApi {
      * @throws NotFoundException         If the city is not found
      * @throws ConnectionFailedException If an error occurs while connecting to the service
      */
-    private static @NotNull HttpResponse getHttpResponse(final @NotNull String cityName, final @NotNull String url) {
+    private static @NotNull String getJsonResponse(final @NotNull String cityName, final @NotNull String url) {
         try (final @NotNull CloseableHttpClient client = HttpClients.createDefault()) {
             final @NotNull URI uri = new URIBuilder(url)
                     .setParameter("q", cityName) //NON-NLS
@@ -46,7 +45,7 @@ public final class OpenWeatherApi implements IWeatherApi {
 
             ApiUtils.checkStatus(response.getStatusLine());
 
-            return response;
+            return EntityUtils.toString(response.getEntity());
         } catch (final @NotNull URISyntaxException | IOException e) {
             throw new ConnectionFailedException(e.getMessage());
         }
@@ -54,28 +53,18 @@ public final class OpenWeatherApi implements IWeatherApi {
 
     @Override
     public @NotNull WeatherData getWeather(final @NotNull String cityName) {
-        try {
-            final @NotNull HttpResponse response = getHttpResponse(cityName, WEATHER_URL);
-            final @NotNull Gson gson = new Gson();
-            final @NotNull String entity = EntityUtils.toString(response.getEntity(), Charset.forName("UTF-8"));
-            return gson.fromJson(entity, WeatherData.class);
-        } catch (final @NotNull IOException e) {
-            throw new DataParsingException(e.getMessage());
-        }
+        final @NotNull String response = getJsonResponse(cityName, WEATHER_URL);
+        final @NotNull Gson gson = new Gson();
+        return gson.fromJson(response, WeatherData.class);
     }
 
     @Override
     public @NotNull List<@NotNull WeatherData> getForecast(final @NotNull String cityName, final int days) {
-        try {
-            final @NotNull HttpResponse response = getHttpResponse(cityName, FORECAST_URL);
-            final @NotNull String entity = EntityUtils.toString(response.getEntity());
-            final @NotNull JsonArray list = new JsonParser().parse(entity).getAsJsonObject().getAsJsonArray("list"); //NON-NLS
-            final @NotNull Gson gson = new Gson();
-            return StreamSupport.stream(list.spliterator(), false)
-                    .map(it -> gson.fromJson(it, WeatherData.class))
-                    .collect(Collectors.toList());
-        } catch (final @NotNull IOException e) {
-            throw new DataParsingException(e.getMessage());
-        }
+        final @NotNull String response = getJsonResponse(cityName, FORECAST_URL);
+        final @NotNull JsonArray list = new JsonParser().parse(response).getAsJsonObject().getAsJsonArray("list"); //NON-NLS
+        final @NotNull Gson gson = new Gson();
+        return StreamSupport.stream(list.spliterator(), false)
+                .map(it -> gson.fromJson(it, WeatherData.class))
+                .collect(Collectors.toList());
     }
 }

@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.StringJoiner;
 
+import static es.uji.ei1048.meteorologia.model.Temperature.Units.KELVIN;
+
 @JsonAdapter(WeatherData.Adapter.class)
 public final class WeatherData {
 
@@ -183,7 +185,7 @@ public final class WeatherData {
                         if (Double.isNaN(tempMax)) throw new IllegalStateException("No 'main.temp_max' was found.");
                         if (Double.isNaN(newPressure)) throw new IllegalStateException("No 'main.pressure' was found.");
                         if (Double.isNaN(newHumidity)) throw new IllegalStateException("No 'main.humidity' was found.");
-                        newTemperature = new Temperature(temp, tempMin, tempMax);
+                        newTemperature = new Temperature(temp, tempMin, tempMax, KELVIN);
                         break;
                     case "wind": //NON-NLS
                         in.beginObject(); // Begin "wind"
