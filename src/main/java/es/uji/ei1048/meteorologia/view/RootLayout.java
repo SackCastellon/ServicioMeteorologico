@@ -1,5 +1,6 @@
 package es.uji.ei1048.meteorologia.view;
 
+import es.uji.ei1048.meteorologia.model.SaveWeather;
 import es.uji.ei1048.meteorologia.service.AccuWeather;
 import es.uji.ei1048.meteorologia.service.OpenWeather;
 import javafx.fxml.FXML;
@@ -11,6 +12,7 @@ public final class RootLayout {
     @FXML
     private SplitPane sp;
 
+    private SaveWeather sw;
 
     private SearchPane searchPane;
 
@@ -34,7 +36,6 @@ public final class RootLayout {
     public void setOwApi() {
         searchPane.setApi(new OpenWeather());
     }
-
 
     public void setSearchPane(SearchPane searchPane) {
         this.searchPane = searchPane;

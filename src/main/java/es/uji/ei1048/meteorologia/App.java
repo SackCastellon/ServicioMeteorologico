@@ -92,6 +92,7 @@ public final class App extends Application {
             final @NotNull BorderPane searchResults = loader.load();
             final @NotNull ISearchResults srController = loader.getController();
             srController.showResults(new City(0, city, "España", new Coordinates(333, 333)), wd);
+            srController.setApp(this);
             rootController.addPane(searchResults);
         } catch (IOException e) {
             e.printStackTrace();

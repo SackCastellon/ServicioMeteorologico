@@ -1,10 +1,10 @@
 package es.uji.ei1048.meteorologia.view;
 
 import es.uji.ei1048.meteorologia.App;
-import es.uji.ei1048.meteorologia.service.IWeatherService;
 import es.uji.ei1048.meteorologia.api.NotFoundException;
-import es.uji.ei1048.meteorologia.service.OpenWeather;
 import es.uji.ei1048.meteorologia.model.WeatherData;
+import es.uji.ei1048.meteorologia.service.IWeatherService;
+import es.uji.ei1048.meteorologia.service.OpenWeather;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -32,6 +32,9 @@ public final class SearchPane {
     private boolean forecast;
     @FXML
     private Button saveButton;
+
+    private List<WeatherData> current;
+
     @FXML
     private void initialize() {
         setApi(new OpenWeather());
@@ -56,9 +59,8 @@ public final class SearchPane {
         this.app = app;
     }
 
-
     public void saveAll() {
-
+        app.saveAll(current);
     }
     @FXML
     private void search() {
@@ -73,6 +75,7 @@ public final class SearchPane {
                 error.setText("");
                 if (forecast) {
                     final List<WeatherData> wdList = api.getForecast(Objects.requireNonNull(val), 3);
+                    current = wdList;
                     app.showForecastSearchResult(val, wdList, advanced);
                     saveButton.setDisable(false);
                 } else {
