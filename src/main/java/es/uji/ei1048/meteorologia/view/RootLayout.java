@@ -1,7 +1,7 @@
 package es.uji.ei1048.meteorologia.view;
 
-import es.uji.ei1048.meteorologia.api.AccuWeatherApi;
-import es.uji.ei1048.meteorologia.api.OpenWeatherApi;
+import es.uji.ei1048.meteorologia.service.AccuWeather;
+import es.uji.ei1048.meteorologia.service.OpenWeather;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.SplitPane;
@@ -28,11 +28,11 @@ public final class RootLayout {
     }
 
     public void setAwApi() {
-        searchPane.setApi(new AccuWeatherApi());
+        searchPane.setApi(new AccuWeather());
     }
 
     public void setOwApi() {
-        searchPane.setApi(new OpenWeatherApi());
+        searchPane.setApi(new OpenWeather());
     }
 
 

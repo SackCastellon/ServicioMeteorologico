@@ -21,7 +21,8 @@ public final class City {
             final int id,
             final @NotNull String name,
             final @NotNull String country,
-            final @NotNull Coordinates coordinates) {
+            final @NotNull Coordinates coordinates
+    ) {
         this.id = id;
         this.name = name;
         this.country = country;
