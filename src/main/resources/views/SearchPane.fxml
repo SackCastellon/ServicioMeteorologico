@@ -48,11 +48,6 @@
                     </children>
             </HBox>
                 <Label fx:id="error" text="Label" textFill="RED"/>
-                <HBox alignment="TOP_RIGHT" prefHeight="45.0" prefWidth="424.0" spacing="10.0">
-                    <padding>
-                        <Insets bottom="10.0" top="10.0"/>
-                    </padding>
-                </HBox>
             </children>
         </VBox>
     </center>
@@ -74,11 +69,17 @@
         </HBox>
     </bottom>
     <right>
-        <Button fx:id="saveButton" disable="true" mnemonicParsing="false" onAction="#saveAll" text="Save all"
-                BorderPane.alignment="CENTER">
-            <BorderPane.margin>
-                <Insets right="10.0" top="40.0"/>
-            </BorderPane.margin>
-        </Button>
+        <VBox prefHeight="71.0" prefWidth="74.0" spacing="10.0" BorderPane.alignment="CENTER">
+            <children>
+                <Button fx:id="saveButton" disable="true" mnemonicParsing="false" onAction="#saveAll" text="Save all"/>
+                <Button fx:id="loadButton" mnemonicParsing="false" onAction="#showLoadScreen" text="Load"/>
+            </children>
+            <opaqueInsets>
+                <Insets/>
+            </opaqueInsets>
+            <padding>
+                <Insets left="10.0"/>
+            </padding>
+        </VBox>
     </right>
 </BorderPane>

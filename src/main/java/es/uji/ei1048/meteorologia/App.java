@@ -1,10 +1,8 @@
 package es.uji.ei1048.meteorologia;
 
-import es.uji.ei1048.meteorologia.model.City;
-import es.uji.ei1048.meteorologia.model.Coordinates;
-import es.uji.ei1048.meteorologia.model.SaveWeather;
-import es.uji.ei1048.meteorologia.model.WeatherData;
+import es.uji.ei1048.meteorologia.model.*;
 import es.uji.ei1048.meteorologia.view.ISearchResults;
+import es.uji.ei1048.meteorologia.view.LoadWeather;
 import es.uji.ei1048.meteorologia.view.RootLayout;
 import es.uji.ei1048.meteorologia.view.SearchPane;
 import javafx.application.Application;
@@ -12,6 +10,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,7 +21,7 @@ import java.util.List;
 public final class App extends Application {
     private Stage primaryStage;
     private RootLayout rootController;
-    private SaveWeather sw;
+    private WeatherManager sw;
     public static void main(final @NotNull String[] args) {
         Application.launch(args);
     }
@@ -30,7 +30,7 @@ public final class App extends Application {
     public void start(final Stage primaryStage) {
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("Meteorological Service");
-        this.sw = new SaveWeather();
+        this.sw = new WeatherManager();
         initRootLayout();
         showSearchPane();
     }
@@ -64,7 +64,7 @@ public final class App extends Application {
     }
 
 
-    public void showSearchResults(final @NotNull String city, final @NotNull WeatherData wd, final boolean advanced) {
+    public void showSearchResult(final @NotNull String city, final @NotNull WeatherData wd, final boolean advanced) {
         if (rootController.getNumPan() > 1) rootController.clean();
         addResult(city, wd, advanced);
     }
@@ -107,6 +107,35 @@ public final class App extends Application {
         for (WeatherData wd : wdList
         ) {
             save(wd);
+        }
+    }
+
+    public void showLoadScreen() {
+        try {
+
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(App.class.getResource("views/LoadWeather.fxml"));
+            VBox page = loader.load();
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Load weather");
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(primaryStage);
+            Scene scene = new Scene(page);
+            dialogStage.setScene(scene);
+
+            LoadWeather controller = loader.getController();
+            controller.setDialogStage(dialogStage);
+
+            dialogStage.showAndWait();
+            String sel = controller.getSel();
+            if (sel != null) {
+                SaveFile sf = sw.load(sel);
+                addResult("Castellon", sf.getWd(), sf.isAdvanced());
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+
         }
     }
 }

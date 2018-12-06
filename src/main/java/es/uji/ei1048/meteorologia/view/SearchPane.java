@@ -80,7 +80,7 @@ public final class SearchPane {
                     saveButton.setDisable(false);
                 } else {
                     final WeatherData wd = api.getWeather(Objects.requireNonNull(val));
-                    app.showSearchResults(val, wd, advanced);
+                    app.showSearchResult(val, wd, advanced);
                     if (!saveButton.isDisabled()) {
                         saveButton.setDisable(true);
                     }
@@ -89,6 +89,10 @@ public final class SearchPane {
                 error.setText("Ciudad no encontrada");
             }
         }
+    }
+
+    private void showLoadScreen() {
+        app.showLoadScreen();
     }
 
     enum Mode {BASIC, ADVANCED}
