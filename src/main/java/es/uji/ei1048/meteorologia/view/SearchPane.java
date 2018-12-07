@@ -90,8 +90,8 @@ public final class SearchPane {
                 error.setText("");
                 final @NotNull City city = new City(-1, query, "", new Coordinates(-1.0, -1.0)); // FIXME
                 if (forecast) {
-                    //final int day = Integer.parseInt(days.getText());
-                    final List<WeatherData> wdList = api.getForecast(Objects.requireNonNull(city), 3);
+                    int n_days = Integer.parseInt(days.getText());
+                    final List<WeatherData> wdList = api.getForecast(Objects.requireNonNull(city), n_days);
                     current = wdList;
                     app.showForecastSearchResult(wdList, advanced);
                     saveButton.setDisable(false);
