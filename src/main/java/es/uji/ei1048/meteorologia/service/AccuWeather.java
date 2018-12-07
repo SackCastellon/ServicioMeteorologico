@@ -59,7 +59,7 @@ public final class AccuWeather implements IWeatherService {
     }
 
     @Override
-    public @NotNull WeatherData getWeather(final @NotNull City city) {
+    public WeatherData getWeather(final String city) {
         throw new UnsupportedOperationException("Not implemented");
     }
 

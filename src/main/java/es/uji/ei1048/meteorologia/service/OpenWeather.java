@@ -60,7 +60,7 @@ public final class OpenWeather implements IWeatherService {
     }
 
     @Override
-    public @NotNull WeatherData getWeather(final @NotNull City city) {
+    public WeatherData getWeather(final String city) {
         final @NotNull String response = getJsonResponse(city.getName(), WEATHER_URL);
         final @NotNull Gson gson = new GsonBuilder()
                 .registerTypeAdapter(WeatherData.class, ADAPTER)
@@ -72,10 +72,10 @@ public final class OpenWeather implements IWeatherService {
     }
 
     @Override
-    public @NotNull List<@NotNull WeatherData> getForecast(final @NotNull City city, final int days) {
+    public @NotNull List<@NotNull WeatherData> getForecast(final @NotNull String city, final int days) {
         if (days <= 0) throw new IllegalArgumentException("days must be greater than 0");
 
-        final @NotNull String response = getJsonResponse(city.getName(), FORECAST_URL);
+        final @NotNull String response = getJsonResponse(city, FORECAST_URL);
         final @NotNull JsonArray list = new JsonParser()
                 .parse(response)
                 .getAsJsonObject()

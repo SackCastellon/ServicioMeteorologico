@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 import static es.uji.ei1048.meteorologia.view.SearchPane.DisplayMode.ADVANCED;
 import static es.uji.ei1048.meteorologia.view.SearchPane.WeatherMode.FORECAST;
 
-public final class SearchPane {
+public class SearchPane {
 
     private static final @NotNull Pattern ONE_TO_FIVE = Pattern.compile("[1-5]");
     private static final @NotNull Pattern NOT_ONE_TO_FIVE = Pattern.compile("^[1-5]");
@@ -129,15 +129,14 @@ public final class SearchPane {
             }
             try {
                 error.setText("");
-                final @NotNull City city = new City(-1, query, "", new Coordinates(-1.0, -1.0)); // FIXME
                 if (weatherMode.get() == FORECAST) {
                     final int n_days = Integer.parseInt(days.getText());
-                    final List<WeatherData> wdList = api.getForecast(Objects.requireNonNull(city), n_days);
+                    final List<WeatherData> wdList = api.getForecast(query, n_days);
                     current = wdList;
                     app.showForecastSearchResult(wdList, displayMode.get() == ADVANCED);
                     saveButton.setDisable(false);
                 } else {
-                    final WeatherData wd = api.getWeather(Objects.requireNonNull(city));
+                    final WeatherData wd = api.getWeather(query);
                     app.showSearchResult(wd, displayMode.get() == ADVANCED);
                     if (!saveButton.isDisabled()) {
                         saveButton.setDisable(true);
@@ -152,6 +151,10 @@ public final class SearchPane {
     @FXML
     private void showLoadScreen() {
         app.showLoadScreen();
+    }
+
+    public List<@NotNull WeatherData> getForecast(String city, int i) {
+        return api.getForecast(city, i);
     }
 
     enum DisplayMode {BASIC, ADVANCED}

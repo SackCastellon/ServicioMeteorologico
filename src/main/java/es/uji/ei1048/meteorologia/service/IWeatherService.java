@@ -3,7 +3,6 @@ package es.uji.ei1048.meteorologia.service;
 import es.uji.ei1048.meteorologia.api.ConnectionFailedException;
 import es.uji.ei1048.meteorologia.api.DataParsingException;
 import es.uji.ei1048.meteorologia.api.NotFoundException;
-import es.uji.ei1048.meteorologia.model.City;
 import es.uji.ei1048.meteorologia.model.WeatherData;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,7 +16,7 @@ public interface IWeatherService {
      * @throws ConnectionFailedException If an error occurs while connecting to the service
      * @throws DataParsingException      In an error occurred while parsing the response data from the service
      */
-    @NotNull WeatherData getWeather(final @NotNull City city);
+    WeatherData getWeather(final String city);
 
     /**
      * @param city The city
@@ -28,5 +27,5 @@ public interface IWeatherService {
      * @throws ConnectionFailedException If an error occurs while connecting to the service
      * @throws DataParsingException      In an error occurred while parsing the response data from the service
      */
-    @NotNull List<@NotNull WeatherData> getForecast(final @NotNull City city, final int days);
+    @NotNull List<@NotNull WeatherData> getForecast(final @NotNull String city, final int days);
 }
