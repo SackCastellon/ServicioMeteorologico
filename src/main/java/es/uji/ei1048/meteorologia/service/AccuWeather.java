@@ -21,6 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.LocalDate;
 import java.util.List;
 
 public final class AccuWeather implements IWeatherService {
@@ -187,7 +188,7 @@ public final class AccuWeather implements IWeatherService {
 
             final Temperature newTemperature = new Temperature(temp, tempMin, tempMax, Temperature.Units.CELSIUS);
 
-            return new WeatherData(null, newWeather, newTemperature, newWind, newPressure, newHumidity);
+            return new WeatherData(null, newWeather, newTemperature, newWind, newPressure, newHumidity, LocalDate.now());
         }
     }
 }
