@@ -94,6 +94,7 @@ public final class App extends Application {
             srController.showResults(wd);
             srController.setApp(this);
             rootController.addPane(searchResults);
+            primaryStage.sizeToScene();
         } catch (final IOException e) {
             e.printStackTrace();
         }

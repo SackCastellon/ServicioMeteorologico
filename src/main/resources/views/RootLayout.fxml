@@ -2,7 +2,9 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.BorderPane?>
-<BorderPane prefHeight="470.0" prefWidth="747.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="es.uji.ei1048.meteorologia.view.RootLayout">
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+            prefHeight="470.0" prefWidth="747.0" xmlns="http://javafx.com/javafx/8.0.171"
+            fx:controller="es.uji.ei1048.meteorologia.view.RootLayout">
     <top>
         <MenuBar BorderPane.alignment="CENTER">
             <Menu mnemonicParsing="false" text="Menu">
@@ -18,6 +20,7 @@
         </MenuBar>
     </top>
     <center>
-        <SplitPane fx:id="sp" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER"/>
+        <SplitPane fx:id="sp" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="200.0"
+                   prefWidth="200.0" BorderPane.alignment="CENTER"/>
     </center>
 </BorderPane>

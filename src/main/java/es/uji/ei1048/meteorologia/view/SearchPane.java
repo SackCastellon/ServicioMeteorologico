@@ -90,11 +90,15 @@ public final class SearchPane {
                 error.setText("");
                 final @NotNull City city = new City(-1, query, "", new Coordinates(-1.0, -1.0)); // FIXME
                 if (forecast) {
-                    int n_days = Integer.parseInt(days.getText());
-                    final List<WeatherData> wdList = api.getForecast(Objects.requireNonNull(city), n_days);
-                    current = wdList;
-                    app.showForecastSearchResult(wdList, advanced);
-                    saveButton.setDisable(false);
+                    try {
+                        int n_days = Integer.parseInt(days.getText());
+                        final List<WeatherData> wdList = api.getForecast(Objects.requireNonNull(city), n_days);
+                        current = wdList;
+                        app.showForecastSearchResult(wdList, advanced);
+                        saveButton.setDisable(false);
+                    } catch (NumberFormatException e) {
+                        error.setText("Introduce un numero valido para buscar");
+                    }
                 } else {
                     final WeatherData wd = api.getWeather(Objects.requireNonNull(city));
                     app.showSearchResult(wd, advanced);

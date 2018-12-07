@@ -19,6 +19,10 @@ public final class RootLayout {
 
     public void addPane(final Node node) {
         sp.getItems().add(node);
+        for (SplitPane.Divider div : sp.getDividers()
+        ) {
+            div.setPosition(div.getPosition() + 1);
+        }
     }
 
     public int getNumPan() {
