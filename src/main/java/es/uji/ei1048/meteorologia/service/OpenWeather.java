@@ -230,6 +230,7 @@ public final class OpenWeather implements IWeatherService {
 
             in.endObject();
 
+            if (dateTime == null) throw new IllegalStateException("No timestamp was found.");
             if (weather == null) throw new IllegalStateException("No 'weather' was found.");
             if (temperature == null) throw new IllegalStateException("No 'main' was found.");
             if (wind == null) throw new IllegalStateException("No 'wind' was found.");

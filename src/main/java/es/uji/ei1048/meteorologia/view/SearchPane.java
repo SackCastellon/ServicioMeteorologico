@@ -7,69 +7,103 @@ import es.uji.ei1048.meteorologia.model.Coordinates;
 import es.uji.ei1048.meteorologia.model.WeatherData;
 import es.uji.ei1048.meteorologia.service.IWeatherService;
 import es.uji.ei1048.meteorologia.service.OpenWeather;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.ResourceBundle;
+import java.util.regex.Pattern;
+
+import static es.uji.ei1048.meteorologia.view.SearchPane.DisplayMode.ADVANCED;
+import static es.uji.ei1048.meteorologia.view.SearchPane.WeatherMode.FORECAST;
 
 public final class SearchPane {
 
+    private static final @NotNull Pattern ONE_TO_FIVE = Pattern.compile("[1-5]");
+    private static final @NotNull Pattern NOT_ONE_TO_FIVE = Pattern.compile("^[1-5]");
+    private static final @NotNull String ENUM_PROPERTY = "enumProperty"; //NON-NLS
+
+    private final @NotNull ObjectProperty<@NotNull DisplayMode> displayMode = new SimpleObjectProperty<>(DisplayMode.BASIC);
+    private final @NotNull ObjectProperty<@NotNull WeatherMode> weatherMode = new SimpleObjectProperty<>(WeatherMode.CURRENT);
+
     @FXML
-    ToggleGroup searchMode;
-    @FXML
-    ToggleGroup dateMode;
-    private App app;
-    private IWeatherService api;
-    private boolean advanced;
+    private ResourceBundle resources; // TODO Use resource bundle for translations
     @FXML
     private TextField searchBar;
     @FXML
+    private RadioButton displayBasic;
+    @FXML
+    private ToggleGroup displayGroup;
+    @FXML
+    private RadioButton displayAdvanced;
+    @FXML
+    private RadioButton weatherCurrent;
+    @FXML
+    private ToggleGroup weatherGroup;
+    @FXML
+    private RadioButton weatherForecast;
+    @FXML
+    private Label daysLabel;
+    @FXML
     private TextField days;
+    @FXML
+    private Label rangeLabel;
     @FXML
     private TextField rangeDays;
     @FXML
     private Label error;
-    private boolean forecast;
+    @FXML
+    private Button csButton;
     @FXML
     private Button saveButton;
+    @FXML
+    private Button loadButton;
 
+    private App app;
+    private IWeatherService api;
     private List<WeatherData> current;
 
-    @FXML
-    private Label daysLabel;
-    @FXML
-    private Label rangeLabel;
-
+    @SuppressWarnings("unchecked")
+    private static <T extends Enum<T>> void bindToggleGroup(
+            final @NotNull Property<@NotNull T> property,
+            final @NotNull ToggleGroup toggleGroup
+    ) {
+        property.bind(Bindings.createObjectBinding(
+                () -> (T) Objects.requireNonNull(toggleGroup).getSelectedToggle().getProperties().get(ENUM_PROPERTY),
+                toggleGroup.selectedToggleProperty()
+        ));
+    }
 
     @FXML
     private void initialize() {
         api = new OpenWeather();
         error.setText("");
         days.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.matches("\\b[1-5]")) {
-                days.setText(newValue.replaceAll("[^\\[0]\\b", ""));
-                rangeDays.setText(newValue.replaceAll("[^\\[0]\\b", ""));
+            if (!ONE_TO_FIVE.matcher(newValue).matches()) {
+                days.setText(NOT_ONE_TO_FIVE.matcher(newValue).replaceAll(""));
             }
         });
-        searchMode.selectedToggleProperty().addListener((ov, oldToggle, newToggle) -> {
-            if (oldToggle != newToggle) {
-                advanced = !advanced;
-            }
-        });
-        dateMode.selectedToggleProperty().addListener((ov, oldToggle, newToggle) -> {
-            if (oldToggle != newToggle) {
-                forecast = !forecast;
-                daysLabel.setDisable(!forecast);
-                rangeLabel.setDisable(!forecast);
-                days.setDisable(!forecast);
-                rangeDays.setDisable(!forecast);
-            }
-        });
+
+        displayBasic.getProperties().put(ENUM_PROPERTY, DisplayMode.BASIC);
+        displayAdvanced.getProperties().put(ENUM_PROPERTY, ADVANCED);
+        bindToggleGroup(displayMode, displayGroup);
+
+        weatherCurrent.getProperties().put(ENUM_PROPERTY, WeatherMode.CURRENT);
+        weatherForecast.getProperties().put(ENUM_PROPERTY, FORECAST);
+        bindToggleGroup(weatherMode, weatherGroup);
+
+        final @NotNull BooleanBinding isNotForecast = weatherMode.isNotEqualTo(FORECAST);
+        daysLabel.disableProperty().bind(isNotForecast);
+        days.disableProperty().bind(isNotForecast);
+        rangeLabel.disableProperty().bind(isNotForecast);
+        rangeDays.disableProperty().bind(isNotForecast);
     }
 
     public void setApi(final IWeatherService api) {
@@ -96,19 +130,15 @@ public final class SearchPane {
             try {
                 error.setText("");
                 final @NotNull City city = new City(-1, query, "", new Coordinates(-1.0, -1.0)); // FIXME
-                if (forecast) {
-                    try {
-                        int n_days = Integer.parseInt(days.getText());
-                        final List<WeatherData> wdList = api.getForecast(Objects.requireNonNull(city), n_days);
-                        current = wdList;
-                        app.showForecastSearchResult(wdList, advanced);
-                        saveButton.setDisable(false);
-                    } catch (NumberFormatException e) {
-                        error.setText("Introduce un numero valido para buscar");
-                    }
+                if (weatherMode.get() == FORECAST) {
+                    final int n_days = Integer.parseInt(days.getText());
+                    final List<WeatherData> wdList = api.getForecast(Objects.requireNonNull(city), n_days);
+                    current = wdList;
+                    app.showForecastSearchResult(wdList, displayMode.get() == ADVANCED);
+                    saveButton.setDisable(false);
                 } else {
                     final WeatherData wd = api.getWeather(Objects.requireNonNull(city));
-                    app.showSearchResult(wd, advanced);
+                    app.showSearchResult(wd, displayMode.get() == ADVANCED);
                     if (!saveButton.isDisabled()) {
                         saveButton.setDisable(true);
                     }
@@ -124,5 +154,7 @@ public final class SearchPane {
         app.showLoadScreen();
     }
 
-    enum Mode {BASIC, ADVANCED}
+    enum DisplayMode {BASIC, ADVANCED}
+
+    enum WeatherMode {CURRENT, FORECAST}
 }

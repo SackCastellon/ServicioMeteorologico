@@ -13,8 +13,6 @@ public final class WeatherData {
     @NonNls
     private final @NotNull LocalDateTime dateTime;
     @NonNls
-    private @Nullable City city;
-    @NonNls
     private final @NotNull Weather weather;
     @NonNls
     private final @NotNull Temperature temperature;
@@ -24,6 +22,8 @@ public final class WeatherData {
     private final double pressure;
     @NonNls
     private final double humidity;
+    @NonNls
+    private @Nullable City city;
 
     public WeatherData(
             final @NotNull LocalDateTime dateTime,
@@ -42,12 +42,12 @@ public final class WeatherData {
             final double pressure,
             final double humidity
     ) {
+        this.dateTime = dateTime;
         this.weather = weather;
         this.temperature = temperature;
         this.wind = wind;
         this.pressure = pressure;
         this.humidity = humidity;
-        this.dateTime = dateTime;
     }
 
     public @Nullable City getCity() {
@@ -89,11 +89,11 @@ public final class WeatherData {
         final @NotNull WeatherData that = (WeatherData) obj;
         return Double.compare(that.pressure, pressure) == 0 &&
                 Double.compare(that.humidity, humidity) == 0 &&
-                city.equals(that.city) &&
                 dateTime.equals(that.dateTime) &&
                 weather.equals(that.weather) &&
                 temperature.equals(that.temperature) &&
-                wind.equals(that.wind);
+                wind.equals(that.wind) &&
+                Objects.equals(city, that.city);
     }
 
     @Override
@@ -102,7 +102,7 @@ public final class WeatherData {
     }
 
     @Override
-    public @NotNull String toString() {
+    public String toString() {
         return new StringJoiner(", ", WeatherData.class.getSimpleName() + "[", "]")
                 .add("city=" + city) //NON-NLS
                 .add("dateTime=" + dateTime) //NON-NLS
