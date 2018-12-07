@@ -31,6 +31,8 @@ public final class SearchPane {
     @FXML
     private TextField days;
     @FXML
+    private TextField rangeDays;
+    @FXML
     private Label error;
     private boolean forecast;
     @FXML
@@ -40,6 +42,8 @@ public final class SearchPane {
 
     @FXML
     private Label daysLabel;
+    @FXML
+    private Label rangeLabel;
 
 
     @FXML
@@ -49,6 +53,7 @@ public final class SearchPane {
         days.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\b[1-5]")) {
                 days.setText(newValue.replaceAll("[^\\[0]\\b", ""));
+                rangeDays.setText(newValue.replaceAll("[^\\[0]\\b", ""));
             }
         });
         searchMode.selectedToggleProperty().addListener((ov, oldToggle, newToggle) -> {
@@ -60,7 +65,9 @@ public final class SearchPane {
             if (oldToggle != newToggle) {
                 forecast = !forecast;
                 daysLabel.setDisable(!forecast);
+                rangeLabel.setDisable(!forecast);
                 days.setDisable(!forecast);
+                rangeDays.setDisable(!forecast);
             }
         });
     }
