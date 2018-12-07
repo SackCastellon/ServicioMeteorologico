@@ -31,6 +31,10 @@ public final class AdvancedResults implements ISearchResults {
     private App app;
     private WeatherData wd;
 
+    @FXML
+    private Label timeRes;
+
+
     @Override
     public void showResults(final @NotNull WeatherData wd) {
         this.wd = wd;
@@ -38,6 +42,7 @@ public final class AdvancedResults implements ISearchResults {
         cityRes.setText(city.getName());
         weatherRes.setText(wd.getWeather().getDescription().toUpperCase());
         rhRes.setText(wd.getHumidity() + " RH%");
+        timeRes.setText(wd.getDateTime().toString());
         final Temperature temp = wd.getTemperature();
         tempRes.setText("Current: " + temp.getCurrent() + "°C " + "Max: " + temp.getMax() + "°C " + "Min: " + temp.getCurrent() + "°C");
         final Coordinates coords = city.getCoordinates();
