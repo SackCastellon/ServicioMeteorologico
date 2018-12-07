@@ -19,6 +19,6 @@ public enum ApiUtils {
      * @throws NotFoundException If the status code was 404 indicating that the given city was not found
      */
     public static void checkStatus(final @NotNull StatusLine status) {
-        if (status.getStatusCode() == NOT_FOUND) throw new NotFoundException(status.getReasonPhrase());
+        throw new UnsupportedOperationException("Not implemented!");
     }
 }
