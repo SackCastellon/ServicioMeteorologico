@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.time.LocalDate;
+import java.time.*;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -66,7 +66,9 @@ public final class OpenWeather implements IWeatherService {
                 .registerTypeAdapter(WeatherData.class, ADAPTER)
                 .create();
 
-        return gson.fromJson(response, WeatherData.class);
+        final @NotNull WeatherData data = gson.fromJson(response, WeatherData.class);
+        data.setCity(city);
+        return data;
     }
 
     @Override
@@ -83,8 +85,17 @@ public final class OpenWeather implements IWeatherService {
                 .registerTypeAdapter(WeatherData.class, ADAPTER)
                 .create();
 
+        final @NotNull LocalDate now = ZonedDateTime.now().withZoneSameLocal(ZoneOffset.UTC).toLocalDate().plusDays((long) days);
+
         return StreamSupport.stream(list.spliterator(), false)
+                .filter(it -> {
+                    final long timestamp = it.getAsJsonObject().get("dt").getAsLong(); //NON-NLS
+                    final @NotNull Instant instant = Instant.ofEpochSecond(timestamp);
+                    final @NotNull LocalDate time = LocalDateTime.ofInstant(instant, ZoneOffset.UTC).toLocalDate();
+                    return time.isEqual(now);
+                })
                 .map(it -> gson.fromJson(it, WeatherData.class))
+                .peek(it -> it.setCity(city))
                 .collect(Collectors.toList());
     }
 
@@ -100,12 +111,12 @@ public final class OpenWeather implements IWeatherService {
         public @NotNull WeatherData read(final JsonReader in) throws IOException {
             in.beginObject();
 
-            Weather newWeather = null;
-            Temperature newTemperature = null;
-            Wind newWind = null;
-            double newPressure = Double.NaN;
-            double newHumidity = Double.NaN;
-            LocalDate date = null;
+            LocalDateTime dateTime = null;
+            Weather weather = null;
+            Temperature temperature = null;
+            Wind wind = null;
+            double pressure = Double.NaN;
+            double humidity = Double.NaN;
 
             while (in.hasNext()) switch (in.nextName()) {
                 case "weather": //NON-NLS
@@ -140,7 +151,7 @@ public final class OpenWeather implements IWeatherService {
                         if (main == null) throw new IllegalStateException("No 'weather.main' was found.");
                         if (description == null)
                             throw new IllegalStateException("No 'weather.description' was found.");
-                        newWeather = new Weather(id, main, description);
+                        weather = new Weather(id, main, description);
                     }
 
                     in.endArray();
@@ -164,10 +175,10 @@ public final class OpenWeather implements IWeatherService {
                                 tempMax = in.nextDouble();
                                 break;
                             case "pressure": //NON-NLS
-                                newPressure = in.nextDouble();
+                                pressure = in.nextDouble();
                                 break;
                             case "humidity": //NON-NLS
-                                newHumidity = in.nextDouble();
+                                humidity = in.nextDouble();
                                 break;
                             default:
                                 in.skipValue();
@@ -180,9 +191,9 @@ public final class OpenWeather implements IWeatherService {
                     if (Double.isNaN(temp)) throw new IllegalStateException("No 'main.temp' was found.");
                     if (Double.isNaN(tempMin)) throw new IllegalStateException("No 'main.temp_min' was found.");
                     if (Double.isNaN(tempMax)) throw new IllegalStateException("No 'main.temp_max' was found.");
-                    if (Double.isNaN(newPressure)) throw new IllegalStateException("No 'main.pressure' was found.");
-                    if (Double.isNaN(newHumidity)) throw new IllegalStateException("No 'main.humidity' was found.");
-                    newTemperature = new Temperature(temp, tempMin, tempMax, KELVIN);
+                    if (Double.isNaN(pressure)) throw new IllegalStateException("No 'main.pressure' was found.");
+                    if (Double.isNaN(humidity)) throw new IllegalStateException("No 'main.humidity' was found.");
+                    temperature = new Temperature(temp, tempMin, tempMax, KELVIN);
                     break;
                 case "wind": //NON-NLS
                     in.beginObject(); // Begin "wind"
@@ -206,32 +217,11 @@ public final class OpenWeather implements IWeatherService {
                     in.endObject(); // End "wind"
 
                     if (Double.isNaN(speed)) throw new IllegalStateException("No 'wind.speed' was found.");
-                    newWind = new Wind(speed, deg);
+                    wind = new Wind(speed, deg);
                     break;
 
-                case "time": //NON-NLS
-                    in.beginObject(); // Begin "time"
-                    String time = null;
-
-                    while (in.hasNext()) {
-                        //NON-NLS
-                        if ("from".equals(in.nextName())) {
-                            time = in.nextString();
-                        } else {
-                            in.skipValue();
-                        }
-                    }
-
-                    in.endObject(); // End "time"
-                    if (time != null) {
-                        int year = Integer.parseInt(time.substring(0, 4));
-                        int month = Integer.parseInt(time.substring(6, 8));
-                        int day = Integer.parseInt(time.substring(10, 12));
-                        date = LocalDate.of(year, month, day);
-                    } else {
-                        date = LocalDate.now();
-                    }
-
+                case "dt": //NON-NLS
+                    dateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(in.nextLong()), ZoneOffset.UTC);
                     break;
                 default:
                     in.skipValue();
@@ -240,11 +230,18 @@ public final class OpenWeather implements IWeatherService {
 
             in.endObject();
 
-            if (newWeather == null) throw new IllegalStateException("No 'weather' was found.");
-            if (newTemperature == null) throw new IllegalStateException("No 'main' was found.");
-            if (newWind == null) throw new IllegalStateException("No 'wind' was found.");
+            if (weather == null) throw new IllegalStateException("No 'weather' was found.");
+            if (temperature == null) throw new IllegalStateException("No 'main' was found.");
+            if (wind == null) throw new IllegalStateException("No 'wind' was found.");
 
-            return new WeatherData(new City(0, "Madrid", "España", new Coordinates(0, 0)), newWeather, newTemperature, newWind, newPressure, newHumidity, date);
+            return new WeatherData(
+                    dateTime,
+                    weather,
+                    temperature,
+                    wind,
+                    pressure,
+                    humidity
+            );
         }
     }
 }

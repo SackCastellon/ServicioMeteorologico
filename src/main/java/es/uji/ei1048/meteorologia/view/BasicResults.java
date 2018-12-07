@@ -30,9 +30,9 @@ public final class BasicResults implements ISearchResults {
     @Override
     public void showResults(final @NotNull WeatherData wd) {
         this.wd = wd;
-        City city = wd.getCity();
+        final City city = wd.getCity();
         cityRes.setText(city.getName());
-        timeRes.setText(wd.getTime().toString());
+        timeRes.setText(wd.getDateTime().toString());
         weatherRes.setText(wd.getWeather().getDescription().toUpperCase());
         humidityRes.setText(wd.getHumidity() + " RH%");
         tempRes.setText(wd.getTemperature().getCurrent() + "°C");

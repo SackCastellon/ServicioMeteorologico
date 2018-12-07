@@ -6,22 +6,25 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
+
 final class TestSaveWeatherBasicResults {
 
     private static WeatherManager manager;
 
     @BeforeAll
     static void setUp() {
-        manager = WeatherManager.INSTANCE;
+        manager = WeatherManager.getInstance();
     }
 
     @Test
     void getSaveWeather_validSave_suc() {
         final @NotNull WeatherData wd = new WeatherData(
-                null,
+                LocalDateTime.now(),
                 new Weather(10, "Viento", "mucho frio"),
                 new Temperature(15.0, 10.0, 20.0, Temperature.Units.CELSIUS),
-                new Wind(20.0, 10.0));
+                new Wind(20.0, 10.0)
+        );
 
         Assertions.assertTrue(manager.save(wd));
     }
@@ -29,10 +32,11 @@ final class TestSaveWeatherBasicResults {
     @Test
     void getSaveWeather_notValidSave_err() {
         final @NotNull WeatherData wd = new WeatherData(
-                null,
+                LocalDateTime.now(),
                 new Weather(10, "Viento", "mucho frio"),
                 new Temperature(15.0, 10.0, 20.0, Temperature.Units.CELSIUS),
-                new Wind(20.0, 10.0));
+                new Wind(20.0, 10.0)
+        );
 
         Assertions.assertFalse(manager.save(wd));
     }

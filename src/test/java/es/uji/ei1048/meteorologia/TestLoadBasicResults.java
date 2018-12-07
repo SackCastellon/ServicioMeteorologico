@@ -13,7 +13,7 @@ final class TestLoadBasicResults {
 
     @BeforeAll
     static void setUp() {
-        manager = WeatherManager.INSTANCE;
+        manager = WeatherManager.getInstance();
     }
 
     @Test

@@ -100,7 +100,7 @@ public final class App extends Application {
     }
 
     public void save(final WeatherData wd) {
-        WeatherManager.INSTANCE.save(wd);
+        WeatherManager.getInstance().save(wd);
     }
 
     public void saveAll(final List<WeatherData> wdList) {

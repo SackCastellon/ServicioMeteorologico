@@ -4,14 +4,16 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.StringJoiner;
 
 public final class WeatherData {
 
     @NonNls
-    private final @NotNull City city;
+    private final @NotNull LocalDateTime dateTime;
+    @NonNls
+    private @Nullable City city;
     @NonNls
     private final @NotNull Weather weather;
     @NonNls
@@ -22,49 +24,46 @@ public final class WeatherData {
     private final double pressure;
     @NonNls
     private final double humidity;
-    @NonNls
-    private final LocalDate time;
-
-    // TODO Add timestamp
 
     public WeatherData(
-            final @NotNull City city,
+            final @NotNull LocalDateTime dateTime,
             final @NotNull Weather weather,
             final @NotNull Temperature temperature,
-            final @NotNull Wind wind,
-            final @NotNull LocalDate date
+            final @NotNull Wind wind
     ) {
-        this(city, weather, temperature, wind, -1.0, -1.0, date);
+        this(dateTime, weather, temperature, wind, -1.0, -1.0);
     }
 
     public WeatherData(
-            final @NotNull City city, //
+            final @NotNull LocalDateTime dateTime,
             final @NotNull Weather weather,
             final @NotNull Temperature temperature,
             final @NotNull Wind wind,
             final double pressure,
-            final double humidity,
-            final LocalDate time
+            final double humidity
     ) {
-        this.city = city;
         this.weather = weather;
         this.temperature = temperature;
         this.wind = wind;
         this.pressure = pressure;
         this.humidity = humidity;
-        this.time = time;
+        this.dateTime = dateTime;
     }
 
-    public @NotNull City getCity() {
+    public @Nullable City getCity() {
         return city;
+    }
+
+    public void setCity(final @NotNull City city) {
+        this.city = city;
+    }
+
+    public @NotNull LocalDateTime getDateTime() {
+        return dateTime;
     }
 
     public @NotNull Weather getWeather() {
         return weather;
-    }
-
-    public LocalDate getTime() {
-        return time;
     }
 
     public @NotNull Temperature getTemperature() {
@@ -91,22 +90,22 @@ public final class WeatherData {
         return Double.compare(that.pressure, pressure) == 0 &&
                 Double.compare(that.humidity, humidity) == 0 &&
                 city.equals(that.city) &&
+                dateTime.equals(that.dateTime) &&
                 weather.equals(that.weather) &&
                 temperature.equals(that.temperature) &&
-                wind.equals(that.wind) &&
-                time.equals(that.time);
+                wind.equals(that.wind);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(city, weather, temperature, wind, pressure, humidity, time);
+        return Objects.hash(city, dateTime, weather, temperature, wind, pressure, humidity);
     }
 
     @Override
     public @NotNull String toString() {
         return new StringJoiner(", ", WeatherData.class.getSimpleName() + "[", "]")
                 .add("city=" + city) //NON-NLS
-                .add("time=" + time) //NON-NLS
+                .add("dateTime=" + dateTime) //NON-NLS
                 .add("weather=" + weather) //NON-NLS
                 .add("temperature=" + temperature) //NON-NLS
                 .add("wind=" + wind) //NON-NLS
@@ -114,5 +113,4 @@ public final class WeatherData {
                 .add("humidity=" + humidity) //NON-NLS
                 .toString();
     }
-
 }

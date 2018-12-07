@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 final class TestSaveWeatherAdvancedResults {
 
@@ -14,17 +14,19 @@ final class TestSaveWeatherAdvancedResults {
 
     @BeforeAll
     static void setUp() {
-        manager =  WeatherManager.INSTANCE;
+        manager = WeatherManager.getInstance();
     }
 
     @Test
     void getSaveWeather_validSave_suc() {
         final @NotNull WeatherData wd = new WeatherData(
-                new City(-1, "Madrid", "España", new Coordinates(0, 0)),
+                LocalDateTime.now(),
                 new Weather(10, "Viento", "mucho frio"),
                 new Temperature(15.0, 10.0, 20.0, Temperature.Units.CELSIUS),
                 new Wind(20.0, 10.0),
-                LocalDate.now());
+                10.0,
+                10.0
+        );
 
         Assertions.assertTrue(manager.save(wd));
     }
@@ -32,11 +34,13 @@ final class TestSaveWeatherAdvancedResults {
     @Test
     void getSaveWeather_notValidSave_err() {
         final @NotNull WeatherData wd = new WeatherData(
-                new City(-1, "Wakanda", "Africa", new Coordinates(0, 0)),
+                LocalDateTime.now(),
                 new Weather(10, "Viento", "mucho frio"),
                 new Temperature(15.0, 10.0, 20.0, Temperature.Units.CELSIUS),
                 new Wind(20.0, 10.0),
-                LocalDate.now());
+                10.0,
+                10.0
+        );
 
         Assertions.assertFalse(manager.save(wd));
     }

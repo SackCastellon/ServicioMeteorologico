@@ -34,7 +34,7 @@ final class TestLoadBasicResultsMock {
     @Test
     void getCurrentWeather_notValidCity_err() {
         final @NotNull String file = "Wakanda.txt";
-        when(manager.load(any(String.class))).thenThrow(NotFoundException.class);
+        when(manager.load(anyString())).thenThrow(NotFoundException.class);
         Assertions.assertThrows(NotFoundException.class, () -> manager.load(file));
     }
 

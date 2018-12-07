@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.time.LocalDateTime;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -24,10 +26,11 @@ final class TestSaveWeatherBasicResultsMock {
     @Test
     void getSaveWeather_validSave_suc() {
         final @NotNull WeatherData wd = new WeatherData(
-                null,
+                LocalDateTime.now(),
                 new Weather(10, "Viento", "mucho frio"),
                 new Temperature(15.0, 10.0, 20.0, Temperature.Units.CELSIUS),
-                new Wind(20.0, 10.0));
+                new Wind(20.0, 10.0)
+        );
 
         when(manager.save(any(WeatherData.class))).thenReturn(true);
         Assertions.assertTrue(manager.save(wd));
@@ -36,10 +39,11 @@ final class TestSaveWeatherBasicResultsMock {
     @Test
     void getSaveWeather_notValidSave_err() {
         final @NotNull WeatherData wd = new WeatherData(
-                null,
+                LocalDateTime.now(),
                 new Weather(10, "Viento", "mucho frio"),
                 new Temperature(15.0, 10.0, 20.0, Temperature.Units.CELSIUS),
-                new Wind(20.0, 10.0));
+                new Wind(20.0, 10.0)
+        );
 
         when(manager.save(any(WeatherData.class))).thenReturn(false);
         Assertions.assertFalse(manager.save(wd));

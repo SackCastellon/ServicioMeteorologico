@@ -21,7 +21,9 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.time.LocalDate;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 
 public final class AccuWeather implements IWeatherService {
@@ -99,18 +101,19 @@ public final class AccuWeather implements IWeatherService {
             in.beginArray();
             in.beginObject();
 
-            Weather newWeather = null;
-            Wind newWind = null;
-            double newPressure = Double.NaN;
-            double newHumidity = Double.NaN;
-
+            final City city = null; // TODO
+            LocalDateTime dateTime = null;
+            Weather weather = null;
+            Wind wind = null;
             double temp = Double.NaN;
             double tempMin = Double.NaN;
             double tempMax = Double.NaN;
+            double pressure = Double.NaN;
+            double humidity = Double.NaN;
 
             while (in.hasNext()) switch (in.nextName()) {
                 case "WeatherText": //NON-NLS
-                    newWeather = new Weather(-1, in.nextString(), ""); // FIXME
+                    weather = new Weather(-1, in.nextString(), ""); // FIXME
                     break;
                 case "Temperature": //NON-NLS
                     temp = getMetricValue(in);
@@ -164,16 +167,18 @@ public final class AccuWeather implements IWeatherService {
                     in.endObject();
 
                     if (Double.isNaN(speed)) throw new IllegalStateException("No wind speed was found.");
-                    if (Double.isNaN(deg)) throw new IllegalStateException("No wind direction was found.");
-                    newWind = new Wind(speed, deg);
+                    wind = new Wind(speed, deg);
                     break;
                 case "Pressure": //NON-NLS
-                    newPressure = getMetricValue(in);
-                    if (Double.isNaN(newPressure)) throw new IllegalStateException("No pressure was found.");
+                    pressure = getMetricValue(in);
+                    if (Double.isNaN(pressure)) throw new IllegalStateException("No pressure was found.");
                     break;
                 case "RelativeHumidity": //NON-NLS
-                    newHumidity = in.nextDouble();
+                    humidity = in.nextDouble();
                     if (Double.isNaN(temp)) throw new IllegalStateException("No humidity was found.");
+                    break;
+                case "EpochTime": //NON-NLS
+                    dateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(in.nextLong()), ZoneOffset.UTC);
                     break;
                 default:
                     in.skipValue();
@@ -183,12 +188,19 @@ public final class AccuWeather implements IWeatherService {
             in.endObject();
             in.endArray();
 
-            if (newWeather == null) throw new IllegalStateException("No weather was found.");
-            if (newWind == null) throw new IllegalStateException("No wind was found.");
+            if (weather == null) throw new IllegalStateException("No weather was found.");
+            if (wind == null) throw new IllegalStateException("No wind was found.");
 
-            final Temperature newTemperature = new Temperature(temp, tempMin, tempMax, Temperature.Units.CELSIUS);
+            final Temperature temperature = new Temperature(temp, tempMin, tempMax, Temperature.Units.CELSIUS);
 
-            return new WeatherData(null, newWeather, newTemperature, newWind, newPressure, newHumidity, LocalDate.now());
+            return new WeatherData(
+                    dateTime,
+                    weather,
+                    temperature,
+                    wind,
+                    pressure,
+                    humidity
+            );
         }
     }
 }
