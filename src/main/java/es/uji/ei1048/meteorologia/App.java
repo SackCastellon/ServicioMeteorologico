@@ -1,7 +1,5 @@
 package es.uji.ei1048.meteorologia;
 
-import es.uji.ei1048.meteorologia.model.City;
-import es.uji.ei1048.meteorologia.model.Coordinates;
 import es.uji.ei1048.meteorologia.model.WeatherData;
 import es.uji.ei1048.meteorologia.model.WeatherManager;
 import es.uji.ei1048.meteorologia.view.ISearchResults;
@@ -66,24 +64,24 @@ public final class App extends Application {
     }
 
 
-    public void showSearchResult(final @NotNull String city, final @NotNull WeatherData wd, final boolean advanced) {
+    public void showSearchResult(final @NotNull WeatherData wd, final boolean advanced) {
         if (rootController.getNumPan() > 1) rootController.clean();
-        addResult(city, wd, advanced);
+        addResult(wd, advanced);
     }
 
     public @NotNull Stage getPrimaryStage() {
         return primaryStage;
     }
 
-    public void showForecastSearchResult(final String city, final @NotNull List<WeatherData> wdList, final boolean advanced) {
+    public void showForecastSearchResult(final @NotNull List<WeatherData> wdList, final boolean advanced) {
         if (rootController.getNumPan() > 1) rootController.clean();
         for (final WeatherData wd : wdList) {
-            addResult(city, wd, advanced);
+            addResult(wd, advanced);
         }
 
     }
 
-    private void addResult(final String city, final WeatherData wd, final boolean advanced) {
+    private void addResult(final WeatherData wd, final boolean advanced) {
         try {
             final @NotNull FXMLLoader loader = new FXMLLoader();
             if (advanced) {
@@ -93,7 +91,7 @@ public final class App extends Application {
             }
             final @NotNull BorderPane searchResults = loader.load();
             final @NotNull ISearchResults srController = loader.getController();
-            srController.showResults(new City(0, city, "España", new Coordinates(42.0, 42.0)), wd);
+            srController.showResults(wd);
             srController.setApp(this);
             rootController.addPane(searchResults);
         } catch (final IOException e) {

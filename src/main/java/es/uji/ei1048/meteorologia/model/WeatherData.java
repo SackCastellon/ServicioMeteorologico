@@ -28,17 +28,17 @@ public final class WeatherData {
     // TODO Add timestamp
 
     public WeatherData(
-            final @NotNull City city, // TODO Make non-nullable
+            final @NotNull City city,
             final @NotNull Weather weather,
             final @NotNull Temperature temperature,
             final @NotNull Wind wind,
-            final LocalDate date
+            final @NotNull LocalDate date
     ) {
         this(city, weather, temperature, wind, -1.0, -1.0, date);
     }
 
     public WeatherData(
-            final @NotNull City city, // TODO Make non-nullable
+            final @NotNull City city, //
             final @NotNull Weather weather,
             final @NotNull Temperature temperature,
             final @NotNull Wind wind,

@@ -5,12 +5,12 @@ import es.uji.ei1048.meteorologia.service.AccuWeather;
 import es.uji.ei1048.meteorologia.service.OpenWeather;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.layout.HBox;
+import javafx.scene.control.SplitPane;
 
 public final class RootLayout {
 
     @FXML
-    private HBox sp;
+    private SplitPane sp;
 
     private WeatherManager sw;
 
@@ -18,15 +18,15 @@ public final class RootLayout {
 
 
     public void addPane(final Node node) {
-        sp.getChildren().add(node);
+        sp.getItems().add(node);
     }
 
     public int getNumPan() {
-        return sp.getChildren().size();
+        return sp.getItems().size();
     }
 
     public void clean() {
-        sp.getChildren().remove(1, sp.getChildren().size());
+        sp.getItems().remove(1, sp.getItems().size());
         System.out.println("Limpio");
         System.out.println(getNumPan());
     }

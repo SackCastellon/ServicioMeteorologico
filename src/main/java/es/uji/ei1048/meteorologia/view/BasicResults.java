@@ -24,10 +24,15 @@ public final class BasicResults implements ISearchResults {
     private WeatherData wd;
     private App app;
 
+    @FXML
+    private Label timeRes;
+
     @Override
-    public void showResults(final @NotNull City city, final @NotNull WeatherData wd) {
+    public void showResults(final @NotNull WeatherData wd) {
         this.wd = wd;
+        City city = wd.getCity();
         cityRes.setText(city.getName());
+        timeRes.setText(wd.getTime().toString());
         weatherRes.setText(wd.getWeather().getDescription().toUpperCase());
         humidityRes.setText(wd.getHumidity() + " RH%");
         tempRes.setText(wd.getTemperature().getCurrent() + "°C");

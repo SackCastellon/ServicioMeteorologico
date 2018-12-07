@@ -32,8 +32,9 @@ public final class AdvancedResults implements ISearchResults {
     private WeatherData wd;
 
     @Override
-    public void showResults(final @NotNull City city, final @NotNull WeatherData wd) {
+    public void showResults(final @NotNull WeatherData wd) {
         this.wd = wd;
+        final City city = wd.getCity();
         cityRes.setText(city.getName());
         weatherRes.setText(wd.getWeather().getDescription().toUpperCase());
         rhRes.setText(wd.getHumidity() + " RH%");

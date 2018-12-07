@@ -39,9 +39,18 @@ public final class SearchPane {
     private List<WeatherData> current;
 
     @FXML
+    private Label daysLabel;
+
+
+    @FXML
     private void initialize() {
         api = new OpenWeather();
         error.setText("");
+        days.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                days.setText(newValue.replaceAll("[^\\d]", ""));
+            }
+        });
         searchMode.selectedToggleProperty().addListener((ov, oldToggle, newToggle) -> {
             if (oldToggle != newToggle) {
                 advanced = !advanced;
@@ -50,6 +59,8 @@ public final class SearchPane {
         dateMode.selectedToggleProperty().addListener((ov, oldToggle, newToggle) -> {
             if (oldToggle != newToggle) {
                 forecast = !forecast;
+                daysLabel.setDisable(!forecast);
+                days.setDisable(!forecast);
             }
         });
     }
@@ -82,11 +93,11 @@ public final class SearchPane {
                     //final int day = Integer.parseInt(days.getText());
                     final List<WeatherData> wdList = api.getForecast(Objects.requireNonNull(city), 3);
                     current = wdList;
-                    app.showForecastSearchResult(city.getName(), wdList, advanced);
+                    app.showForecastSearchResult(wdList, advanced);
                     saveButton.setDisable(false);
                 } else {
                     final WeatherData wd = api.getWeather(Objects.requireNonNull(city));
-                    app.showSearchResult(city.getName(), wd, advanced);
+                    app.showSearchResult(wd, advanced);
                     if (!saveButton.isDisabled()) {
                         saveButton.setDisable(true);
                     }
