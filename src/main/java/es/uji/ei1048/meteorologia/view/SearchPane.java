@@ -29,6 +29,8 @@ public final class SearchPane {
     @FXML
     private TextField searchBar;
     @FXML
+    private TextField days;
+    @FXML
     private Label error;
     private boolean forecast;
     @FXML
@@ -77,6 +79,7 @@ public final class SearchPane {
                 error.setText("");
                 final @NotNull City city = new City(-1, query, "", new Coordinates(-1.0, -1.0)); // FIXME
                 if (forecast) {
+                    //final int day = Integer.parseInt(days.getText());
                     final List<WeatherData> wdList = api.getForecast(Objects.requireNonNull(city), 3);
                     current = wdList;
                     app.showForecastSearchResult(city.getName(), wdList, advanced);
