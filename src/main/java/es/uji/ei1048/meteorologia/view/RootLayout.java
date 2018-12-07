@@ -36,11 +36,11 @@ public final class RootLayout {
     }
 
     public void setAwApi() {
-        searchPane.setApi(new AccuWeather());
+        searchPane.setService(new AccuWeather());
     }
 
     public void setOwApi() {
-        searchPane.setApi(new OpenWeather());
+        searchPane.setService(new OpenWeather());
     }
 
     public void setSearchPane(final SearchPane searchPane) {

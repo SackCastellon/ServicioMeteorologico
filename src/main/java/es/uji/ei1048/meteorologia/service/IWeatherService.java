@@ -10,16 +10,16 @@ import java.util.List;
 
 public interface IWeatherService {
     /**
-     * @param city The city
+     * @param cityName The city
      * @return The data for the current weather of the given city
      * @throws NotFoundException         If the city is not found
      * @throws ConnectionFailedException If an error occurs while connecting to the service
      * @throws DataParsingException      In an error occurred while parsing the response data from the service
      */
-    WeatherData getWeather(final String city);
+    @NotNull WeatherData getWeather(final @NotNull String cityName);
 
     /**
-     * @param city The city
+     * @param cityName The city
      * @param days The number of days from now to check the forecast
      * @return A list of data for the forecast of the given city in the given days in the future
      * @throws IllegalArgumentException  If the number of days is equal or less than zero
@@ -27,5 +27,5 @@ public interface IWeatherService {
      * @throws ConnectionFailedException If an error occurs while connecting to the service
      * @throws DataParsingException      In an error occurred while parsing the response data from the service
      */
-    @NotNull List<@NotNull WeatherData> getForecast(final @NotNull String city, final int days);
+    @NotNull List<@NotNull WeatherData> getForecast(final @NotNull String cityName, final int days);
 }

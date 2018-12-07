@@ -1,9 +1,6 @@
 package es.uji.ei1048.meteorologia.view;
 
 import es.uji.ei1048.meteorologia.App;
-import es.uji.ei1048.meteorologia.api.NotFoundException;
-import es.uji.ei1048.meteorologia.model.City;
-import es.uji.ei1048.meteorologia.model.Coordinates;
 import es.uji.ei1048.meteorologia.model.WeatherData;
 import es.uji.ei1048.meteorologia.service.IWeatherService;
 import es.uji.ei1048.meteorologia.service.OpenWeather;
@@ -24,7 +21,7 @@ import java.util.regex.Pattern;
 import static es.uji.ei1048.meteorologia.view.SearchPane.DisplayMode.ADVANCED;
 import static es.uji.ei1048.meteorologia.view.SearchPane.WeatherMode.FORECAST;
 
-public class SearchPane {
+public final class SearchPane {
 
     private static final @NotNull Pattern ONE_TO_FIVE = Pattern.compile("[1-5]");
     private static final @NotNull Pattern NOT_ONE_TO_FIVE = Pattern.compile("^[1-5]");
@@ -67,7 +64,7 @@ public class SearchPane {
     private Button loadButton;
 
     private App app;
-    private IWeatherService api;
+    private IWeatherService service;
     private List<WeatherData> current;
 
     @SuppressWarnings("unchecked")
@@ -83,7 +80,7 @@ public class SearchPane {
 
     @FXML
     private void initialize() {
-        api = new OpenWeather();
+        service = new OpenWeather();
         error.setText("");
         days.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!ONE_TO_FIVE.matcher(newValue).matches()) {
@@ -106,8 +103,8 @@ public class SearchPane {
         rangeDays.disableProperty().bind(isNotForecast);
     }
 
-    public void setApi(final IWeatherService api) {
-        this.api = api;
+    public void setService(final IWeatherService service) {
+        this.service = service;
     }
 
     public void setApp(final App app) {
@@ -120,7 +117,7 @@ public class SearchPane {
 
     @FXML
     private void search() {
-        final String query = searchBar.getText();
+        /*final String query = searchBar.getText();
         if (query == null || query.isEmpty()) {
             error.setText("Input a valid city");
         } else {
@@ -129,14 +126,15 @@ public class SearchPane {
             }
             try {
                 error.setText("");
+                final @NotNull City city = new City(-1, query, "", new Coordinates(-1.0, -1.0)); // FIXME
                 if (weatherMode.get() == FORECAST) {
                     final int n_days = Integer.parseInt(days.getText());
-                    final List<WeatherData> wdList = api.getForecast(query, n_days);
+                    final List<WeatherData> wdList = service.getForecast(Objects.requireNonNull(city), n_days);
                     current = wdList;
                     app.showForecastSearchResult(wdList, displayMode.get() == ADVANCED);
                     saveButton.setDisable(false);
                 } else {
-                    final WeatherData wd = api.getWeather(query);
+                    final WeatherData wd = service.getWeather(Objects.requireNonNull(city));
                     app.showSearchResult(wd, displayMode.get() == ADVANCED);
                     if (!saveButton.isDisabled()) {
                         saveButton.setDisable(true);
@@ -145,7 +143,7 @@ public class SearchPane {
             } catch (final NotFoundException e) {
                 error.setText("Ciudad no encontrada");
             }
-        }
+        }*/
     }
 
     @FXML
@@ -153,8 +151,14 @@ public class SearchPane {
         app.showLoadScreen();
     }
 
-    public List<@NotNull WeatherData> getForecast(String city, int i) {
-        return api.getForecast(city, i);
+    public @NotNull WeatherData getWeather(final @NotNull String query) {
+        if (query.isEmpty()) throw new IllegalArgumentException("The query text must not be empty!");
+        return service.getWeather(query);
+    }
+
+    public @NotNull List<@NotNull WeatherData> getForecast(final @NotNull String query, final int days) {
+        if (query.isEmpty()) throw new IllegalArgumentException("The query text must not be empty!");
+        return service.getForecast(query, days);
     }
 
     enum DisplayMode {BASIC, ADVANCED}

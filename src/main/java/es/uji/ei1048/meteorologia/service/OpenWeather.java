@@ -6,7 +6,10 @@ import com.google.gson.stream.JsonWriter;
 import es.uji.ei1048.meteorologia.api.ApiUtils;
 import es.uji.ei1048.meteorologia.api.ConnectionFailedException;
 import es.uji.ei1048.meteorologia.api.NotFoundException;
-import es.uji.ei1048.meteorologia.model.*;
+import es.uji.ei1048.meteorologia.model.Temperature;
+import es.uji.ei1048.meteorologia.model.Weather;
+import es.uji.ei1048.meteorologia.model.WeatherData;
+import es.uji.ei1048.meteorologia.model.Wind;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -60,22 +63,22 @@ public final class OpenWeather implements IWeatherService {
     }
 
     @Override
-    public WeatherData getWeather(final String city) {
-        final @NotNull String response = getJsonResponse(city.getName(), WEATHER_URL);
+    public @NotNull WeatherData getWeather(final @NotNull String cityName) {
+        final @NotNull String response = getJsonResponse(cityName, WEATHER_URL);
         final @NotNull Gson gson = new GsonBuilder()
                 .registerTypeAdapter(WeatherData.class, ADAPTER)
                 .create();
 
         final @NotNull WeatherData data = gson.fromJson(response, WeatherData.class);
-        data.setCity(city);
+        //data.setCity(cityName); // TODO
         return data;
     }
 
     @Override
-    public @NotNull List<@NotNull WeatherData> getForecast(final @NotNull String city, final int days) {
+    public @NotNull List<@NotNull WeatherData> getForecast(final @NotNull String cityName, final int days) {
         if (days <= 0) throw new IllegalArgumentException("days must be greater than 0");
 
-        final @NotNull String response = getJsonResponse(city, FORECAST_URL);
+        final @NotNull String response = getJsonResponse(cityName, FORECAST_URL);
         final @NotNull JsonArray list = new JsonParser()
                 .parse(response)
                 .getAsJsonObject()
@@ -95,7 +98,7 @@ public final class OpenWeather implements IWeatherService {
                     return time.isEqual(now);
                 })
                 .map(it -> gson.fromJson(it, WeatherData.class))
-                .peek(it -> it.setCity(city))
+                //.peek(it -> it.setCity(cityName)) // TODO
                 .collect(Collectors.toList());
     }
 

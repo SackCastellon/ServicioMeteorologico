@@ -58,13 +58,15 @@ public final class AccuWeather implements IWeatherService {
         }
     }
 
+    @NotNull
     @Override
-    public WeatherData getWeather(final String city) {
+    public WeatherData getWeather(@NotNull final String cityName) {
         throw new UnsupportedOperationException("Not implemented");
     }
 
+    @NotNull
     @Override
-    public @NotNull List<@NotNull WeatherData> getForecast(final @NotNull City city, final int days) {
+    public List<@NotNull WeatherData> getForecast(final @NotNull String cityName, final int days) {
         throw new UnsupportedOperationException("Not implemented");
     }
 
