@@ -47,8 +47,8 @@ public final class SearchPane {
         api = new OpenWeather();
         error.setText("");
         days.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.matches("\\d*")) {
-                days.setText(newValue.replaceAll("[^\\d]", ""));
+            if (!newValue.matches("\\b[1-5]")) {
+                days.setText(newValue.replaceAll("[^\\[0]\\b", ""));
             }
         });
         searchMode.selectedToggleProperty().addListener((ov, oldToggle, newToggle) -> {
