@@ -9,7 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.when;
 
 final class TestForecastWeatherMock {
@@ -24,7 +25,7 @@ final class TestForecastWeatherMock {
 
     @Test
     void getForecastWeather_validCity_suc() {
-        when(service.getForecast(anyString(), anyInt())).thenReturn(anyList());
+        when(service.getForecast(anyInt(), anyInt())).thenReturn(anyList());
 
         final SearchPane controller = new SearchPane();
         controller.setService(service);
@@ -34,7 +35,7 @@ final class TestForecastWeatherMock {
 
     @Test
     void geForecastWeather_notValidCity_err() {
-        when(service.getForecast(anyString(), anyInt())).thenThrow(NotFoundException.class);
+        when(service.getForecast(anyInt(), anyInt())).thenThrow(NotFoundException.class);
 
         final SearchPane controller = new SearchPane();
         controller.setService(service);

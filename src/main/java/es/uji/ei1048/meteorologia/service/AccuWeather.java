@@ -25,20 +25,21 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.OptionalInt;
 
-public final class AccuWeather implements IWeatherService {
+public final class AccuWeather extends AbstractWeatherService {
 
     private static final @NotNull String WEATHER_URL = "http://dataservice.accuweather.com/currentconditions/v1/"; //NON-NLS
-    private static final @NotNull String FORECAST_URL = "http://dataservice.accuweather.com/forecasts/v1/daily/1day/348735?apikey=1qnDGxmkUObV0hjDGUf8KbpWSYndly7e"; //NON-NLS
+    private static final @NotNull String FORECAST_URL = "http://dataservice.accuweather.com/forecasts/v1/daily/1day/"; //NON-NLS
     private static final @NotNull String API_KEY = "1qnDGxmkUObV0hjDGUf8KbpWSYndly7e"; //NON-NLS
     private static final @NotNull TypeAdapter<WeatherData> ADAPTER = new Adapter();
 
     /**
-     * @param cityId The name of the city to check the weather
-     * @param url    The url of the weather service
-     * @return The response from the weather service
-     * @throws NotFoundException         If the city is not found
-     * @throws ConnectionFailedException If an error occurs while connecting to the service
+     * @param cityId The id of the city.
+     * @param url    The url of the weather service.
+     * @return The response from the weather service.
+     * @throws NotFoundException         If the city is not found.
+     * @throws ConnectionFailedException If an error occurs while connecting to the service.
      */
     private static @NotNull String getJsonResponse(final int cityId, @NonNls final @NotNull String url) {
         try (final @NotNull CloseableHttpClient client = HttpClients.createDefault()) {
@@ -58,15 +59,28 @@ public final class AccuWeather implements IWeatherService {
         }
     }
 
-    @NotNull
     @Override
-    public WeatherData getWeather(@NotNull final String cityName) {
+    public @NotNull List<@NotNull String> getSuggestedCities(final @NotNull String query, final int count) {
         throw new UnsupportedOperationException("Not implemented");
     }
 
-    @NotNull
     @Override
-    public List<@NotNull WeatherData> getForecast(final @NotNull String cityName, final int days) {
+    public @NotNull OptionalInt getCityId(final @NotNull String cityName) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    @Override
+    public @NotNull WeatherData getWeather(final int cityId) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    @Override
+    public @NotNull List<@NotNull WeatherData> getForecast(final int cityId, final int offset) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    @Override
+    public @NotNull List<@NotNull WeatherData> getForecast(final int cityId, final int offset, final int count) {
         throw new UnsupportedOperationException("Not implemented");
     }
 

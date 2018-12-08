@@ -1,6 +1,7 @@
 package es.uji.ei1048.meteorologia.view;
 
 import es.uji.ei1048.meteorologia.App;
+import es.uji.ei1048.meteorologia.api.CityNotFoundException;
 import es.uji.ei1048.meteorologia.model.WeatherData;
 import es.uji.ei1048.meteorologia.service.IWeatherService;
 import es.uji.ei1048.meteorologia.service.OpenWeather;
@@ -153,12 +154,14 @@ public final class SearchPane {
 
     public @NotNull WeatherData getWeather(final @NotNull String query) {
         if (query.isEmpty()) throw new IllegalArgumentException("The query text must not be empty!");
-        return service.getWeather(query);
+        final int cityId = service.getCityId(query).orElseThrow(() -> new CityNotFoundException(query));
+        return service.getWeather(cityId);
     }
 
-    public @NotNull List<@NotNull WeatherData> getForecast(final @NotNull String query, final int days) {
+    public @NotNull List<@NotNull WeatherData> getForecast(final @NotNull String query, final int offset) {
         if (query.isEmpty()) throw new IllegalArgumentException("The query text must not be empty!");
-        return service.getForecast(query, days);
+        final int cityId = service.getCityId(query).orElseThrow(() -> new CityNotFoundException(query));
+        return service.getForecast(cityId, offset);
     }
 
     enum DisplayMode {BASIC, ADVANCED}

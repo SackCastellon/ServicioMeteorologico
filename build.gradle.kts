@@ -13,6 +13,8 @@ repositories {
 
 dependencies {
     implementation("com.google.code.gson:gson:2.8.5")
+    implementation("com.google.guava:guava:27.0.1-jre")
+    implementation("org.apache.commons:commons-text:1.6")
     implementation("org.apache.httpcomponents:httpclient:4.5.6")
     implementation("org.jetbrains:annotations:16.0.3")
 

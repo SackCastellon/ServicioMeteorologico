@@ -11,7 +11,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
 final class TestCurrentWeatherMock {
@@ -26,7 +26,7 @@ final class TestCurrentWeatherMock {
 
     @Test
     void getCurrentWeather_validCity_suc() {
-        when(service.getWeather(anyString())).thenReturn(any(WeatherData.class));
+        when(service.getWeather(anyInt())).thenReturn(any(WeatherData.class));
 
         final SearchPane controller = new SearchPane();
         controller.setService(service);
@@ -36,7 +36,7 @@ final class TestCurrentWeatherMock {
 
     @Test
     void getCurrentWeather_notValidCity_err() {
-        when(service.getWeather(anyString())).thenThrow(NotFoundException.class);
+        when(service.getWeather(anyInt())).thenThrow(NotFoundException.class);
 
         final SearchPane controller = new SearchPane();
         controller.setService(service);

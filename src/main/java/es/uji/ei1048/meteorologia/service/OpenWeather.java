@@ -1,5 +1,6 @@
 package es.uji.ei1048.meteorologia.service;
 
+import com.google.common.base.Charsets;
 import com.google.gson.*;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
@@ -18,36 +19,61 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.*;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import static es.uji.ei1048.meteorologia.model.Temperature.Units.KELVIN;
 
-public final class OpenWeather implements IWeatherService {
+public final class OpenWeather extends AbstractWeatherService {
 
     private static final @NotNull String WEATHER_URL = "http://api.openweathermap.org/data/2.5/weather"; //NON-NLS
     private static final @NotNull String FORECAST_URL = "http://api.openweathermap.org/data/2.5/forecast"; //NON-NLS
     private static final @NotNull String API_KEY = "44b7cad45f4fb36eefa0f72259b8beb4"; //NON-NLS
     private static final @NotNull TypeAdapter<WeatherData> ADAPTER = new Adapter();
 
+    private static final @NotNull Map<String, Integer> cities;
+
+    static {
+        @NotNull Map<String, Integer> result;
+        try (final InputStream stream = OpenWeather.class.getResourceAsStream("/city.list.min.json"); //NON-NLS
+             final InputStreamReader reader = new InputStreamReader(stream, Charsets.UTF_8)) {
+            final JsonElement parse = new JsonParser().parse(reader);
+            final JsonArray array = parse.getAsJsonArray();
+
+            result = StreamSupport.stream(array.spliterator(), false)
+                    .map(JsonElement::getAsJsonObject)
+                    .limit(0L)// FIXME There are duplicated names in "city.list.min.json"
+                    .collect(Collectors.toMap(
+                            it -> it.get("name").getAsString(), //NON-NLS
+                            it -> it.get("id").getAsInt() //NON-NLS
+                    ));
+        } catch (final IOException e) {
+            result = Collections.emptyMap();
+        }
+        cities = result;
+    }
+
     /**
-     * @param cityName The name of the city to check the weather
-     * @param url      The url of the weather service
-     * @return The response from the weather service
-     * @throws NotFoundException         If the city is not found
-     * @throws ConnectionFailedException If an error occurs while connecting to the service
+     * @param cityId The id of the city.
+     * @param url    The url of the weather service.
+     * @return The response from the weather service.
+     * @throws NotFoundException         If the city is not found.
+     * @throws ConnectionFailedException If an error occurs while connecting to the service.
      */
-    private static @NotNull String getJsonResponse(final @NotNull String cityName, final @NotNull String url) {
+    private static @NotNull String getJsonResponse(final int cityId, @NonNls final @NotNull String url) {
         try (final @NotNull CloseableHttpClient client = HttpClients.createDefault()) {
             final @NotNull URI uri = new URIBuilder(url)
-                    .setParameter("q", cityName) //NON-NLS
+                    .setParameter("id", Integer.toString(cityId)) //NON-NLS
                     .setParameter("appid", API_KEY) //NON-NLS
                     .build();
 
@@ -63,8 +89,23 @@ public final class OpenWeather implements IWeatherService {
     }
 
     @Override
-    public @NotNull WeatherData getWeather(final @NotNull String cityName) {
-        final @NotNull String response = getJsonResponse(cityName, WEATHER_URL);
+    public @NotNull List<@NotNull String> getSuggestedCities(final @NotNull String query, final int count) {
+        return cities.isEmpty() ? Collections.emptyList() : cities
+                .keySet()
+                .parallelStream()
+                .sorted(Comparator.<String>comparingDouble(it -> jaroWinklerDistance.apply(query, it)).reversed())
+                .limit((long) count)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public @NotNull OptionalInt getCityId(final @NotNull String cityName) {
+        return OptionalInt.of(cities.get(cityName));
+    }
+
+    @Override
+    public @NotNull WeatherData getWeather(final int cityId) {
+        final @NotNull String response = getJsonResponse(cityId, WEATHER_URL);
         final @NotNull Gson gson = new GsonBuilder()
                 .registerTypeAdapter(WeatherData.class, ADAPTER)
                 .create();
@@ -75,10 +116,11 @@ public final class OpenWeather implements IWeatherService {
     }
 
     @Override
-    public @NotNull List<@NotNull WeatherData> getForecast(final @NotNull String cityName, final int days) {
-        if (days <= 0) throw new IllegalArgumentException("days must be greater than 0");
+    public @NotNull List<@NotNull WeatherData> getForecast(final int cityId, final int offset, final int count) {
+        if (offset <= 0) throw new IllegalArgumentException("Day offset must be greater than 0");
+        if (count <= 0) throw new IllegalArgumentException("Day count must be greater than 0");
 
-        final @NotNull String response = getJsonResponse(cityName, FORECAST_URL);
+        final @NotNull String response = getJsonResponse(cityId, FORECAST_URL);
         final @NotNull JsonArray list = new JsonParser()
                 .parse(response)
                 .getAsJsonObject()
@@ -88,14 +130,14 @@ public final class OpenWeather implements IWeatherService {
                 .registerTypeAdapter(WeatherData.class, ADAPTER)
                 .create();
 
-        final @NotNull LocalDate now = ZonedDateTime.now().withZoneSameLocal(ZoneOffset.UTC).toLocalDate().plusDays((long) days);
+        final @NotNull LocalDate now = ZonedDateTime.now().withZoneSameLocal(ZoneOffset.UTC).toLocalDate().plusDays((long) offset);
 
         return StreamSupport.stream(list.spliterator(), false)
                 .filter(it -> {
                     final long timestamp = it.getAsJsonObject().get("dt").getAsLong(); //NON-NLS
                     final @NotNull Instant instant = Instant.ofEpochSecond(timestamp);
                     final @NotNull LocalDate time = LocalDateTime.ofInstant(instant, ZoneOffset.UTC).toLocalDate();
-                    return time.isEqual(now);
+                    return time.compareTo(now) >= 0 && time.compareTo(now.plusDays((long) (count - 1))) <= 0;
                 })
                 .map(it -> gson.fromJson(it, WeatherData.class))
                 //.peek(it -> it.setCity(cityName)) // TODO
