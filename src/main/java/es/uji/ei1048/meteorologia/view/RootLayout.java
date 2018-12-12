@@ -1,49 +1,62 @@
 package es.uji.ei1048.meteorologia.view;
 
-import es.uji.ei1048.meteorologia.model.WeatherManager;
 import es.uji.ei1048.meteorologia.service.AccuWeather;
 import es.uji.ei1048.meteorologia.service.OpenWeather;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.Pane;
+import org.controlsfx.control.StatusBar;
+import org.jetbrains.annotations.NotNull;
+
+import static es.uji.ei1048.meteorologia.Utils.bindToToggleGroup;
 
 public final class RootLayout {
 
+    private static final @NotNull String PROVIDER_PROPERTY = "providerProperty"; //NON-NLS
+
     @FXML
-    private SplitPane sp;
+    private ToggleGroup groupProviders;
+    @FXML
+    private RadioMenuItem serviceOpenWeather;
+    @FXML
+    private RadioMenuItem serviceAccuWeather;
+    @FXML
+    private SplitPane splitPane;
+    @FXML
+    private StatusBar statusBar;
 
-    private WeatherManager sw;
+    private SearchPane searchController;
+    private ResultsPane resultsController;
 
-    private SearchPane searchPane;
+    @FXML
+    private void initialize() {
+        splitPane.getItems().setAll(new Pane(), new Pane());
 
-
-    public void addPane(final Node node) {
-        sp.getItems().add(node);
-        for (SplitPane.Divider div : sp.getDividers()
-        ) {
-            div.setPosition(div.getPosition() + 1);
-        }
+        serviceOpenWeather.getProperties().put(PROVIDER_PROPERTY, new OpenWeather());
+        serviceAccuWeather.getProperties().put(PROVIDER_PROPERTY, new AccuWeather());
     }
 
-    public int getNumPan() {
-        return sp.getItems().size();
+    public void setSearchPane(final @NotNull Parent root, final @NotNull SearchPane controller) {
+        splitPane.getItems().set(0, root);
+        SplitPane.setResizableWithParent(root, false);
+        searchController = controller;
+
+        splitPane.setDividerPositions(0.0);
+
+        bindToToggleGroup(searchController.providerProperty(), groupProviders, PROVIDER_PROPERTY);
     }
 
-    public void clean() {
-        sp.getItems().remove(1, sp.getItems().size());
-        System.out.println("Limpio");
-        System.out.println(getNumPan());
+    public void setResultPane(final @NotNull Parent root, final @NotNull ResultsPane controller) {
+        splitPane.getItems().set(1, root);
+        SplitPane.setResizableWithParent(root, true);
+        resultsController = controller;
     }
 
-    public void setAwApi() {
-        searchPane.setService(new AccuWeather());
-    }
-
-    public void setOwApi() {
-        searchPane.setService(new OpenWeather());
-    }
-
-    public void setSearchPane(final SearchPane searchPane) {
-        this.searchPane = searchPane;
+    public void sync() {
+        resultsController.bindWeatherData(searchController.weatherDataProperty());
+        resultsController.bindResultMode(searchController.resultModeProperty());
     }
 }

@@ -1,7 +1,8 @@
 package es.uji.ei1048.meteorologia;
 
 import es.uji.ei1048.meteorologia.api.NotFoundException;
-import es.uji.ei1048.meteorologia.service.IWeatherService;
+import es.uji.ei1048.meteorologia.model.City;
+import es.uji.ei1048.meteorologia.service.IWeatherProvider;
 import es.uji.ei1048.meteorologia.view.SearchPane;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,14 +10,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 final class TestForecastWeatherMock {
 
     @Mock
-    private IWeatherService service;
+    private IWeatherProvider service;
 
     @BeforeEach
     void setUp() {
@@ -25,21 +25,23 @@ final class TestForecastWeatherMock {
 
     @Test
     void getForecastWeather_validCity_suc() {
-        when(service.getForecast(anyInt(), anyInt())).thenReturn(anyList());
+        when(service.getForecast(any(City.class), anyInt())).thenReturn(anyList());
 
         final SearchPane controller = new SearchPane();
-        controller.setService(service);
+        controller.providerProperty().set(service);
 
-        Assertions.assertNotNull(controller.getForecast("Madrid", 3));
+        final City validCity = new City(6359304L, "Madrid", "ES");
+        Assertions.assertNotNull(controller.getForecast(validCity, 3, 1));
     }
 
     @Test
     void geForecastWeather_notValidCity_err() {
-        when(service.getForecast(anyInt(), anyInt())).thenThrow(NotFoundException.class);
+        when(service.getForecast(any(City.class), anyInt())).thenThrow(NotFoundException.class);
 
         final SearchPane controller = new SearchPane();
-        controller.setService(service);
+        controller.providerProperty().set(service);
 
-        Assertions.assertThrows(NotFoundException.class, () -> controller.getForecast("Wakanda", 3));
+        final City invalidCity = new City(-1L, "Wakanda", "XX");
+        Assertions.assertThrows(NotFoundException.class, () -> controller.getForecast(invalidCity, 3, 1));
     }
 }

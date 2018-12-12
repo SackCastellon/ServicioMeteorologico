@@ -72,6 +72,16 @@ public final class Temperature {
                 .toString();
     }
 
+    @SuppressWarnings("ReturnOfThis")
+    public @NotNull Temperature convertTo(final @NotNull Units newUnit) {
+        return unit == newUnit ? this : new Temperature(
+                unit.convert(current, newUnit),
+                unit.convert(min, newUnit),
+                unit.convert(max, newUnit),
+                newUnit
+        );
+    }
+
     public enum Units {
         CELSIUS {
             @Override

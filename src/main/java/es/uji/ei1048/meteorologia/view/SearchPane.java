@@ -1,170 +1,226 @@
 package es.uji.ei1048.meteorologia.view;
 
-import es.uji.ei1048.meteorologia.App;
-import es.uji.ei1048.meteorologia.api.CityNotFoundException;
+import es.uji.ei1048.meteorologia.model.City;
 import es.uji.ei1048.meteorologia.model.WeatherData;
-import es.uji.ei1048.meteorologia.service.IWeatherService;
-import es.uji.ei1048.meteorologia.service.OpenWeather;
+import es.uji.ei1048.meteorologia.model.converter.CityStringConverter;
+import es.uji.ei1048.meteorologia.service.IWeatherProvider;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.binding.BooleanExpression;
+import javafx.beans.binding.ObjectExpression;
+import javafx.beans.property.*;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
+import org.controlsfx.control.textfield.AutoCompletionBinding;
+import org.controlsfx.control.textfield.TextFields;
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.regex.Pattern;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import static es.uji.ei1048.meteorologia.view.SearchPane.DisplayMode.ADVANCED;
-import static es.uji.ei1048.meteorologia.view.SearchPane.WeatherMode.FORECAST;
+import static es.uji.ei1048.meteorologia.Utils.bindToToggleGroup;
+import static java.time.temporal.ChronoUnit.DAYS;
+import static org.controlsfx.control.textfield.AutoCompletionBinding.ISuggestionRequest;
 
 public final class SearchPane {
 
-    private static final @NotNull Pattern ONE_TO_FIVE = Pattern.compile("[1-5]");
-    private static final @NotNull Pattern NOT_ONE_TO_FIVE = Pattern.compile("^[1-5]");
     private static final @NotNull String ENUM_PROPERTY = "enumProperty"; //NON-NLS
 
-    private final @NotNull ObjectProperty<@NotNull DisplayMode> displayMode = new SimpleObjectProperty<>(DisplayMode.BASIC);
+    private static final @NotNull ExecutorService executorService = Executors.newCachedThreadPool(new ThreadFactory() {
+        private final @NotNull ThreadGroup group;
+        private final @NotNull AtomicInteger threadNumber = new AtomicInteger(1);
+        @NonNls
+        private final @NotNull String namePrefix;
+
+        {
+            final @Nullable SecurityManager manager = System.getSecurityManager();
+            group = (manager != null) ? manager.getThreadGroup() : Thread.currentThread().getThreadGroup();
+            namePrefix = "pool-weather-thread-"; //NON-NLS
+        }
+
+        @Override
+        public @NotNull Thread newThread(final @NotNull Runnable r) {
+            final @NotNull Thread thread = new Thread(group, r, namePrefix + threadNumber.getAndIncrement());
+            thread.setDaemon(true);
+            return thread;
+        }
+    });
+
+    private final @NotNull ObjectProperty<@NotNull IWeatherProvider> provider = new SimpleObjectProperty<>();
+
+    private final @NotNull ReadOnlyObjectWrapper<@NotNull ResultMode> resultMode = new ReadOnlyObjectWrapper<>(ResultMode.BASIC);
     private final @NotNull ObjectProperty<@NotNull WeatherMode> weatherMode = new SimpleObjectProperty<>(WeatherMode.CURRENT);
+
+    private final @NotNull ReadOnlyListWrapper<@NotNull WeatherData> weatherData = new ReadOnlyListWrapper<>(FXCollections.observableArrayList());
+
+    private final @NotNull LocalDate minDate = LocalDate.now().plusDays(1L);
+    private final @NotNull ObjectExpression<@NotNull LocalDate> maxForecastDayProperty =
+            Bindings.createObjectBinding(() -> minDate.plusDays((long) provider.get().getMaxForecastDays() - 1L), provider);
 
     @FXML
     private ResourceBundle resources; // TODO Use resource bundle for translations
     @FXML
-    private TextField searchBar;
+    private TextField searchBox;
+    @FXML
+    private ToggleGroup groupDisplay;
     @FXML
     private RadioButton displayBasic;
     @FXML
-    private ToggleGroup displayGroup;
-    @FXML
     private RadioButton displayAdvanced;
+    @FXML
+    private ToggleGroup groupWeather;
     @FXML
     private RadioButton weatherCurrent;
     @FXML
-    private ToggleGroup weatherGroup;
-    @FXML
     private RadioButton weatherForecast;
     @FXML
-    private Label daysLabel;
+    private VBox forecastOptions;
     @FXML
-    private TextField days;
+    private DatePicker fromDate;
     @FXML
-    private Label rangeLabel;
-    @FXML
-    private TextField rangeDays;
+    private DatePicker toDate;
     @FXML
     private Label error;
     @FXML
-    private Button csButton;
-    @FXML
-    private Button saveButton;
-    @FXML
     private Button loadButton;
+    @FXML
+    private Button searchBtn;
 
-    private App app;
-    private IWeatherService service;
-    private List<WeatherData> current;
+    public @NotNull ObjectProperty<@NotNull IWeatherProvider> providerProperty() {
+        return provider;
+    }
 
-    @SuppressWarnings("unchecked")
-    private static <T extends Enum<T>> void bindToggleGroup(
-            final @NotNull Property<@NotNull T> property,
-            final @NotNull ToggleGroup toggleGroup
-    ) {
-        property.bind(Bindings.createObjectBinding(
-                () -> (T) Objects.requireNonNull(toggleGroup).getSelectedToggle().getProperties().get(ENUM_PROPERTY),
-                toggleGroup.selectedToggleProperty()
-        ));
+    public @NotNull ReadOnlyObjectProperty<@NotNull ResultMode> resultModeProperty() {
+        return resultMode.getReadOnlyProperty();
+    }
+
+    public @NotNull ObservableList<@NotNull WeatherData> weatherDataProperty() {
+        return weatherData.getReadOnlyProperty();
     }
 
     @FXML
     private void initialize() {
-        service = new OpenWeather();
-        error.setText("");
-        days.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!ONE_TO_FIVE.matcher(newValue).matches()) {
-                days.setText(NOT_ONE_TO_FIVE.matcher(newValue).replaceAll(""));
-            }
-        });
+        final @NotNull AutoCompletionBinding<@NotNull City> completionBinding = TextFields.bindAutoCompletion(searchBox, this::getSuggestions, CityStringConverter.getInstance());
+        completionBinding.minWidthProperty().bind(searchBox.minWidthProperty());
+        completionBinding.setOnAutoCompleted(event -> search(event.getCompletion()));
+        completionBinding.setDelay(0L);
 
-        displayBasic.getProperties().put(ENUM_PROPERTY, DisplayMode.BASIC);
-        displayAdvanced.getProperties().put(ENUM_PROPERTY, ADVANCED);
-        bindToggleGroup(displayMode, displayGroup);
+        displayBasic.getProperties().put(ENUM_PROPERTY, ResultMode.BASIC);
+        displayAdvanced.getProperties().put(ENUM_PROPERTY, ResultMode.ADVANCED);
+        bindToToggleGroup(resultMode, groupDisplay, ENUM_PROPERTY);
 
         weatherCurrent.getProperties().put(ENUM_PROPERTY, WeatherMode.CURRENT);
-        weatherForecast.getProperties().put(ENUM_PROPERTY, FORECAST);
-        bindToggleGroup(weatherMode, weatherGroup);
+        weatherForecast.getProperties().put(ENUM_PROPERTY, WeatherMode.FORECAST);
+        bindToToggleGroup(weatherMode, groupWeather, ENUM_PROPERTY);
 
-        final @NotNull BooleanBinding isNotForecast = weatherMode.isNotEqualTo(FORECAST);
-        daysLabel.disableProperty().bind(isNotForecast);
-        days.disableProperty().bind(isNotForecast);
-        rangeLabel.disableProperty().bind(isNotForecast);
-        rangeDays.disableProperty().bind(isNotForecast);
+        final @NotNull BooleanExpression isNotForecast = weatherMode.isNotEqualTo(WeatherMode.FORECAST);
+        forecastOptions.disableProperty().bind(isNotForecast);
+
+        fromDate.setValue(minDate);
+        fromDate.setDayCellFactory(picker -> new ForecastDateCell(new SimpleObjectProperty<>(minDate), toDate.valueProperty()));
+        fromDate.setEditable(false);
+        toDate.setValue(minDate);
+        toDate.setDayCellFactory(picker -> new ForecastDateCell(fromDate.valueProperty(), maxForecastDayProperty));
+        toDate.setEditable(false);
+
+        searchBtn.setOnAction(event -> search(searchBox.getText()));
+
+        final @NotNull BooleanExpression isEmpty = weatherData.emptyProperty();
+        loadButton.disableProperty().bind(isEmpty);
+
+        Platform.runLater(() -> searchBox.requestFocus());
     }
 
-    public void setService(final IWeatherService service) {
-        this.service = service;
-    }
-
-    public void setApp(final App app) {
-        this.app = app;
-    }
-
-    public void saveAll() {
-        app.saveAll(current);
-    }
-
-    @FXML
-    private void search() {
-        /*final String query = searchBar.getText();
-        if (query == null || query.isEmpty()) {
-            error.setText("Input a valid city");
+    private void search(final @NotNull String query) {
+        if (query.isEmpty()) {
+            error.setText("Search field must not be empty.");
         } else {
-            if (error.getText() != null && !error.getText().isEmpty()) {
+            final @NotNull Optional<City> city = provider.get().getCity(query);
+            if (city.isPresent()) {
                 error.setText("");
+                search(city.get());
+            } else {
+                error.setText("City not found.");
             }
-            try {
-                error.setText("");
-                final @NotNull City city = new City(-1, query, "", new Coordinates(-1.0, -1.0)); // FIXME
-                if (weatherMode.get() == FORECAST) {
-                    final int n_days = Integer.parseInt(days.getText());
-                    final List<WeatherData> wdList = service.getForecast(Objects.requireNonNull(city), n_days);
-                    current = wdList;
-                    app.showForecastSearchResult(wdList, displayMode.get() == ADVANCED);
-                    saveButton.setDisable(false);
-                } else {
-                    final WeatherData wd = service.getWeather(Objects.requireNonNull(city));
-                    app.showSearchResult(wd, displayMode.get() == ADVANCED);
-                    if (!saveButton.isDisabled()) {
-                        saveButton.setDisable(true);
+        }
+    }
+
+    private void search(final @NotNull City city) {
+        // TODO Show status in RootLayout status bar
+        switch (weatherMode.get()) {
+            case CURRENT:
+                final @NotNull Task<WeatherData> task1 = new Task<WeatherData>() {
+                    @Override
+                    protected @NotNull WeatherData call() {
+                        return getWeather(city);
                     }
-                }
-            } catch (final NotFoundException e) {
-                error.setText("Ciudad no encontrada");
-            }
-        }*/
+                };
+                task1.setOnSucceeded(event -> weatherData.setAll((@NotNull WeatherData) event.getSource().getValue()));
+                executorService.submit(task1);
+                break;
+            case FORECAST:
+                final @NotNull LocalDate from = fromDate.getValue();
+                final @NotNull LocalDate to = toDate.getValue();
+                final int count = (int) DAYS.between(from, to) + 1;
+                final int offset = (int) DAYS.between(minDate, from) + 1;
+
+                final @NotNull Task<@NotNull List<@NotNull WeatherData>> task2 = new Task<@NotNull List<@NotNull WeatherData>>() {
+                    @Override
+                    protected @NotNull List<@NotNull WeatherData> call() {
+                        return getForecast(city, offset, count);
+                    }
+                };
+                //noinspection unchecked
+                task2.setOnSucceeded(event -> weatherData.setAll((@NotNull Collection<@NotNull WeatherData>) event.getSource().getValue()));
+                executorService.submit(task2);
+                break;
+        }
     }
 
-    @FXML
-    private void showLoadScreen() {
-        app.showLoadScreen();
+    public @NotNull WeatherData getWeather(final @NotNull City city) {
+        return provider.get().getWeather(city);
     }
 
-    public @NotNull WeatherData getWeather(final @NotNull String query) {
-        if (query.isEmpty()) throw new IllegalArgumentException("The query text must not be empty!");
-        final int cityId = service.getCityId(query).orElseThrow(() -> new CityNotFoundException(query));
-        return service.getWeather(cityId);
+    public @NotNull List<@NotNull WeatherData> getForecast(final @NotNull City city, final int offset, final int count) {
+        return provider.get().getForecast(city, offset, count);
     }
 
-    public @NotNull List<@NotNull WeatherData> getForecast(final @NotNull String query, final int offset) {
-        if (query.isEmpty()) throw new IllegalArgumentException("The query text must not be empty!");
-        final int cityId = service.getCityId(query).orElseThrow(() -> new CityNotFoundException(query));
-        return service.getForecast(cityId, offset);
+    private @NotNull List<@NotNull City> getSuggestions(final @NotNull ISuggestionRequest suggestionRequest) {
+        return provider.get().getSuggestedCities(suggestionRequest.getUserText());
     }
 
-    enum DisplayMode {BASIC, ADVANCED}
+    public enum ResultMode {BASIC, ADVANCED}
 
-    enum WeatherMode {CURRENT, FORECAST}
+    private enum WeatherMode {CURRENT, FORECAST}
+
+    private static final class ForecastDateCell extends DateCell {
+        private final @NotNull ObservableValue<@NotNull LocalDate> min;
+        private final @NotNull ObservableValue<@NotNull LocalDate> max;
+
+        private ForecastDateCell(final @NotNull ObservableValue<@NotNull LocalDate> min, final @NotNull ObservableValue<@NotNull LocalDate> max) {
+            this.min = min;
+            this.max = max;
+        }
+
+        @Override
+        public void updateItem(final LocalDate item, final boolean empty) {
+            super.updateItem(item, empty);
+            setDisable(empty || (item.isBefore(min.getValue()) || item.isAfter(max.getValue())));
+        }
+    }
+
 }

@@ -25,9 +25,9 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
-import java.util.OptionalInt;
+import java.util.Optional;
 
-public final class AccuWeather extends AbstractWeatherService {
+public final class AccuWeather extends AbstractWeatherProvider {
 
     private static final @NotNull String WEATHER_URL = "http://dataservice.accuweather.com/currentconditions/v1/"; //NON-NLS
     private static final @NotNull String FORECAST_URL = "http://dataservice.accuweather.com/forecasts/v1/daily/1day/"; //NON-NLS
@@ -41,7 +41,7 @@ public final class AccuWeather extends AbstractWeatherService {
      * @throws NotFoundException         If the city is not found.
      * @throws ConnectionFailedException If an error occurs while connecting to the service.
      */
-    private static @NotNull String getJsonResponse(final int cityId, @NonNls final @NotNull String url) {
+    private static @NotNull String getJsonResponse(final long cityId, @NonNls final @NotNull String url) {
         try (final @NotNull CloseableHttpClient client = HttpClients.createDefault()) {
             final @NotNull URI uri = new URIBuilder(url + cityId)
                     .setParameter("apikey", API_KEY) //NON-NLS
@@ -60,27 +60,32 @@ public final class AccuWeather extends AbstractWeatherService {
     }
 
     @Override
-    public @NotNull List<@NotNull String> getSuggestedCities(final @NotNull String query, final int count) {
+    public @NotNull List<@NotNull City> getSuggestedCities(final @NotNull String query) {
         throw new UnsupportedOperationException("Not implemented");
     }
 
     @Override
-    public @NotNull OptionalInt getCityId(final @NotNull String cityName) {
+    public @NotNull Optional<City> getCity(final @NotNull String cityName) {
         throw new UnsupportedOperationException("Not implemented");
     }
 
     @Override
-    public @NotNull WeatherData getWeather(final int cityId) {
+    public @NotNull WeatherData getWeather(final @NotNull City city) {
         throw new UnsupportedOperationException("Not implemented");
     }
 
     @Override
-    public @NotNull List<@NotNull WeatherData> getForecast(final int cityId, final int offset) {
+    public int getMaxForecastDays() {
         throw new UnsupportedOperationException("Not implemented");
     }
 
     @Override
-    public @NotNull List<@NotNull WeatherData> getForecast(final int cityId, final int offset, final int count) {
+    public @NotNull List<@NotNull WeatherData> getForecast(final @NotNull City city, final int offset) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    @Override
+    public @NotNull List<@NotNull WeatherData> getForecast(final @NotNull City city, final int offset, final int count) {
         throw new UnsupportedOperationException("Not implemented");
     }
 

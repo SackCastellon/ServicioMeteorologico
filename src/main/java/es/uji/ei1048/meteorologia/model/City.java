@@ -9,27 +9,23 @@ import java.util.StringJoiner;
 
 public final class City {
     @NonNls
-    private final int id;
+    private final long id;
     @NonNls
     private final @NotNull String name;
     @NonNls
     private final @NotNull String country;
-    @NonNls
-    private final @NotNull Coordinates coordinates;
 
     public City(
-            final int id,
-            final @NotNull String name,
-            final @NotNull String country,
-            final @NotNull Coordinates coordinates
+            final long id,
+            @NonNls final @NotNull String name,
+            @NonNls final @NotNull String country
     ) {
         this.id = id;
         this.name = name;
         this.country = country;
-        this.coordinates = coordinates;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
@@ -41,10 +37,6 @@ public final class City {
         return country;
     }
 
-    public @NotNull Coordinates getCoordinates() {
-        return coordinates;
-    }
-
     @Override
     public boolean equals(final @Nullable Object obj) {
         if (this == obj) return true;
@@ -52,13 +44,12 @@ public final class City {
         final @NotNull City city = (City) obj;
         return id == city.id &&
                 name.equals(city.name) &&
-                country.equals(city.country) &&
-                coordinates.equals(city.coordinates);
+                country.equals(city.country);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, country, coordinates);
+        return Objects.hash(id, name, country);
     }
 
     @Override
@@ -67,7 +58,6 @@ public final class City {
                 .add("id=" + id) //NON-NLS
                 .add("name='" + name + "'") //NON-NLS
                 .add("country='" + country + "'") //NON-NLS
-                .add("coordinates=" + coordinates) //NON-NLS
                 .toString();
     }
 }
