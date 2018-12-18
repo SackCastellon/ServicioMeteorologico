@@ -40,6 +40,7 @@ public final class App extends Application {
         initRootLayout();
         showSearchPane();
         showResultPane();
+        showLoadScreen();
 
         rootController.sync();
 
@@ -87,7 +88,7 @@ public final class App extends Application {
     public void showLoadScreen() {
         try {
             final FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(App.class.getResource("views/LoadWeather.fxml"));
+            loader.setLocation(App.class.getResource("/views/LoadWeather.fxml"));
             final VBox page = loader.load();
             final Stage dialogStage = new Stage();
             dialogStage.setTitle("Load weather");
@@ -95,7 +96,6 @@ public final class App extends Application {
             dialogStage.initOwner(primaryStage);
             final Scene scene = new Scene(page);
             dialogStage.setScene(scene);
-
             final LoadWeather controller = loader.getController();
             controller.setDialogStage(dialogStage);
 

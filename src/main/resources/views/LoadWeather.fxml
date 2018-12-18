@@ -6,7 +6,8 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <VBox xmlns:fx="http://javafx.com/fxml/1" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-      minWidth="-Infinity" prefHeight="377.0" prefWidth="388.0" xmlns="http://javafx.com/javafx/8.0.171">
+      minWidth="-Infinity" prefHeight="377.0" prefWidth="388.0" xmlns="http://javafx.com/javafx/8.0.171"
+      fx:controller="es.uji.ei1048.meteorologia.view.LoadWeather">
     <Label text="Load savefile">
         <font>
             <Font size="20.0"/>

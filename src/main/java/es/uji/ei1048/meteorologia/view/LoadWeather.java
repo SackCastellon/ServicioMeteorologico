@@ -7,6 +7,7 @@ import es.uji.ei1048.meteorologia.service.IWeatherProvider;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -15,6 +16,7 @@ import org.controlsfx.control.textfield.TextFields;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Optional;
 
 public class LoadWeather {
 
@@ -26,10 +28,13 @@ public class LoadWeather {
     private TextField searchBox;
 
     @FXML
+    private Label error;
+
+    @FXML
     private void initialize() {
         final @NotNull AutoCompletionBinding<@NotNull City> completionBinding = TextFields.bindAutoCompletion(searchBox, this::getSuggestions, CityStringConverter.getInstance());
         completionBinding.minWidthProperty().bind(searchBox.minWidthProperty());
-        completionBinding.setOnAutoCompleted(event -> searchSaves(event.getCompletion()));
+        completionBinding.setOnAutoCompleted(event -> loadCity(event.getCompletion()));
         completionBinding.setDelay(0L);
     }
 
@@ -41,8 +46,22 @@ public class LoadWeather {
 
     }
 
-    private void searchSaves(final @NotNull City city) {
+    private void loadCity(final @NotNull String query) {
+        if (query.isEmpty()) {
+            error.setText("Search field must not be empty.");
+        } else {
+            final @NotNull Optional<City> city = provider.get().getCity(query);
+            if (city.isPresent()) {
+                error.setText("");
+                loadCity(city.get());
+            } else {
+                error.setText("City not found.");
+            }
+        }
+    }
 
+    private void loadCity(final @NotNull City city) {
+        System.out.println("Cargados elementos de la ciudad: " + city.getName());
     }
 
     public SaveFile getSel() {
