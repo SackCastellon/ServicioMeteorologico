@@ -12,7 +12,7 @@ final class TestCurrentWeather {
     @Test
     void getCurrentWeather_validCity_suc() {
         final SearchPane controller = new SearchPane();
-        controller.providerProperty().set(new OpenWeather());
+        controller.providerProperty().set(OpenWeather.getInstance());
 
         final City validCity = new City(6359304L, "Madrid", "ES");
         Assertions.assertNotNull(controller.getWeather(validCity));
@@ -21,7 +21,7 @@ final class TestCurrentWeather {
     @Test
     void getCurrentWeather_notValidCity_err() {
         final SearchPane controller = new SearchPane();
-        controller.providerProperty().set(new OpenWeather());
+        controller.providerProperty().set(OpenWeather.getInstance());
 
         final City invalidCity = new City(-1L, "Wakanda", "XX");
         Assertions.assertThrows(NotFoundException.class, () -> controller.getWeather(invalidCity));

@@ -35,7 +35,8 @@
                             <ToggleGroup fx:id="groupDisplay"/>
                         </toggleGroup>
                     </RadioButton>
-                    <RadioButton fx:id="displayAdvanced" mnemonicParsing="false" text="Advanced" toggleGroup="$groupDisplay"/>
+                    <RadioButton fx:id="displayAdvanced" mnemonicParsing="false" text="Advanced"
+                                 toggleGroup="$groupDisplay"/>
                 </VBox>
                 <VBox spacing="7.0">
                     <Label text="Weather mode:"/>
@@ -44,7 +45,8 @@
                             <ToggleGroup fx:id="groupWeather"/>
                         </toggleGroup>
                     </RadioButton>
-                    <RadioButton fx:id="weatherForecast" mnemonicParsing="false" text="Forecast" toggleGroup="$groupWeather"/>
+                    <RadioButton fx:id="weatherForecast" mnemonicParsing="false" text="Forecast"
+                                 toggleGroup="$groupWeather"/>
                 </VBox>
                 <padding>
                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
@@ -85,8 +87,10 @@
         <VBox style="-fx-border-color: #d3d3d3 #0000 #0000 #0000;">
             <ButtonBar buttonOrder="+U_O">
                 <buttons>
-                    <Button fx:id="loadButton" mnemonicParsing="false" text="Load results" ButtonBar.buttonData="OTHER"/>
-                    <Button fx:id="searchBtn" defaultButton="true" mnemonicParsing="false" text="Search" ButtonBar.buttonData="OK_DONE"/>
+                    <Button fx:id="loadButton" mnemonicParsing="false" text="Load results"
+                            ButtonBar.buttonData="OTHER"/>
+                    <Button fx:id="searchBtn" defaultButton="true" mnemonicParsing="false" text="Search"
+                            ButtonBar.buttonData="OK_DONE"/>
                 </buttons>
             </ButtonBar>
             <padding>

@@ -16,7 +16,7 @@ public final class CityStringConverter extends StringConverter<@NotNull City> {
 
     @Override
     public @NotNull String toString(final @NotNull City object) {
-        return object.getName();
+        return String.format("%s (%s)", object.getName(), object.getCountry()); //NON-NLS
     }
 
     @Override

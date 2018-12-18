@@ -29,10 +29,19 @@ import java.util.Optional;
 
 public final class AccuWeather extends AbstractWeatherProvider {
 
-    private static final @NotNull String WEATHER_URL = "http://dataservice.accuweather.com/currentconditions/v1/"; //NON-NLS
-    private static final @NotNull String FORECAST_URL = "http://dataservice.accuweather.com/forecasts/v1/daily/1day/"; //NON-NLS
+    private static final @NotNull IWeatherProvider INSTANCE = new AccuWeather();
+
+    private static final @NotNull String WEATHER_URL = "https://dataservice.accuweather.com/currentconditions/v1/"; //NON-NLS
+    private static final @NotNull String FORECAST_URL = "https://dataservice.accuweather.com/forecasts/v1/daily/1day/"; //NON-NLS
     private static final @NotNull String API_KEY = "1qnDGxmkUObV0hjDGUf8KbpWSYndly7e"; //NON-NLS
     private static final @NotNull TypeAdapter<WeatherData> ADAPTER = new Adapter();
+
+    private AccuWeather() {
+    }
+
+    public static @NotNull IWeatherProvider getInstance() {
+        return INSTANCE;
+    }
 
     /**
      * @param cityId The id of the city.
@@ -216,6 +225,7 @@ public final class AccuWeather extends AbstractWeatherProvider {
             final Temperature temperature = new Temperature(temp, tempMin, tempMax, Temperature.Units.CELSIUS);
 
             return new WeatherData(
+                    city,
                     dateTime,
                     weather,
                     temperature,

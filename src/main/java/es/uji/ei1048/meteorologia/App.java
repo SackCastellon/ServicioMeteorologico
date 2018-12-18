@@ -30,6 +30,8 @@ public final class App extends Application {
 
     @Override
     public void start(final Stage primaryStage) {
+        logger.debug("Starting application"); //NON-NLS
+
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("Meteorological Service");
         this.primaryStage.setMinWidth(525.0);

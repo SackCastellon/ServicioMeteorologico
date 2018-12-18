@@ -19,7 +19,9 @@ final class TestSaveWeather {
 
     @Test
     void getSaveWeather_validSave_suc() {
+        final City city = new City(6359304L, "Madrid", "ES");
         final @NotNull WeatherData wd = new WeatherData(
+                city,
                 LocalDateTime.now(),
                 new Weather(10, "Viento", "mucho frio"),
                 new Temperature(15.0, 10.0, 20.0, Temperature.Units.CELSIUS),
@@ -33,7 +35,9 @@ final class TestSaveWeather {
 
     @Test
     void getSaveWeather_notValidSave_err() {
+        final City city = new City(6359304L, "Madrid", "ES");
         final @NotNull WeatherData wd = new WeatherData(
+                city,
                 LocalDateTime.now(),
                 new Weather(10, "Viento", "mucho frio"),
                 new Temperature(15.0, 10.0, 20.0, Temperature.Units.CELSIUS),

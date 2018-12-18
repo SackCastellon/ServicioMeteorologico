@@ -11,6 +11,8 @@ import java.util.StringJoiner;
 public final class WeatherData {
 
     @NonNls
+    private final @NotNull City city;
+    @NonNls
     private final @NotNull LocalDateTime dateTime;
     @NonNls
     private final @NotNull Weather weather;
@@ -22,19 +24,19 @@ public final class WeatherData {
     private final double pressure;
     @NonNls
     private final double humidity;
-    @NonNls
-    private @Nullable City city;
 
     public WeatherData(
+            final @NotNull City city,
             final @NotNull LocalDateTime dateTime,
             final @NotNull Weather weather,
             final @NotNull Temperature temperature,
             final @NotNull Wind wind
     ) {
-        this(dateTime, weather, temperature, wind, -1.0, -1.0);
+        this(city, dateTime, weather, temperature, wind, -1.0, -1.0);
     }
 
     public WeatherData(
+            final @NotNull City city,
             final @NotNull LocalDateTime dateTime,
             final @NotNull Weather weather,
             final @NotNull Temperature temperature,
@@ -42,6 +44,7 @@ public final class WeatherData {
             final double pressure,
             final double humidity
     ) {
+        this.city = city;
         this.dateTime = dateTime;
         this.weather = weather;
         this.temperature = temperature;
@@ -50,12 +53,8 @@ public final class WeatherData {
         this.humidity = humidity;
     }
 
-    public @Nullable City getCity() {
+    public @NotNull City getCity() {
         return city;
-    }
-
-    public void setCity(final @NotNull City city) {
-        this.city = city;
     }
 
     public @NotNull LocalDateTime getDateTime() {
@@ -89,11 +88,11 @@ public final class WeatherData {
         final @NotNull WeatherData that = (WeatherData) obj;
         return Double.compare(that.pressure, pressure) == 0 &&
                 Double.compare(that.humidity, humidity) == 0 &&
+                city.equals(that.city) &&
                 dateTime.equals(that.dateTime) &&
                 weather.equals(that.weather) &&
                 temperature.equals(that.temperature) &&
-                wind.equals(that.wind) &&
-                Objects.equals(city, that.city);
+                wind.equals(that.wind);
     }
 
     @Override
@@ -102,7 +101,7 @@ public final class WeatherData {
     }
 
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return new StringJoiner(", ", WeatherData.class.getSimpleName() + "[", "]")
                 .add("city=" + city) //NON-NLS
                 .add("dateTime=" + dateTime) //NON-NLS

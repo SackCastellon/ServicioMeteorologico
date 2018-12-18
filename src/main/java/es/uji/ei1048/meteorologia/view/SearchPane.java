@@ -32,7 +32,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static es.uji.ei1048.meteorologia.Utils.bindToToggleGroup;
+import static es.uji.ei1048.meteorologia.util.Utils.bindToToggleGroup;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static org.controlsfx.control.textfield.AutoCompletionBinding.ISuggestionRequest;
 
@@ -117,7 +117,6 @@ public final class SearchPane {
         final @NotNull AutoCompletionBinding<@NotNull City> completionBinding = TextFields.bindAutoCompletion(searchBox, this::getSuggestions, CityStringConverter.getInstance());
         completionBinding.minWidthProperty().bind(searchBox.minWidthProperty());
         completionBinding.setOnAutoCompleted(event -> search(event.getCompletion()));
-        completionBinding.setDelay(0L);
 
         displayBasic.getProperties().put(ENUM_PROPERTY, ResultMode.BASIC);
         displayAdvanced.getProperties().put(ENUM_PROPERTY, ResultMode.ADVANCED);

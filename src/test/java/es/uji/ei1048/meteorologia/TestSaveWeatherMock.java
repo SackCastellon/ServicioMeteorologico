@@ -25,12 +25,15 @@ final class TestSaveWeatherMock {
 
     @Test
     void getSaveWeather_validSave_suc() {
+        final City city = new City(6359304L, "Madrid", "ES");
         final @NotNull WeatherData wd = new WeatherData(
+                city,
                 LocalDateTime.now(),
                 new Weather(10, "Viento", "mucho frio"),
                 new Temperature(15.0, 10.0, 20.0, Temperature.Units.CELSIUS),
                 new Wind(20.0, 10.0),
-                10.0, 10.0
+                10.0,
+                10.0
         );
 
         when(manager.save(any(WeatherData.class))).thenReturn(true);
@@ -39,12 +42,15 @@ final class TestSaveWeatherMock {
 
     @Test
     void getSaveWeather_notValidSave_err() {
+        final City city = new City(6359304L, "Madrid", "ES");
         final @NotNull WeatherData wd = new WeatherData(
+                city,
                 LocalDateTime.now(),
                 new Weather(10, "Viento", "mucho frio"),
                 new Temperature(15.0, 10.0, 20.0, Temperature.Units.CELSIUS),
                 new Wind(20.0, 10.0),
-                10.0, 10.0
+                10.0,
+                10.0
         );
 
         when(manager.save(any(WeatherData.class))).thenReturn(false);

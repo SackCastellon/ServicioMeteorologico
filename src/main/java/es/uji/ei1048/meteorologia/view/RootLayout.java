@@ -11,7 +11,7 @@ import javafx.scene.layout.Pane;
 import org.controlsfx.control.StatusBar;
 import org.jetbrains.annotations.NotNull;
 
-import static es.uji.ei1048.meteorologia.Utils.bindToToggleGroup;
+import static es.uji.ei1048.meteorologia.util.Utils.bindToToggleGroup;
 
 public final class RootLayout {
 
@@ -35,8 +35,8 @@ public final class RootLayout {
     private void initialize() {
         splitPane.getItems().setAll(new Pane(), new Pane());
 
-        serviceOpenWeather.getProperties().put(PROVIDER_PROPERTY, new OpenWeather());
-        serviceAccuWeather.getProperties().put(PROVIDER_PROPERTY, new AccuWeather());
+        serviceOpenWeather.getProperties().put(PROVIDER_PROPERTY, OpenWeather.getInstance());
+        serviceAccuWeather.getProperties().put(PROVIDER_PROPERTY, AccuWeather.getInstance());
     }
 
     public void setSearchPane(final @NotNull Parent root, final @NotNull SearchPane controller) {

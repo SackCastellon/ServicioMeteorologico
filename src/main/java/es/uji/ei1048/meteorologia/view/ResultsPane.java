@@ -1,7 +1,10 @@
 package es.uji.ei1048.meteorologia.view;
 
 import es.uji.ei1048.meteorologia.model.WeatherData;
+import es.uji.ei1048.meteorologia.model.converter.CityStringConverter;
 import es.uji.ei1048.meteorologia.view.SearchPane.ResultMode;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleListProperty;
@@ -19,9 +22,9 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
-import kotlin.collections.CollectionsKt;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
@@ -31,17 +34,19 @@ import java.util.stream.IntStream;
 
 import static es.uji.ei1048.meteorologia.model.Temperature.Units.CELSIUS;
 import static kotlin.collections.CollectionsKt.groupBy;
+import static kotlin.collections.CollectionsKt.listOf;
 
 public final class ResultsPane {
 
     private static final @NotNull String DATA_PROPERTY = "dataProperty"; //NON-NLS
     private static final @NotNull String LABEL_COLOR = "#4040ff"; //NON-NLS
+    private static final @NotNull DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm dd/MM/yyyy"); //NON-NLS
 
     private final @NotNull ListProperty<@NotNull WeatherData> weatherData = new SimpleListProperty<>(FXCollections.observableArrayList());
     private final @NotNull ObjectProperty<@NotNull ResultMode> resultMode = new SimpleObjectProperty<>();
 
     @FXML
-    private Label title;
+    private Label titleCity;
     @FXML
     private TabPane tabPane;
     @FXML
@@ -63,8 +68,8 @@ public final class ResultsPane {
         gridPane.setVgap(7.0);
         gridPane.setPadding(new Insets(15.0));
 
-        final @NotNull List<@NotNull Label[]> rows = CollectionsKt.listOf(
-                createLabels("Time:", data.getDateTime().toString()),
+        final @NotNull List<@NotNull Label[]> rows = listOf(
+                createLabels("Time:", data.getDateTime().format(TIME_FORMATTER)),
                 createLabels("Weather:", data.getWeather().getMain()),
                 createLabels("Temperature:", String.format("%.2f ºC", data.getTemperature().convertTo(CELSIUS).getCurrent())),
                 createLabels("Humidity:", String.format("%.2f RH%%", data.getHumidity())),
@@ -72,8 +77,7 @@ public final class ResultsPane {
                 createLabels("Pressure:", String.format("%.2f hPa", data.getPressure()))
         );
 
-        int row = 0;
-        for (int i = 0; i < rows.size(); i++, row++) {
+        for (int i = 0, row = 0; i < rows.size(); i++, row++) {
             final @NotNull Label[] labels = rows.get(i);
             gridPane.add(labels[0], 0, row, 1, labels.length - 1);
             for (int j = 1; j < labels.length; j++, row++) {
@@ -105,6 +109,13 @@ public final class ResultsPane {
     private void
     initialize() {
         weatherData.addListener(this::updateTabs);
+        final @NotNull ObjectBinding<@Nullable WeatherData> binding = weatherData.valueAt(0);
+        titleCity.textProperty().bind(Bindings.createStringBinding(
+                () -> binding.get() == null ? "" : CityStringConverter.getInstance().toString(binding.get().getCity()),
+                binding
+        ));
+
+        saveButton.disableProperty().bind(weatherData.emptyProperty());
     }
 
     public void showResults(final @NotNull WeatherData wd) {

@@ -3,7 +3,7 @@ package es.uji.ei1048.meteorologia.service;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.google.common.base.Charsets;
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.gson.*;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
@@ -11,7 +11,7 @@ import es.uji.ei1048.meteorologia.api.ApiUtils;
 import es.uji.ei1048.meteorologia.api.ConnectionFailedException;
 import es.uji.ei1048.meteorologia.api.NotFoundException;
 import es.uji.ei1048.meteorologia.model.*;
-import kotlin.collections.CollectionsKt;
+import es.uji.ei1048.meteorologia.model.converter.CityStringConverter;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -31,58 +31,82 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.*;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import static es.uji.ei1048.meteorologia.model.Temperature.Units.KELVIN;
+import static java.util.Spliterator.*;
+import static kotlin.collections.CollectionsKt.binarySearchBy;
 import static kotlin.collections.CollectionsKt.emptyList;
 
 public final class OpenWeather extends AbstractWeatherProvider {
 
-    private static final Logger logger = LogManager.getLogger(OpenWeather.class);
+    private static final @NotNull Logger logger = LogManager.getLogger(OpenWeather.class);
 
-    private static final @NotNull String WEATHER_URL = "http://api.openweathermap.org/data/2.5/weather"; //NON-NLS
-    private static final @NotNull String FORECAST_URL = "http://api.openweathermap.org/data/2.5/forecast"; //NON-NLS
+    private static final @NotNull IWeatherProvider INSTANCE = new OpenWeather();
+
+    private static final @NotNull String WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather"; //NON-NLS
+    private static final @NotNull String FORECAST_URL = "https://api.openweathermap.org/data/2.5/forecast"; //NON-NLS
     private static final @NotNull String API_KEY = "44b7cad45f4fb36eefa0f72259b8beb4"; //NON-NLS
+    private static final @NotNull String CITIES_JSON = "/json/openweather.cities.json"; //NON-NLS
+
     private static final @NotNull TypeAdapter<WeatherData> ADAPTER = new Adapter();
 
-    private static final @NotNull ImmutableList<City> CITIES;
+    private static final @NotNull ImmutableMap<@NotNull Long, @NotNull City> CITIES;
     private static final @NotNull LoadingCache<@NotNull String, @NotNull List<@NotNull City>> SUGGESTIONS;
+
     private static final int MAX_FORECAST_DAYS = 5;
 
     static {
-        @NotNull ImmutableList<City> result;
-        try (final InputStream stream = OpenWeather.class.getResourceAsStream("/json/cities.openweather.json"); //NON-NLS
-             final InputStreamReader reader = new InputStreamReader(stream, Charsets.UTF_8)) {
-            final @NotNull JsonElement parse = new JsonParser().parse(reader);
-            final JsonArray array = parse.getAsJsonArray();
+        final long start = System.currentTimeMillis();
 
-            result = StreamSupport.stream(array.spliterator(), false)
-                    .map(JsonElement::getAsJsonObject)
-                    .map(it -> new City(
-                            it.get("id").getAsLong(), //NON-NLS
-                            it.get("name").getAsString(), //NON-NLS
-                            it.get("country").getAsString() //NON-NLS
-                    ))
-                    .sorted(Comparator.comparing(City::getName))
-                    .collect(ImmutableList.toImmutableList());
+        @NotNull JsonArray jsonArray = new JsonArray(0);
+
+        try (final InputStream stream = OpenWeather.class.getResourceAsStream(CITIES_JSON);
+             final InputStreamReader reader = new InputStreamReader(stream, Charsets.UTF_8)) {
+            jsonArray = new JsonParser().parse(reader).getAsJsonArray();
         } catch (final IOException e) {
-            result = ImmutableList.of();
+            logger.error(String.format("Failed to read '%s'", CITIES_JSON), e); //NON-NLS
         }
-        CITIES = result;
+
+        final @NotNull Spliterator<JsonElement> spliterator = Spliterators.spliterator(
+                jsonArray.iterator(),
+                (long) jsonArray.size(),
+                SIZED | SUBSIZED | ORDERED | DISTINCT | NONNULL
+        );
+
+        CITIES = StreamSupport.stream(spliterator, false)
+                .map(JsonElement::getAsJsonObject)
+                .map(it -> new City(
+                        it.get("id").getAsLong(), //NON-NLS
+                        it.get("name").getAsString(), //NON-NLS
+                        it.get("country").getAsString() //NON-NLS
+                ))
+                .sorted(Comparator.comparing(City::getName))
+                .collect(ImmutableMap.toImmutableMap(City::getId, city -> city));
+
+        final long end = System.currentTimeMillis() - start;
+        logger.debug(() -> String.format("Loaded %d cities in %d ms", CITIES.size(), end)); //NON-NLS
 
         SUGGESTIONS = Caffeine.newBuilder()
-                .maximumSize(10_000L)
-                .expireAfterAccess(Duration.ofMinutes(5L))
-                .build(it -> CITIES
+                .maximumSize(100_000L)
+                .initialCapacity(1_000)
+                .build(query -> CITIES
+                        .values().asList()
                         .parallelStream()
-                        .sorted(getCityQueryComparator(it))
+                        .filter(it -> !it.getName().isEmpty())
+                        .filter(it -> Math.abs(it.getName().length() - query.length()) < 5)
+                        .sorted(getCityQueryComparator(query))
                         .limit(SUGGESTION_COUNT)
                         .collect(Collectors.toList()));
+    }
+
+    private OpenWeather() {
+    }
+
+    public static @NotNull IWeatherProvider getInstance() {
+        return INSTANCE;
     }
 
     /**
@@ -116,14 +140,18 @@ public final class OpenWeather extends AbstractWeatherProvider {
         final long start = System.currentTimeMillis();
         final @NotNull List<@NotNull City> cities = Objects.requireNonNull(SUGGESTIONS.get(query.toLowerCase()));
         final long end = System.currentTimeMillis() - start;
-        logger.debug(() -> String.format("Generation of suggestions for '%s' took %d ms", query, end)); //NON-NLS
+        logger.debug(() -> String.format("Generated %d suggestions for '%s' in %d ms", SUGGESTION_COUNT, query, end)); //NON-NLS
         return cities;
     }
 
     @Override
     public @NotNull Optional<City> getCity(final @NotNull String cityName) {
-        final int i = CollectionsKt.binarySearchBy(CITIES, cityName, 0, CITIES.size() - 1, City::getName);
-        return i < 0 ? Optional.empty() : Optional.of(CITIES.get(i));
+        final int i = binarySearchBy(CITIES.values().asList(),
+                cityName.toLowerCase(Locale.ENGLISH),
+                0,
+                CITIES.size() - 1,
+                city -> CityStringConverter.getInstance().toString(city).toLowerCase(Locale.ENGLISH));
+        return i < 0 ? Optional.empty() : Optional.of(CITIES.values().asList().get(i));
     }
 
     @Override
@@ -185,6 +213,8 @@ public final class OpenWeather extends AbstractWeatherProvider {
         public @NotNull WeatherData read(final JsonReader in) throws IOException {
             in.beginObject();
 
+
+            long cityId = -1L;
             LocalDateTime dateTime = null;
             Weather weather = null;
             Temperature temperature = null;
@@ -297,6 +327,10 @@ public final class OpenWeather extends AbstractWeatherProvider {
                 case "dt": //NON-NLS
                     dateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(in.nextLong()), ZoneOffset.UTC);
                     break;
+
+                case "id": //NON-NLS
+                    cityId = in.nextLong();
+                    break;
                 default:
                     in.skipValue();
                     break;
@@ -310,7 +344,7 @@ public final class OpenWeather extends AbstractWeatherProvider {
             if (wind == null) throw new IllegalStateException("No 'wind' was found.");
 
             return new WeatherData(
-                    // TODO city
+                    CITIES.get(cityId),
                     dateTime,
                     weather,
                     temperature,
