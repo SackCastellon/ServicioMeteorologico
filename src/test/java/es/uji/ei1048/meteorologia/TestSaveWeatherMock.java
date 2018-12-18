@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-final class TestSaveWeatherBasicResultsMock {
+final class TestSaveWeatherMock {
 
     @Mock
     private WeatherManager manager;
@@ -29,7 +29,8 @@ final class TestSaveWeatherBasicResultsMock {
                 LocalDateTime.now(),
                 new Weather(10, "Viento", "mucho frio"),
                 new Temperature(15.0, 10.0, 20.0, Temperature.Units.CELSIUS),
-                new Wind(20.0, 10.0)
+                new Wind(20.0, 10.0),
+                10.0, 10.0
         );
 
         when(manager.save(any(WeatherData.class))).thenReturn(true);
@@ -42,11 +43,11 @@ final class TestSaveWeatherBasicResultsMock {
                 LocalDateTime.now(),
                 new Weather(10, "Viento", "mucho frio"),
                 new Temperature(15.0, 10.0, 20.0, Temperature.Units.CELSIUS),
-                new Wind(20.0, 10.0)
+                new Wind(20.0, 10.0),
+                10.0, 10.0
         );
 
         when(manager.save(any(WeatherData.class))).thenReturn(false);
         Assertions.assertFalse(manager.save(wd));
     }
-
 }

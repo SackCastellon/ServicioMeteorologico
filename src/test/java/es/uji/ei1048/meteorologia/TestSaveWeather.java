@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 
-final class TestSaveWeatherAdvancedResults {
+final class TestSaveWeather {
 
     private static WeatherManager manager;
 

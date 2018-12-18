@@ -14,7 +14,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-final class TestLoadBasicResultsMock {
+final class TestLoadWeatherMock {
 
     @Mock
     private WeatherManager manager;
