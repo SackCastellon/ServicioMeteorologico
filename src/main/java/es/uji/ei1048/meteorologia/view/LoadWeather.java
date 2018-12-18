@@ -4,6 +4,7 @@ import es.uji.ei1048.meteorologia.model.City;
 import es.uji.ei1048.meteorologia.model.SaveFile;
 import es.uji.ei1048.meteorologia.model.converter.CityStringConverter;
 import es.uji.ei1048.meteorologia.service.IWeatherProvider;
+import es.uji.ei1048.meteorologia.service.OpenWeather;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
@@ -36,6 +37,8 @@ public class LoadWeather {
         completionBinding.minWidthProperty().bind(searchBox.minWidthProperty());
         completionBinding.setOnAutoCompleted(event -> loadCity(event.getCompletion()));
         completionBinding.setDelay(0L);
+
+        provider.setValue(OpenWeather.getInstance());
     }
 
     private @NotNull List<@NotNull City> getSuggestions(final @NotNull AutoCompletionBinding.ISuggestionRequest suggestionRequest) {
