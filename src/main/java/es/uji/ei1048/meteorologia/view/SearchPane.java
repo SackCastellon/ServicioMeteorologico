@@ -2,6 +2,7 @@ package es.uji.ei1048.meteorologia.view;
 
 import es.uji.ei1048.meteorologia.model.City;
 import es.uji.ei1048.meteorologia.model.WeatherData;
+import es.uji.ei1048.meteorologia.model.WeatherManager;
 import es.uji.ei1048.meteorologia.model.converter.CityStringConverter;
 import es.uji.ei1048.meteorologia.service.IWeatherProvider;
 import javafx.application.Platform;
@@ -61,6 +62,7 @@ public final class SearchPane {
     });
 
     private final @NotNull ObjectProperty<@NotNull IWeatherProvider> provider = new SimpleObjectProperty<>();
+    private final @NotNull ObjectProperty<@NotNull WeatherManager> manager = new SimpleObjectProperty<>();
 
     private final @NotNull ReadOnlyObjectWrapper<@NotNull ResultMode> resultMode = new ReadOnlyObjectWrapper<>(ResultMode.BASIC);
     private final @NotNull ObjectProperty<@NotNull WeatherMode> weatherMode = new SimpleObjectProperty<>(WeatherMode.CURRENT);
@@ -197,6 +199,8 @@ public final class SearchPane {
     public @NotNull List<@NotNull WeatherData> getForecast(final @NotNull City city, final int offset, final int count) {
         return provider.get().getForecast(city, offset, count);
     }
+
+
 
     private @NotNull List<@NotNull City> getSuggestions(final @NotNull ISuggestionRequest suggestionRequest) {
         return provider.get().getSuggestedCities(suggestionRequest.getUserText());
