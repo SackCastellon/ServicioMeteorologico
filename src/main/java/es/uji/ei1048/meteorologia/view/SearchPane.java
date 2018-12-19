@@ -13,7 +13,6 @@ import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
@@ -24,7 +23,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -140,9 +138,6 @@ public final class SearchPane {
 
         searchBtn.setOnAction(event -> search(searchBox.getText()));
 
-        final @NotNull BooleanExpression isEmpty = weatherData.emptyProperty();
-        loadButton.disableProperty().bind(isEmpty);
-
         Platform.runLater(() -> searchBox.requestFocus());
     }
 
@@ -164,14 +159,10 @@ public final class SearchPane {
         // TODO Show status in RootLayout status bar
         switch (weatherMode.get()) {
             case CURRENT:
-                final @NotNull Task<WeatherData> task1 = new Task<WeatherData>() {
-                    @Override
-                    protected @NotNull WeatherData call() {
-                        return getWeather(city);
-                    }
-                };
-                task1.setOnSucceeded(event -> weatherData.setAll((@NotNull WeatherData) event.getSource().getValue()));
-                executorService.submit(task1);
+                executorService.execute(()->{
+                    final @NotNull WeatherData data = getWeather(city);
+                    Platform.runLater(() -> weatherData.setAll(data));
+                });
                 break;
             case FORECAST:
                 final @NotNull LocalDate from = fromDate.getValue();
@@ -179,15 +170,10 @@ public final class SearchPane {
                 final int count = (int) DAYS.between(from, to) + 1;
                 final int offset = (int) DAYS.between(minDate, from) + 1;
 
-                final @NotNull Task<@NotNull List<@NotNull WeatherData>> task2 = new Task<@NotNull List<@NotNull WeatherData>>() {
-                    @Override
-                    protected @NotNull List<@NotNull WeatherData> call() {
-                        return getForecast(city, offset, count);
-                    }
-                };
-                //noinspection unchecked
-                task2.setOnSucceeded(event -> weatherData.setAll((@NotNull Collection<@NotNull WeatherData>) event.getSource().getValue()));
-                executorService.submit(task2);
+                executorService.execute(() -> {
+                    final @NotNull List<@NotNull WeatherData> data = getForecast(city, offset, count);
+                    Platform.runLater(()-> weatherData.setAll(data));
+                });
                 break;
         }
     }
@@ -199,7 +185,6 @@ public final class SearchPane {
     public @NotNull List<@NotNull WeatherData> getForecast(final @NotNull City city, final int offset, final int count) {
         return provider.get().getForecast(city, offset, count);
     }
-
 
     private @NotNull List<@NotNull City> getSuggestions(final @NotNull ISuggestionRequest suggestionRequest) {
         return provider.get().getSuggestedCities(suggestionRequest.getUserText());

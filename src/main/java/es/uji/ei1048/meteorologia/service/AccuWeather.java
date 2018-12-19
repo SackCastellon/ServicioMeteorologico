@@ -25,6 +25,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 public final class AccuWeather extends AbstractWeatherProvider {
@@ -218,18 +219,14 @@ public final class AccuWeather extends AbstractWeatherProvider {
             in.endObject();
             in.endArray();
 
-            if (dateTime == null) throw new IllegalStateException("No timestamp was found.");
-            if (weather == null) throw new IllegalStateException("No weather was found.");
-            if (wind == null) throw new IllegalStateException("No wind was found.");
-
             final Temperature temperature = new Temperature(temp, tempMin, tempMax, Temperature.Units.CELSIUS);
 
             return new WeatherData(
                     city,
-                    dateTime,
-                    weather,
+                    Objects.requireNonNull(dateTime),
+                    Objects.requireNonNull(weather),
                     temperature,
-                    wind,
+                    Objects.requireNonNull(wind),
                     pressure,
                     humidity
             );

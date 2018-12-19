@@ -138,7 +138,7 @@ public final class OpenWeather extends AbstractWeatherProvider {
     public @NotNull List<@NotNull City> getSuggestedCities(@NonNls final @NotNull String query) {
         if (query.isEmpty()) return emptyList();
         final long start = System.currentTimeMillis();
-        final @NotNull List<@NotNull City> cities = Objects.requireNonNull(SUGGESTIONS.get(query.toLowerCase()));
+        final @NotNull List<@NotNull City> cities = Objects.requireNonNull(SUGGESTIONS.get(query.toLowerCase(Locale.ENGLISH)));
         final long end = System.currentTimeMillis() - start;
         logger.debug(() -> String.format("Generated %d suggestions for '%s' in %d ms", SUGGESTION_COUNT, query, end)); //NON-NLS
         return cities;
@@ -177,10 +177,10 @@ public final class OpenWeather extends AbstractWeatherProvider {
             throw new IllegalArgumentException("The offset and count days represent a day greater than the supported by this service");
 
         final @NotNull String response = getJsonResponse(city.getId(), FORECAST_URL);
-        final @NotNull JsonArray list = new JsonParser()
-                .parse(response)
-                .getAsJsonObject()
-                .getAsJsonArray("list"); //NON-NLS
+
+        final @NotNull JsonObject json = new JsonParser().parse(response).getAsJsonObject();
+
+        final int cityId = json.get("city").getAsJsonObject().get("id").getAsInt(); //NON-NLS
 
         final @NotNull Gson gson = new GsonBuilder()
                 .registerTypeAdapter(WeatherData.class, ADAPTER)
@@ -188,13 +188,14 @@ public final class OpenWeather extends AbstractWeatherProvider {
 
         final @NotNull LocalDate now = ZonedDateTime.now().withZoneSameLocal(ZoneOffset.UTC).toLocalDate().plusDays((long) offset);
 
-        return StreamSupport.stream(list.spliterator(), false)
+        return StreamSupport.stream(json.getAsJsonArray("list").spliterator(), false) //NON-NLS
                 .filter(it -> {
                     final long timestamp = it.getAsJsonObject().get("dt").getAsLong(); //NON-NLS
                     final @NotNull Instant instant = Instant.ofEpochSecond(timestamp);
                     final @NotNull LocalDate time = LocalDateTime.ofInstant(instant, ZoneOffset.UTC).toLocalDate();
                     return time.compareTo(now) >= 0 && time.compareTo(now.plusDays((long) (count - 1))) <= 0;
                 })
+                .peek(it -> it.getAsJsonObject().addProperty("id", cityId)) //NON-NLS
                 .map(it -> gson.fromJson(it, WeatherData.class))
                 .collect(Collectors.toList());
     }
@@ -210,7 +211,6 @@ public final class OpenWeather extends AbstractWeatherProvider {
         @Contract("_ -> new")
         public @NotNull WeatherData read(final JsonReader in) throws IOException {
             in.beginObject();
-
 
             long cityId = -1L;
             LocalDateTime dateTime = null;
@@ -250,10 +250,11 @@ public final class OpenWeather extends AbstractWeatherProvider {
                         in.endObject(); // End "weather"
 
                         if (id == -1) throw new IllegalStateException("No 'weather.id' was found.");
-                        if (main == null) throw new IllegalStateException("No 'weather.main' was found.");
-                        if (description == null)
-                            throw new IllegalStateException("No 'weather.description' was found.");
-                        weather = new Weather(id, main, description);
+                        weather = new Weather(
+                                id,
+                                Objects.requireNonNull(main),
+                                Objects.requireNonNull(description)
+                        );
                     }
 
                     in.endArray();
@@ -329,6 +330,7 @@ public final class OpenWeather extends AbstractWeatherProvider {
                 case "id": //NON-NLS
                     cityId = in.nextLong();
                     break;
+
                 default:
                     in.skipValue();
                     break;
@@ -336,17 +338,12 @@ public final class OpenWeather extends AbstractWeatherProvider {
 
             in.endObject();
 
-            if (dateTime == null) throw new IllegalStateException("No timestamp was found.");
-            if (weather == null) throw new IllegalStateException("No 'weather' was found.");
-            if (temperature == null) throw new IllegalStateException("No 'main' was found.");
-            if (wind == null) throw new IllegalStateException("No 'wind' was found.");
-
             return new WeatherData(
                     CITIES.get(cityId),
-                    dateTime,
-                    weather,
-                    temperature,
-                    wind,
+                    Objects.requireNonNull(dateTime),
+                    Objects.requireNonNull(weather),
+                    Objects.requireNonNull(temperature),
+                    Objects.requireNonNull(wind),
                     pressure,
                     humidity
             );
