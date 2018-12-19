@@ -8,7 +8,7 @@
             fx:controller="es.uji.ei1048.meteorologia.view.SearchPane">
     <top>
         <VBox style="-fx-border-color: #0000 #0000 #d3d3d3 #0000;">
-            <Label text="Search city weather">
+            <Label text="%title">
                 <font>
                     <Font size="22.0"/>
                 </font>
@@ -21,7 +21,7 @@
     <center>
         <VBox spacing="7.0" BorderPane.alignment="CENTER">
             <VBox spacing="7.0">
-                <Label text="City name:"/>
+                <Label text="%search.label"/>
                 <TextField fx:id="searchBox"/>
                 <padding>
                     <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
@@ -29,23 +29,24 @@
             </VBox>
             <HBox alignment="CENTER" spacing="25.0">
                 <VBox spacing="7.0">
-                    <Label text="Result mode:"/>
-                    <RadioButton fx:id="displayBasic" mnemonicParsing="false" selected="true" text="Basic">
+                    <Label text="%resultMode.label"/>
+                    <RadioButton fx:id="displayBasic" mnemonicParsing="false" selected="true" text="%resultMode.basic">
                         <toggleGroup>
                             <ToggleGroup fx:id="groupDisplay"/>
                         </toggleGroup>
                     </RadioButton>
-                    <RadioButton fx:id="displayAdvanced" mnemonicParsing="false" text="Advanced"
+                    <RadioButton fx:id="displayAdvanced" mnemonicParsing="false" text="%resultMode.advanced"
                                  toggleGroup="$groupDisplay"/>
                 </VBox>
                 <VBox spacing="7.0">
-                    <Label text="Weather mode:"/>
-                    <RadioButton fx:id="weatherCurrent" mnemonicParsing="false" selected="true" text="Current">
+                    <Label text="%weatherMode.label"/>
+                    <RadioButton fx:id="weatherCurrent" mnemonicParsing="false" selected="true"
+                                 text="%weatherMode.current">
                         <toggleGroup>
                             <ToggleGroup fx:id="groupWeather"/>
                         </toggleGroup>
                     </RadioButton>
-                    <RadioButton fx:id="weatherForecast" mnemonicParsing="false" text="Forecast"
+                    <RadioButton fx:id="weatherForecast" mnemonicParsing="false" text="%weatherMode.forecast"
                                  toggleGroup="$groupWeather"/>
                 </VBox>
                 <padding>
@@ -53,11 +54,11 @@
                 </padding>
             </HBox>
             <VBox fx:id="forecastOptions" alignment="CENTER" fillWidth="false" spacing="7.0">
-                <Label text="Forecast:"/>
+                <Label text="%forecastRange.label"/>
                 <GridPane hgap="7.0" vgap="7.0">
-                    <Label text="From:"/>
+                    <Label text="%forecastRange.from"/>
                     <DatePicker fx:id="fromDate" prefWidth="110.0" GridPane.columnIndex="1"/>
-                    <Label text="To:" GridPane.rowIndex="1"/>
+                    <Label text="%forecastRange.to" GridPane.rowIndex="1"/>
                     <DatePicker fx:id="toDate" prefWidth="110.0" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
                     <columnConstraints>
                         <ColumnConstraints halignment="RIGHT"/>
@@ -87,9 +88,9 @@
         <VBox style="-fx-border-color: #d3d3d3 #0000 #0000 #0000;">
             <ButtonBar buttonOrder="+U_O">
                 <buttons>
-                    <Button fx:id="loadButton" mnemonicParsing="false" text="Load results"
+                    <Button fx:id="loadButton" mnemonicParsing="false" text="%button.load"
                             ButtonBar.buttonData="OTHER"/>
-                    <Button fx:id="searchBtn" defaultButton="true" mnemonicParsing="false" text="Search"
+                    <Button fx:id="searchBtn" defaultButton="true" mnemonicParsing="false" text="%button.search"
                             ButtonBar.buttonData="OK_DONE"/>
                 </buttons>
             </ButtonBar>

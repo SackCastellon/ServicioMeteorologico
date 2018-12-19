@@ -10,7 +10,7 @@
             fx:controller="es.uji.ei1048.meteorologia.view.ResultsPane">
     <top>
         <HBox spacing="7.0" style="-fx-border-color: #0000 #0000 #d3d3d3 #0000;">
-            <Label text="Results:">
+            <Label text="%title">
                 <font>
                     <Font size="22.0"/>
                 </font>
@@ -26,13 +26,13 @@
         </HBox>
     </top>
     <center>
-        <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE"/>
+        <TabPane fx:id="tabPane" tabClosingPolicy="UNAVAILABLE" tabMaxWidth="75.0" tabMinWidth="25.0"/>
     </center>
     <bottom>
         <VBox style="-fx-border-color: #d3d3d3 #0000 #0000 #0000;">
             <ButtonBar buttonOrder="+U">
                 <buttons>
-                    <Button fx:id="saveButton" mnemonicParsing="false" text="Save results"
+                    <Button fx:id="saveButton" mnemonicParsing="false" text="%button.save"
                             ButtonBar.buttonData="OTHER"/>
                 </buttons>
             </ButtonBar>

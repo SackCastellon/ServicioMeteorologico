@@ -9,29 +9,28 @@
             fx:controller="es.uji.ei1048.meteorologia.view.RootLayout">
     <top>
         <MenuBar>
-            <Menu mnemonicParsing="false" text="_File">
-                <MenuItem text="Close"/>
+            <Menu text="%menu.file">
+                <MenuItem text="%menu.file.close"/>
             </Menu>
-            <Menu mnemonicParsing="false" text="_Edit">
-                <MenuItem text="_Copy">
+            <Menu text="%menu.edit">
+                <MenuItem text="%menu.edit.copy">
                     <accelerator>
                         <KeyCodeCombination alt="UP" code="C" control="DOWN" meta="UP" shift="UP" shortcut="UP"/>
                     </accelerator>
                 </MenuItem>
             </Menu>
-            <Menu text="_Service">
-                <RadioMenuItem fx:id="serviceOpenWeather" selected="true" text="_OpenWeather">
+            <Menu text="%menu.service">
+                <RadioMenuItem fx:id="serviceOpenWeather" selected="true" text="%menu.service.openweather">
                     <toggleGroup>
                         <ToggleGroup fx:id="groupProviders"/>
                     </toggleGroup>
                 </RadioMenuItem>
-                <RadioMenuItem fx:id="serviceAccuWeather" disable="true" text="_AccuWeather"
+                <RadioMenuItem fx:id="serviceAccuWeather" disable="true" text="%menu.service.accuweather"
                                toggleGroup="$groupProviders"/>
                 <SeparatorMenuItem mnemonicParsing="false"/>
-                <MenuItem mnemonicParsing="false" text="Action 1"/>
             </Menu>
-            <Menu text="_Help">
-                <MenuItem text="_About"/>
+            <Menu text="%menu.help">
+                <MenuItem text="%menu.help.about"/>
             </Menu>
         </MenuBar>
     </top>

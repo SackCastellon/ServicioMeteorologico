@@ -95,7 +95,7 @@ public final class OpenWeather extends AbstractWeatherProvider {
                 .build(query -> CITIES
                         .values().asList()
                         .parallelStream()
-                        .filter(it -> !it.getName().isEmpty())
+                        .filter(it -> !it.getName().trim().isEmpty())
                         .filter(it -> Math.abs(it.getName().length() - query.length()) < 5)
                         .sorted(getCityQueryComparator(query))
                         .limit(SUGGESTION_COUNT)
@@ -161,9 +161,7 @@ public final class OpenWeather extends AbstractWeatherProvider {
                 .registerTypeAdapter(WeatherData.class, ADAPTER)
                 .create();
 
-        final @NotNull WeatherData data = gson.fromJson(response, WeatherData.class);
-        //data.setCity(cityName); // TODO
-        return data;
+        return gson.fromJson(response, WeatherData.class);
     }
 
     @Override

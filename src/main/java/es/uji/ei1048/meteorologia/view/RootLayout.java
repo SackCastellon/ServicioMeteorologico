@@ -11,12 +11,16 @@ import javafx.scene.layout.Pane;
 import org.controlsfx.control.StatusBar;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ResourceBundle;
+
 import static es.uji.ei1048.meteorologia.util.Utils.bindToToggleGroup;
 
 public final class RootLayout {
 
     private static final @NotNull String PROVIDER_PROPERTY = "providerProperty"; //NON-NLS
 
+    @FXML
+    private ResourceBundle resources;
     @FXML
     private ToggleGroup groupProviders;
     @FXML
@@ -26,7 +30,7 @@ public final class RootLayout {
     @FXML
     private SplitPane splitPane;
     @FXML
-    private StatusBar statusBar;
+    private StatusBar statusBar; // TODO
 
     private SearchPane searchController;
     private ResultsPane resultsController;

@@ -18,13 +18,11 @@
     </Label>
     <Separator prefHeight="10.0" prefWidth="388.0"/>
     <HBox alignment="CENTER_LEFT" prefHeight="55.0" prefWidth="388.0" spacing="10.0">
-        <children>
-            <Label alignment="CENTER" text="City name:"/>
-            <TextField fx:id="searchBox" prefHeight="6.0" prefWidth="216.0"/>
-        </children>
         <padding>
             <Insets left="10.0"/>
         </padding>
+        <Label alignment="CENTER" text="City name:"/>
+        <TextField fx:id="searchBox" prefHeight="6.0" prefWidth="216.0"/>
     </HBox>
     <ListView fx:id="saveList" prefHeight="302.0" prefWidth="356.0"/>
     <ButtonBar prefHeight="56.0" prefWidth="388.0">

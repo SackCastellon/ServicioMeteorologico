@@ -12,11 +12,11 @@ public class WeatherManager {
         return INSTANCE;
     }
 
-    public final boolean save(final @NotNull WeatherData data) {
+    public boolean save(final @NotNull WeatherData data) {
         throw new UnsupportedOperationException("Not implemented!");
     }
 
-    public final @NotNull SaveFile load(final @NotNull String filename) {
+    public @NotNull SaveFile load(final @NotNull String filename) {
         throw new UnsupportedOperationException("Not implemented!");
     }
 }

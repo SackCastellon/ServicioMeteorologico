@@ -25,7 +25,7 @@ final class TestSaveWeatherMock {
 
     @Test
     void getSaveWeather_validSave_suc() {
-        final City city = new City(6359304L, "Madrid", "ES");
+        final @NotNull City city = new City(6359304L, "Madrid", "ES");
         final @NotNull WeatherData wd = new WeatherData(
                 city,
                 LocalDateTime.now(),
@@ -42,7 +42,7 @@ final class TestSaveWeatherMock {
 
     @Test
     void getSaveWeather_notValidSave_err() {
-        final City city = new City(6359304L, "Madrid", "ES");
+        final @NotNull City city = new City(6359304L, "Madrid", "ES");
         final @NotNull WeatherData wd = new WeatherData(
                 city,
                 LocalDateTime.now(),

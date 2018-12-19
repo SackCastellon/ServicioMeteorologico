@@ -74,7 +74,7 @@ public final class SearchPane {
             Bindings.createObjectBinding(() -> minDate.plusDays((long) provider.get().getMaxForecastDays() - 1L), provider);
 
     @FXML
-    private ResourceBundle resources; // TODO Use resource bundle for translations
+    private ResourceBundle resources;
     @FXML
     private TextField searchBox;
     @FXML
@@ -148,14 +148,14 @@ public final class SearchPane {
 
     private void search(final @NotNull String query) {
         if (query.isEmpty()) {
-            error.setText("Search field must not be empty.");
+            error.setText(resources.getString("search.error.empty"));
         } else {
             final @NotNull Optional<City> city = provider.get().getCity(query);
             if (city.isPresent()) {
                 error.setText("");
                 search(city.get());
             } else {
-                error.setText("City not found.");
+                error.setText(resources.getString("search.error.notFound"));
             }
         }
     }
@@ -199,7 +199,6 @@ public final class SearchPane {
     public @NotNull List<@NotNull WeatherData> getForecast(final @NotNull City city, final int offset, final int count) {
         return provider.get().getForecast(city, offset, count);
     }
-
 
 
     private @NotNull List<@NotNull City> getSuggestions(final @NotNull ISuggestionRequest suggestionRequest) {

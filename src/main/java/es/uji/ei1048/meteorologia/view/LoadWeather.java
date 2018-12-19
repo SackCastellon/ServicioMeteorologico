@@ -21,10 +21,9 @@ import java.util.Optional;
 
 public class LoadWeather {
 
+    private final @NotNull ObjectProperty<@NotNull IWeatherProvider> provider = new SimpleObjectProperty<>();
     @FXML
     private ListView<SaveFile> saveList;
-
-    private final @NotNull ObjectProperty<@NotNull IWeatherProvider> provider = new SimpleObjectProperty<>();
     @FXML
     private TextField searchBox;
 

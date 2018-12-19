@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.util.ResourceBundle;
 
 public final class App extends Application {
 
@@ -40,6 +41,7 @@ public final class App extends Application {
         initRootLayout();
         showSearchPane();
         showResultPane();
+
         showLoadScreen();
 
         rootController.sync();
@@ -50,6 +52,7 @@ public final class App extends Application {
     private void initRootLayout() {
         try {
             final @NotNull FXMLLoader loader = new FXMLLoader(App.class.getResource("/views/RootLayout.fxml")); //NON-NLS
+            loader.setResources(ResourceBundle.getBundle("bundles/RootLayout")); //NON-NLS
             final @NotNull Parent root = loader.load();
 
             rootController = loader.getController();
@@ -64,6 +67,7 @@ public final class App extends Application {
     private void showSearchPane() {
         try {
             final @NotNull FXMLLoader loader = new FXMLLoader(App.class.getResource("/views/SearchPane.fxml")); //NON-NLS
+            loader.setResources(ResourceBundle.getBundle("bundles/SearchPane")); //NON-NLS
             final @NotNull Parent root = loader.load();
             final @NotNull SearchPane controller = loader.getController();
 
@@ -76,6 +80,7 @@ public final class App extends Application {
     private void showResultPane() {
         try {
             final @NotNull FXMLLoader loader = new FXMLLoader(App.class.getResource("/views/ResultsPane.fxml")); //NON-NLS
+            loader.setResources(ResourceBundle.getBundle("bundles/ResultsPane")); //NON-NLS
             final @NotNull Parent root = loader.load();
             final @NotNull ResultsPane controller = loader.getController();
 
