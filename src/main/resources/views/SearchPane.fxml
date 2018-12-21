@@ -88,7 +88,7 @@
         <VBox style="-fx-border-color: #d3d3d3 #0000 #0000 #0000;">
             <ButtonBar buttonOrder="+U_O">
                 <buttons>
-                    <Button fx:id="loadButton" mnemonicParsing="false" text="%button.load"
+                    <Button fx:id="loadBtn" mnemonicParsing="false" text="%button.load"
                             ButtonBar.buttonData="OTHER"/>
                     <Button fx:id="searchBtn" defaultButton="true" mnemonicParsing="false" text="%button.search"
                             ButtonBar.buttonData="OK_DONE"/>

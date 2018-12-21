@@ -42,7 +42,7 @@ public final class App extends Application {
         showSearchPane();
         showResultPane();
 
-        showLoadScreen();
+        //showLoadScreen();
 
         rootController.sync();
 
@@ -96,7 +96,7 @@ public final class App extends Application {
             loader.setLocation(App.class.getResource("/views/LoadWeather.fxml"));
             final VBox page = loader.load();
             final Stage dialogStage = new Stage();
-            dialogStage.setTitle("Load weather");
+            dialogStage.setTitle("Load weather results");
             dialogStage.initModality(Modality.WINDOW_MODAL);
             dialogStage.initOwner(primaryStage);
             final Scene scene = new Scene(page);

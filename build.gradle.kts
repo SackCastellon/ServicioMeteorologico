@@ -21,6 +21,8 @@ dependencies {
     implementation("org.apache.logging.log4j:log4j-core:2.11.1")
 
     implementation("com.github.ben-manes.caffeine:caffeine:2.6.2")
+    
+    implementation("io.github.soc:directories:11")
 
     implementation("org.apache.httpcomponents:httpclient:4.5.6")
     implementation("org.jetbrains:annotations:16.0.3")

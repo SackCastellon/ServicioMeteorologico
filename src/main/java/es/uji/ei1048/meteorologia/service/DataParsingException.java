@@ -1,4 +1,4 @@
-package es.uji.ei1048.meteorologia.api;
+package es.uji.ei1048.meteorologia.service;
 
 import org.jetbrains.annotations.NotNull;
 

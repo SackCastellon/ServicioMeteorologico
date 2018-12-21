@@ -1,8 +1,5 @@
 package es.uji.ei1048.meteorologia.service;
 
-import es.uji.ei1048.meteorologia.api.ConnectionFailedException;
-import es.uji.ei1048.meteorologia.api.DataParsingException;
-import es.uji.ei1048.meteorologia.api.NotFoundException;
 import es.uji.ei1048.meteorologia.model.City;
 import es.uji.ei1048.meteorologia.model.WeatherData;
 import org.jetbrains.annotations.NotNull;

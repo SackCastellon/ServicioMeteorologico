@@ -3,10 +3,8 @@ package es.uji.ei1048.meteorologia.service;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import es.uji.ei1048.meteorologia.api.ApiUtils;
-import es.uji.ei1048.meteorologia.api.ConnectionFailedException;
-import es.uji.ei1048.meteorologia.api.NotFoundException;
 import es.uji.ei1048.meteorologia.model.*;
+import es.uji.ei1048.meteorologia.util.Utils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -61,7 +59,7 @@ public final class AccuWeather extends AbstractWeatherProvider {
             final @NotNull HttpUriRequest request = new HttpGet(uri);
             final @NotNull HttpResponse response = client.execute(request);
 
-            ApiUtils.checkStatus(response.getStatusLine());
+            Utils.checkStatus(response.getStatusLine());
 
             return EntityUtils.toString(response.getEntity());
         } catch (final @NotNull URISyntaxException | IOException e) {

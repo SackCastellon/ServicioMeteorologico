@@ -1,6 +1,6 @@
 package es.uji.ei1048.meteorologia;
 
-import es.uji.ei1048.meteorologia.api.NotFoundException;
+import es.uji.ei1048.meteorologia.service.NotFoundException;
 import es.uji.ei1048.meteorologia.model.City;
 import es.uji.ei1048.meteorologia.model.WeatherData;
 import es.uji.ei1048.meteorologia.service.IWeatherProvider;

@@ -97,7 +97,7 @@ public final class SearchPane {
     @FXML
     private Label error;
     @FXML
-    private Button loadButton;
+    private Button loadBtn;
     @FXML
     private Button searchBtn;
 
@@ -140,6 +140,7 @@ public final class SearchPane {
         toDate.setDayCellFactory(picker -> new ForecastDateCell(fromDate.valueProperty(), maxForecastDayProperty));
         toDate.setEditable(false);
 
+        loadBtn.setOnAction(event -> {});// TODO
         searchBtn.setOnAction(event -> search(searchBox.getText()));
 
         Platform.runLater(() -> searchBox.requestFocus());
@@ -163,7 +164,7 @@ public final class SearchPane {
         // TODO Show status in RootLayout status bar
         switch (weatherMode.get()) {
             case CURRENT:
-                executorService.execute(()->{
+                executorService.execute(() -> {
                     final @NotNull WeatherData data = getWeather(city);
                     Platform.runLater(() -> weatherData.setAll(data));
                 });
@@ -171,12 +172,12 @@ public final class SearchPane {
             case FORECAST:
                 final @NotNull LocalDate from = fromDate.getValue();
                 final @NotNull LocalDate to = toDate.getValue();
-                final int count = (int) DAYS.between(from, to) + 1;
                 final int offset = (int) DAYS.between(minDate, from) + 1;
+                final int count = (int) DAYS.between(from, to) + 1;
 
                 executorService.execute(() -> {
                     final @NotNull List<@NotNull WeatherData> data = getForecast(city, offset, count);
-                    Platform.runLater(()-> weatherData.setAll(data));
+                    Platform.runLater(() -> weatherData.setAll(data));
                 });
                 break;
         }

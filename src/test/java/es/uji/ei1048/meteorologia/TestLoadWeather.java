@@ -1,6 +1,6 @@
 package es.uji.ei1048.meteorologia;
 
-import es.uji.ei1048.meteorologia.api.NotFoundException;
+import es.uji.ei1048.meteorologia.service.NotFoundException;
 import es.uji.ei1048.meteorologia.model.WeatherManager;
 import es.uji.ei1048.meteorologia.view.SearchPane;
 import org.jetbrains.annotations.NotNull;
