@@ -31,7 +31,7 @@ final class TestForecastWeather {
     @Test
     void getForecastWeather_notValidCity_err() {
         final SearchPane controller = new SearchPane();
-        controller.providerProperty().set(OpenWeather.getInstance());
+        controller.providerProperty().set(service);
 
         final @NotNull City invalidCity = new City(-1L, "Wakanda", "XX");
         Assertions.assertThrows(NotFoundException.class, () -> controller.getForecast(invalidCity, 3, 1));

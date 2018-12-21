@@ -1,6 +1,7 @@
 package es.uji.ei1048.meteorologia;
 
 import es.uji.ei1048.meteorologia.model.*;
+import es.uji.ei1048.meteorologia.view.ResultsPane;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +12,7 @@ import org.mockito.MockitoAnnotations;
 import java.time.LocalDateTime;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.when;
 
 final class TestSaveWeatherMock {
@@ -25,6 +27,11 @@ final class TestSaveWeatherMock {
 
     @Test
     void getSaveWeather_validSave_suc() {
+        when(manager.save(any(WeatherData.class))).thenReturn(true);
+
+        final @NotNull ResultsPane controller = new ResultsPane();
+        controller.managerProperty().set(manager);
+
         final @NotNull City city = new City(6359304L, "Madrid", "ES");
         final @NotNull WeatherData wd = new WeatherData(
                 city,
@@ -35,13 +42,16 @@ final class TestSaveWeatherMock {
                 10.0,
                 10.0
         );
-
-        when(manager.save(any(WeatherData.class))).thenReturn(true);
         Assertions.assertTrue(manager.save(wd));
     }
 
     @Test
     void getSaveWeather_notValidSave_err() {
+        when(manager.save(any(WeatherData.class))).thenReturn(false);
+
+        final @NotNull ResultsPane controller = new ResultsPane();
+        controller.managerProperty().set(manager);
+
         final @NotNull City city = new City(6359304L, "Madrid", "ES");
         final @NotNull WeatherData wd = new WeatherData(
                 city,
@@ -52,8 +62,6 @@ final class TestSaveWeatherMock {
                 10.0,
                 10.0
         );
-
-        when(manager.save(any(WeatherData.class))).thenReturn(false);
         Assertions.assertFalse(manager.save(wd));
     }
 }

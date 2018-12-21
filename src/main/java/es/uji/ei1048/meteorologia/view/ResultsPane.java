@@ -1,6 +1,8 @@
 package es.uji.ei1048.meteorologia.view;
 
+import es.uji.ei1048.meteorologia.model.City;
 import es.uji.ei1048.meteorologia.model.WeatherData;
+import es.uji.ei1048.meteorologia.model.WeatherManager;
 import es.uji.ei1048.meteorologia.model.converter.CityStringConverter;
 import es.uji.ei1048.meteorologia.view.SearchPane.ResultMode;
 import javafx.beans.binding.Bindings;
@@ -53,6 +55,11 @@ public final class ResultsPane {
 
     private final @NotNull ListProperty<@NotNull WeatherData> weatherData = new SimpleListProperty<>(FXCollections.observableArrayList());
     private final @NotNull ObjectProperty<@NotNull ResultMode> resultMode = new SimpleObjectProperty<>();
+    private final @NotNull ObjectProperty<@NotNull WeatherManager> manager = new SimpleObjectProperty<>();
+
+    public @NotNull ObjectProperty<@NotNull WeatherManager> managerProperty() {
+        return manager;
+    }
 
     @FXML
     private ResourceBundle resources;
@@ -151,6 +158,10 @@ public final class ResultsPane {
         ));
 
         saveButton.disableProperty().bind(weatherData.emptyProperty());
+    }
+
+    public boolean save(final @NotNull WeatherData data) {
+        return manager.get().save(data);
     }
 
     public void bindWeatherData(final @NotNull ObservableList<@NotNull WeatherData> list) {

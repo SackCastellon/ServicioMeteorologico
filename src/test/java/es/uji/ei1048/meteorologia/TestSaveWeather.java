@@ -1,6 +1,7 @@
 package es.uji.ei1048.meteorologia;
 
 import es.uji.ei1048.meteorologia.model.*;
+import es.uji.ei1048.meteorologia.view.ResultsPane;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -19,6 +20,9 @@ final class TestSaveWeather {
 
     @Test
     void getSaveWeather_validSave_suc() {
+        final ResultsPane controller = new ResultsPane();
+        controller.managerProperty().set(manager);
+
         final @NotNull City city = new City(6359304L, "Madrid", "ES");
         final @NotNull WeatherData wd = new WeatherData(
                 city,
@@ -35,6 +39,9 @@ final class TestSaveWeather {
 
     @Test
     void getSaveWeather_notValidSave_err() {
+        final ResultsPane controller = new ResultsPane();
+        controller.managerProperty().set(manager);
+
         final @NotNull City city = new City(6359304L, "Madrid", "ES");
         final @NotNull WeatherData wd = new WeatherData(
                 city,
