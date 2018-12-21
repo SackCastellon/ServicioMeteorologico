@@ -173,7 +173,7 @@ public final class OpenWeather extends AbstractWeatherProvider {
     public @NotNull List<@NotNull WeatherData> getForecast(final @NotNull City city, final int offset, final int count) {
         if (offset <= 0) throw new IllegalArgumentException("Day offset must be greater than 0");
         if (count <= 0) throw new IllegalArgumentException("Day count must be greater than 0");
-        if (offset + count > MAX_FORECAST_DAYS)
+        if (offset + count > MAX_FORECAST_DAYS + 1)
             throw new IllegalArgumentException("The offset and count days represent a day greater than the supported by this service");
 
         final @NotNull String response = getJsonResponse(city.getId(), FORECAST_URL);
