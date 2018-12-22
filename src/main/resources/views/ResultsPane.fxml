@@ -32,7 +32,7 @@
         <VBox style="-fx-border-color: #d3d3d3 #0000 #0000 #0000;">
             <ButtonBar buttonOrder="+U">
                 <buttons>
-                    <Button fx:id="saveButton" mnemonicParsing="false" text="%button.save"
+                    <Button fx:id="saveButton" mnemonicParsing="false" onAction="#saveAll" text="%button.save"
                             ButtonBar.buttonData="OTHER"/>
                 </buttons>
             </ButtonBar>

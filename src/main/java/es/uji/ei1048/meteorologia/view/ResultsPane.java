@@ -1,6 +1,5 @@
 package es.uji.ei1048.meteorologia.view;
 
-import es.uji.ei1048.meteorologia.model.City;
 import es.uji.ei1048.meteorologia.model.WeatherData;
 import es.uji.ei1048.meteorologia.model.WeatherManager;
 import es.uji.ei1048.meteorologia.model.converter.CityStringConverter;
@@ -158,10 +157,23 @@ public final class ResultsPane {
         ));
 
         saveButton.disableProperty().bind(weatherData.emptyProperty());
+        manager.setValue(WeatherManager.getInstance());
     }
 
     public boolean save(final @NotNull WeatherData data) {
         return manager.get().save(data);
+    }
+
+    public boolean saveAll() {
+
+        for (WeatherData wd : weatherData.get()
+        ) {
+            System.out.println(wd.toString());
+            if (!save(wd)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public void bindWeatherData(final @NotNull ObservableList<@NotNull WeatherData> list) {

@@ -48,12 +48,17 @@ public class WeatherManager {
             final @NotNull Path file = folder.resolve("data.json"); //NON-NLS
 
             final @NotNull JsonArray json;
-            try (final BufferedReader in = Files.newBufferedReader(file)) {
-                json = new JsonParser().parse(in).getAsJsonArray();
-            }
+            if (Files.notExists(file)) {
+                Files.createFile(file);
+                json = new JsonArray();
+            } else {
+                try (final BufferedReader in = Files.newBufferedReader(file)) {
+                    json = new JsonParser().parse(in).getAsJsonArray();
+                }
 
-            if (json.size() >= MAX_DATA_PER_FILE)
-                throw new MaxFileDataExcededException();
+                if (json.size() >= MAX_DATA_PER_FILE)
+                    throw new MaxFileDataExcededException();
+            }
 
             final @NotNull Gson gson = new Gson();
 
