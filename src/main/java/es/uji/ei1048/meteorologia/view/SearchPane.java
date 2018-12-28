@@ -2,7 +2,6 @@ package es.uji.ei1048.meteorologia.view;
 
 import es.uji.ei1048.meteorologia.App;
 import es.uji.ei1048.meteorologia.model.City;
-import es.uji.ei1048.meteorologia.model.SaveFile;
 import es.uji.ei1048.meteorologia.model.WeatherData;
 import es.uji.ei1048.meteorologia.model.WeatherManager;
 import es.uji.ei1048.meteorologia.model.converter.CityStringConverter;
@@ -202,10 +201,6 @@ public final class SearchPane {
         return provider.get().getForecast(city, offset, count);
     }
 
-
-    public @NotNull SaveFile load(final @NotNull String filename){
-        return manager.get().load(filename);
-    }
 
     private @NotNull List<@NotNull City> getSuggestions(final @NotNull ISuggestionRequest suggestionRequest) {
         return provider.get().getSuggestedCities(suggestionRequest.getUserText());

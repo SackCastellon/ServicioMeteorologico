@@ -20,6 +20,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -110,18 +111,21 @@ public class WeatherManager {
         }
     }
 
-    public @NotNull SaveFile load(final @NotNull String filename) {
+    public @NotNull List<WeatherData> load(final @NotNull String query) {
         try {
             final @NotNull List<WeatherData> data;
-            try (final BufferedReader in = Files.newBufferedReader(Paths.get(filename))) {
+            String[] sep = query.split(" ");
+            String city = sep[0];
+            String country = sep[1].substring(1, 3);
+            Path filepath = DATA_DIR.resolve(country).resolve(city + ".json");
+            try (final BufferedReader in = Files.newBufferedReader(filepath)) {
                 data = new Gson().fromJson(in, new TypeToken<List<WeatherData>>() {
                 }.getType());
             }
-
-            return null; // TODO
+            return data;
         } catch (final IOException e) {
             logger.error("Failed to load weather data", e); //NON-NLS
         }
-        return null; // TODO
+        return new ArrayList<>();
     }
 }

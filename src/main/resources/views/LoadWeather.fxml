@@ -22,7 +22,7 @@
             <Insets left="10.0"/>
         </padding>
         <Label alignment="CENTER" text="City:"/>
-        <ChoiceBox fx:id="cb_city" prefWidth="150.0"/>
+        <ChoiceBox fx:id="cbCity" prefWidth="150.0"/>
     </HBox>
     <ListView fx:id="saveList" prefHeight="302.0" prefWidth="356.0"/>
     <ButtonBar prefHeight="56.0" prefWidth="388.0">

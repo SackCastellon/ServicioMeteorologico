@@ -1,27 +1,24 @@
 package es.uji.ei1048.meteorologia.view;
 
 import es.uji.ei1048.meteorologia.model.City;
-import es.uji.ei1048.meteorologia.model.SaveFile;
+import es.uji.ei1048.meteorologia.model.WeatherData;
 import es.uji.ei1048.meteorologia.model.WeatherManager;
-import es.uji.ei1048.meteorologia.service.IWeatherProvider;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Optional;
+import java.util.List;
 
 public class LoadWeather {
 
-    private final @NotNull ObjectProperty<@NotNull IWeatherProvider> provider = new SimpleObjectProperty<>();
+
     @FXML
-    private ListView<SaveFile> saveList;
+    private ListView<String> saveList;
     WeatherManager wm;
     @FXML
-    private ChoiceBox cb_city;
+    private ChoiceBox cbCity;
 
     @FXML
     private Label error;
@@ -31,31 +28,25 @@ public class LoadWeather {
         wm = WeatherManager.getInstance();
         for (String svc : wm.getSavedCities()
         ) {
-            cb_city.getItems().add(svc);
+            cbCity.getItems().add(svc);
         }
+        cbCity.getSelectionModel().selectedIndexProperty().addListener((observableValue, oldInd, newInd) -> loadCity((String) cbCity.getItems().get((Integer) newInd)));
     }
 
 
 
     private void loadCity(final @NotNull String query) {
-        if (query.isEmpty()) {
-            error.setText("Search field must not be empty.");
-        } else {
-            final @NotNull Optional<City> city = provider.get().getCity(query);
-            if (city.isPresent()) {
-                error.setText("");
-                loadCity(city.get());
-            } else {
-                error.setText("City not found.");
-            }
+        List<WeatherData> data = wm.load(query);
+        saveList.getItems().clear();
+        for (WeatherData wd : data
+        ) {
+            saveList.getItems().add("Dia: " + wd.getDateTime().toString());
         }
     }
+
 
     private void loadCity(final @NotNull City city) {
         System.out.println("Cargados elementos de la ciudad: " + city.getName());
     }
 
-    public SaveFile getSel() {
-        return saveList.getSelectionModel().getSelectedItem();
-    }
 }
