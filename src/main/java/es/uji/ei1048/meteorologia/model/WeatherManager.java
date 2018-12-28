@@ -8,6 +8,7 @@ import io.github.soc.directories.ProjectDirectories;
 import javafx.scene.control.Alert;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
@@ -17,56 +18,64 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 public class WeatherManager {
 
-    private static final Logger logger = LogManager.getLogger(WeatherManager.class);
+    private static final @NotNull Logger logger = LogManager.getLogger(WeatherManager.class);
 
     private static final int MAX_DATA_PER_FILE = 7;
 
     private static final @NotNull ProjectDirectories dirs = ProjectDirectories.from(null, "UJI", "ServicioMeteorologico"); //NON-NLS
+    private static final @NotNull Path ROOT = Paths.get(dirs.dataDir);
 
     private static final @NotNull WeatherManager INSTANCE = new WeatherManager();
+    private static final @NotNull DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"); //NON-NLS
 
     private WeatherManager() {
+        logger.debug("App directory: {}", ROOT::toAbsolutePath); //NON-NLS
     }
 
     public static @NotNull WeatherManager getInstance() {
         return INSTANCE;
     }
 
-    public boolean save(final @NotNull WeatherData data) throws MaxFileDataExcededException {
+    /**
+     * @throws MaxFileDataExcededException If the save file has reached the max data count.
+     */
+    public boolean save(final @NotNull WeatherData data) {
         try {
-            final @NotNull Path folder = Paths.get(dirs.dataDir)
-                    .resolve(data.getCity().getCountry().toLowerCase(Locale.ENGLISH).trim())
-                    .resolve(data.getCity().getName().toLowerCase(Locale.ENGLISH).trim());
+            final @NotNull String country = data.getCity().getCountry().toLowerCase(Locale.ENGLISH).trim();
+            final @NotNull Path folder = ROOT.resolve(country);
 
-            if (Files.notExists(folder))
-                Files.createDirectories(folder);
+            if (Files.notExists(folder)) Files.createDirectories(folder);
 
-            final @NotNull Path file = folder.resolve("data.json"); //NON-NLS
+            @NonNls final @NotNull String city = data.getCity().getName().toLowerCase(Locale.ENGLISH).trim();
+            final @NotNull Path file = folder.resolve(city + ".json"); //NON-NLS
 
             final @NotNull JsonArray json;
-            if (Files.notExists(file)) {
-                Files.createFile(file);
-                json = new JsonArray();
-            } else {
-                try (final BufferedReader in = Files.newBufferedReader(file)) {
-                    json = new JsonParser().parse(in).getAsJsonArray();
-                }
-
-                if (json.size() >= MAX_DATA_PER_FILE)
-                    throw new MaxFileDataExcededException();
+            if (Files.notExists(file)) json = new JsonArray();
+            else try (final @NotNull BufferedReader in = Files.newBufferedReader(file)) {
+                json = new JsonParser().parse(in).getAsJsonArray();
             }
 
             final @NotNull Gson gson = new Gson();
 
+            StreamSupport.stream(json.spliterator(), false).filter(it -> gson.fromJson(it, WeatherData.class).getDateTime().isEqual(data.getDateTime())).collect(Collectors.toList()).forEach(json::remove);
+
             json.add(gson.toJsonTree(data, WeatherData.class));
 
-            try (final BufferedWriter out = Files.newBufferedWriter(file, StandardOpenOption.CREATE, StandardOpenOption.WRITE)) {
+            if (json.size() >= MAX_DATA_PER_FILE)
+                throw new MaxFileDataExcededException();
+
+            try (final @NotNull BufferedWriter out = Files.newBufferedWriter(file, StandardOpenOption.CREATE, StandardOpenOption.WRITE)) {
                 gson.toJson(json, out);
+                logger.info(String.format("Saved weather data from %s (%s) at %s -> %s (Count: %d, Limit: %d)", //NON-NLS
+                        data.getCity().getName(), data.getCity().getCountry(), DATE_TIME_FORMATTER.format(data.getDateTime()), file, json.size(), MAX_DATA_PER_FILE));
             }
         } catch (final IOException e) {
             logger.error("Failed to save weather data", e); //NON-NLS

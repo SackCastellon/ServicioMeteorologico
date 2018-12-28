@@ -255,6 +255,8 @@ public final class OpenWeather extends AbstractWeatherProvider {
                         );
                     }
 
+                    while (in.hasNext()) in.skipValue();
+
                     in.endArray();
                     break;
                 case "main": //NON-NLS

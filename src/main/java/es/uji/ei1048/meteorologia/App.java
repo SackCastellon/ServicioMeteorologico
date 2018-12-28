@@ -20,7 +20,7 @@ import java.util.ResourceBundle;
 
 public final class App extends Application {
 
-    private static final Logger logger = LogManager.getLogger(App.class);
+    private static final @NotNull Logger logger = LogManager.getLogger(App.class);
 
     private Stage primaryStage;
     private RootLayout rootController;

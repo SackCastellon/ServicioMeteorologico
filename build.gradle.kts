@@ -8,11 +8,15 @@ group = "es.uji.ei1048"
 version = "1.0-SNAPSHOT"
 
 repositories {
+    mavenLocal()
     mavenCentral()
+    jcenter()
+    maven("https://oss.sonatype.org/content/repositories/snapshots")
 }
 
 dependencies {
     implementation(kotlin("stdlib-jdk8", "1.3.11"))
+    implementation("no.tornado:tornadofx:1.7.18-SNAPSHOT")
     implementation("org.controlsfx:controlsfx:8.40.14")
 
     implementation("com.google.code.gson:gson:2.8.5")
@@ -21,7 +25,7 @@ dependencies {
     implementation("org.apache.logging.log4j:log4j-core:2.11.1")
 
     implementation("com.github.ben-manes.caffeine:caffeine:2.6.2")
-    
+
     implementation("io.github.soc:directories:11")
 
     implementation("org.apache.httpcomponents:httpclient:4.5.6")

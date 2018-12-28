@@ -27,6 +27,7 @@ import javafx.scene.paint.Color;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import tornadofx.BindingKt;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
@@ -57,10 +58,7 @@ public final class ResultsPane {
     private final @NotNull ObjectProperty<@NotNull ResultMode> resultMode = new SimpleObjectProperty<>();
     private final @NotNull ObjectProperty<@NotNull WeatherManager> manager = new SimpleObjectProperty<>();
 
-    public @NotNull ObjectProperty<@NotNull WeatherManager> managerProperty() {
-        return manager;
-    }
-
+    private final @NotNull ObjectProperty<@Nullable WeatherData> selectedData = new SimpleObjectProperty<>();
     @FXML
     private ResourceBundle resources;
     @FXML
@@ -69,6 +67,66 @@ public final class ResultsPane {
     private TabPane tabPane;
     @FXML
     private Button saveButton;
+
+    public @NotNull ObjectProperty<@NotNull WeatherManager> managerProperty() {
+        return manager;
+    }
+
+    @FXML
+    private void
+    initialize() {
+        weatherData.addListener(this::updateTabs);
+        final @NotNull ObjectBinding<@Nullable WeatherData> binding = weatherData.valueAt(0);
+        titleCity.textProperty().bind(Bindings.createStringBinding(
+                () -> {
+                    final @Nullable WeatherData data = binding.get();
+                    return data == null ? "" : CityStringConverter.getInstance().toString(data.getCity());
+                },
+                binding
+        ));
+
+        saveButton.disableProperty().bind(weatherData.emptyProperty());
+        manager.setValue(WeatherManager.getInstance());
+
+        // For some reason if I create an object binding it doesn't update, so instead I added a change listener to manually update the `selectedData` ¯\_(ツ)_/¯
+        BindingKt.select(tabPane.getSelectionModel().selectedItemProperty(), tab -> tab == null ? null : ((TabPane) tab.getContent()).getSelectionModel().selectedItemProperty())
+                .addListener((observable, oldValue, newValue) -> selectedData.set(newValue == null ? null : (WeatherData) newValue.getProperties().get(DATA_PROPERTY)));
+    }
+
+    @FXML
+    private boolean save() {
+        final @Nullable WeatherData data = selectedData.getValue();
+        return data != null && save(data);
+    }
+
+    private void updateTabs(final @NotNull ListChangeListener.Change<? extends WeatherData> change) {
+        while (change.next()) {
+            final @NotNull ObservableList<@NotNull Tab> tabs = tabPane.getTabs();
+
+            if (change.wasPermutated()) {
+                IntStream.range(0, tabs.size())
+                        .mapToObj(it -> ImmutablePair.of(it, change.getPermutation(it)))
+                        .filter(it -> !it.getLeft().equals(it.getRight()))
+                        .forEach(it -> Collections.swap(tabs, it.getLeft(), it.getRight()));
+            } else if (change.wasAdded()) {
+                final @NotNull List<Tab> newTabs = groupBy(change.getAddedSubList(), data -> data.getDateTime().toLocalDate(), this::createTab)
+                        .entrySet().stream()
+                        .map(entry -> {
+                            final @NotNull TabPane pane = new TabPane();
+                            pane.setSide(Side.BOTTOM);
+                            pane.getTabs().addAll(entry.getValue());
+                            pane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+                            return new Tab(entry.getKey().format(DateTimeFormatter.ofPattern("EEE dd")), pane); //NON-NLS
+                        })
+                        .collect(Collectors.toList());
+
+                tabs.addAll(change.getFrom(), newTabs);
+            } else if (change.wasRemoved()) {
+                tabs.forEach(it -> ((TabPane) it.getContent()).getTabs().removeIf(tab -> change.getRemoved().stream().anyMatch(data -> tab.getProperties().get(DATA_PROPERTY).equals(data))));
+                tabs.removeIf(it -> ((TabPane) it.getContent()).getTabs().isEmpty());
+            }
+        }
+    }
 
     private @NotNull Tab createTab(final @NotNull WeatherData data) {
         final @NotNull HBox[] rows = {
@@ -112,7 +170,7 @@ public final class ResultsPane {
         scrollPane.setFitToWidth(true);
 
         final @NotNull Tab tab = new Tab(data.getDateTime().format(DateTimeFormatter.ofPattern("HH:mm")), scrollPane); //NON-NLS
-        tab.getProperties().put(DATA_PROPERTY, data.hashCode());
+        tab.getProperties().put(DATA_PROPERTY, data);
         return tab;
     }
 
@@ -144,23 +202,6 @@ public final class ResultsPane {
         return hbox;
     }
 
-    @FXML
-    private void
-    initialize() {
-        weatherData.addListener(this::updateTabs);
-        final @NotNull ObjectBinding<@Nullable WeatherData> binding = weatherData.valueAt(0);
-        titleCity.textProperty().bind(Bindings.createStringBinding(
-                () -> {
-                    final @Nullable WeatherData data = binding.get();
-                    return data == null ? "" : CityStringConverter.getInstance().toString(data.getCity());
-                },
-                binding
-        ));
-
-        saveButton.disableProperty().bind(weatherData.emptyProperty());
-        manager.setValue(WeatherManager.getInstance());
-    }
-
     public boolean save(final @NotNull WeatherData data) {
         try {
             return manager.get().save(data);
@@ -175,18 +216,6 @@ public final class ResultsPane {
         }
     }
 
-    public boolean saveAll() {
-
-        for (WeatherData wd : weatherData.get()
-        ) {
-            System.out.println(wd.toString());
-            if (!save(wd)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     public void bindWeatherData(final @NotNull ObservableList<@NotNull WeatherData> list) {
         weatherData.bindContent(list);
     }
@@ -195,32 +224,4 @@ public final class ResultsPane {
         resultMode.bind(property);
     }
 
-    private void updateTabs(final @NotNull ListChangeListener.Change<? extends WeatherData> change) {
-        while (change.next()) {
-            final @NotNull ObservableList<@NotNull Tab> tabs = tabPane.getTabs();
-
-            if (change.wasPermutated()) {
-                IntStream.range(0, tabs.size())
-                        .mapToObj(it -> ImmutablePair.of(it, change.getPermutation(it)))
-                        .filter(it -> !it.getLeft().equals(it.getRight()))
-                        .forEach(it -> Collections.swap(tabs, it.getLeft(), it.getRight()));
-            } else if (change.wasAdded()) {
-                final @NotNull List<Tab> newTabs = groupBy(change.getAddedSubList(), data -> data.getDateTime().toLocalDate(), this::createTab)
-                        .entrySet().stream()
-                        .map(entry -> {
-                            final @NotNull TabPane pane = new TabPane();
-                            pane.setSide(Side.BOTTOM);
-                            pane.getTabs().addAll(entry.getValue());
-                            pane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
-                            return new Tab(entry.getKey().format(DateTimeFormatter.ofPattern("EEE dd")), pane); //NON-NLS
-                        })
-                        .collect(Collectors.toList());
-
-                tabs.addAll(change.getFrom(), newTabs);
-            } else if (change.wasRemoved()) {
-                tabs.forEach(it -> ((TabPane) it.getContent()).getTabs().removeIf(tab -> change.getRemoved().stream().anyMatch(data -> tab.getProperties().get(DATA_PROPERTY).equals(data.hashCode()))));
-                tabs.removeIf(it -> ((TabPane) it.getContent()).getTabs().isEmpty());
-            }
-        }
-    }
 }
