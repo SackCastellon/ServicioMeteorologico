@@ -1,6 +1,6 @@
 package es.uji.ei1048.meteorologia.view;
 
-import es.uji.ei1048.meteorologia.model.MaxFileDataExcededException;
+import es.uji.ei1048.meteorologia.model.MaxFileDataExceededException;
 import es.uji.ei1048.meteorologia.model.WeatherData;
 import es.uji.ei1048.meteorologia.model.WeatherManager;
 import es.uji.ei1048.meteorologia.model.converter.CityStringConverter;
@@ -205,7 +205,7 @@ public final class ResultsPane {
     public boolean save(final @NotNull WeatherData data) {
         try {
             return manager.get().save(data);
-        } catch (MaxFileDataExcededException e) {
+        } catch (MaxFileDataExceededException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error de guardado");
             alert.setHeaderText(null);

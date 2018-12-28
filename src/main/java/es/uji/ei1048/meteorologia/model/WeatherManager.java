@@ -6,6 +6,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import io.github.soc.directories.ProjectDirectories;
 import javafx.scene.control.Alert;
+import org.apache.commons.text.WordUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NonNls;
@@ -19,11 +20,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 public class WeatherManager {
@@ -33,13 +34,13 @@ public class WeatherManager {
     private static final int MAX_DATA_PER_FILE = 7;
 
     private static final @NotNull ProjectDirectories dirs = ProjectDirectories.from(null, "UJI", "ServicioMeteorologico"); //NON-NLS
-    private static final @NotNull Path ROOT = Paths.get(dirs.dataDir);
+    private static final @NotNull Path DATA_DIR = Paths.get(dirs.dataDir);
 
     private static final @NotNull WeatherManager INSTANCE = new WeatherManager();
     private static final @NotNull DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm"); //NON-NLS
 
     private WeatherManager() {
-        logger.debug("App directory: {}", ROOT::toAbsolutePath); //NON-NLS
+        logger.debug("AppData directory: {}", DATA_DIR::toAbsolutePath); //NON-NLS
     }
 
     public static @NotNull WeatherManager getInstance() {
@@ -47,12 +48,12 @@ public class WeatherManager {
     }
 
     /**
-     * @throws MaxFileDataExcededException If the save file has reached the max data count.
+     * @throws MaxFileDataExceededException If the save file has reached the max data count.
      */
     public boolean save(final @NotNull WeatherData data) {
         try {
             final @NotNull String country = data.getCity().getCountry().toLowerCase(Locale.ENGLISH).trim();
-            final @NotNull Path folder = ROOT.resolve(country);
+            final @NotNull Path folder = DATA_DIR.resolve(country);
 
             if (Files.notExists(folder)) Files.createDirectories(folder);
 
@@ -72,7 +73,7 @@ public class WeatherManager {
             json.add(gson.toJsonTree(data, WeatherData.class));
 
             if (json.size() >= MAX_DATA_PER_FILE)
-                throw new MaxFileDataExcededException();
+                throw new MaxFileDataExceededException();
 
             try (final @NotNull BufferedWriter out = Files.newBufferedWriter(file, StandardOpenOption.CREATE, StandardOpenOption.WRITE)) {
                 gson.toJson(json, out);
@@ -84,7 +85,7 @@ public class WeatherManager {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error de guardado");
             alert.setHeaderText(null);
-            alert.setContentText("No se ha podido guardar los datos.");
+            alert.setContentText("No se han podido guardar los datos.");
 
             alert.showAndWait();
             return false;
@@ -92,27 +93,20 @@ public class WeatherManager {
         return true;
     }
 
-
-    public ArrayList<String> getSavedCities() {
-        try {
-
-            final @NotNull Path savesFolder = Paths.get(dirs.dataDir);
-            List<Path> countries = Files.walk(savesFolder, 5)
+    public @NotNull List<@NotNull String> getSavedCities() {
+        try (final @NotNull Stream<Path> walk = Files.walk(DATA_DIR)) {
+            return walk
                     .filter(Files::isRegularFile)
+                    .map(Path::toAbsolutePath)
+                    .map(path -> {
+                        final @NotNull String country = path.getParent().getFileName().toString();
+                        final @NotNull String city = path.getFileName().toString().split("\\.")[0];
+                        return String.format("%s (%s)", WordUtils.capitalize(city), country.toUpperCase(Locale.ENGLISH)); //NON-NLS
+                    }) //NON-NLS
                     .collect(Collectors.toList());
-            ArrayList<String> res = new ArrayList<>();
-            for (Path country : countries
-            ) {
-                String pattern = Pattern.quote(System.getProperty("file.separator"));
-                String[] ls = country.toString().split(pattern);
-                String city = ls[ls.length - 1].split("\\.")[0];
-                String cn = ls[ls.length - 2];
-                res.add(city + " " + cn);
-            }
-            return res;
         } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+            logger.error("Failed to get saved cities list.", e);
+            return Collections.emptyList();
         }
     }
 
