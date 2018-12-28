@@ -13,7 +13,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,6 +22,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -103,9 +103,8 @@ public class WeatherManager {
             ArrayList<String> res = new ArrayList<>();
             for (Path country : countries
             ) {
-                System.out.println(country.toString());
-                System.out.println(File.separator);
-                String[] ls = country.toString().split(File.separator);
+                String pattern = Pattern.quote(System.getProperty("file.separator"));
+                String[] ls = country.toString().split(pattern);
                 res.add(ls[ls.length - 1] + " " + ls[ls.length - 2]);
             }
             return res;
