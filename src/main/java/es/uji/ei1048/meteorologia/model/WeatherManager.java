@@ -105,7 +105,9 @@ public class WeatherManager {
             ) {
                 String pattern = Pattern.quote(System.getProperty("file.separator"));
                 String[] ls = country.toString().split(pattern);
-                res.add(ls[ls.length - 1] + " " + ls[ls.length - 2]);
+                String city = ls[ls.length - 1].split("\\.")[0];
+                String cn = ls[ls.length - 2];
+                res.add(city + " " + cn);
             }
             return res;
         } catch (IOException e) {
