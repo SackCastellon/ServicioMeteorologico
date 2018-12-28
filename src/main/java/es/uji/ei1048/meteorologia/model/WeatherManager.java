@@ -71,7 +71,7 @@ public class WeatherManager {
         } catch (final IOException e) {
             logger.error("Failed to save weather data", e); //NON-NLS
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error Dialog");
+            alert.setTitle("Error de guardado");
             alert.setHeaderText(null);
             alert.setContentText("No se ha podido guardar los datos.");
 

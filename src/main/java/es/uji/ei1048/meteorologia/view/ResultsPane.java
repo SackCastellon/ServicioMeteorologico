@@ -166,7 +166,7 @@ public final class ResultsPane {
             return manager.get().save(data);
         } catch (MaxFileDataExcededException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error Dialog");
+            alert.setTitle("Error de guardado");
             alert.setHeaderText(null);
             alert.setContentText("Se ha alcanzado el numero maximo de estados guardados");
 
