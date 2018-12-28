@@ -1,5 +1,6 @@
 package es.uji.ei1048.meteorologia.view;
 
+import es.uji.ei1048.meteorologia.App;
 import es.uji.ei1048.meteorologia.model.City;
 import es.uji.ei1048.meteorologia.model.SaveFile;
 import es.uji.ei1048.meteorologia.model.WeatherData;
@@ -72,8 +73,11 @@ public final class SearchPane {
     private final @NotNull ObjectExpression<@NotNull LocalDate> maxForecastDayProperty =
             Bindings.createObjectBinding(() -> minDate.plusDays((long) provider.get().getMaxForecastDays() - 1L), provider);
 
+    private App app;
+
     @FXML
     private ResourceBundle resources;
+
     @FXML
     private TextField searchBox;
     @FXML
@@ -100,14 +104,13 @@ public final class SearchPane {
     private Button loadBtn;
     @FXML
     private Button searchBtn;
-
     public @NotNull ObjectProperty<@NotNull IWeatherProvider> providerProperty() {
         return provider;
     }
+
     public @NotNull ObjectProperty<@NotNull WeatherManager> managerProperty() {
         return manager;
     }
-
     public @NotNull ReadOnlyObjectProperty<@NotNull ResultMode> resultModeProperty() {
         return resultMode.getReadOnlyProperty();
     }
@@ -140,10 +143,18 @@ public final class SearchPane {
         toDate.setDayCellFactory(picker -> new ForecastDateCell(fromDate.valueProperty(), maxForecastDayProperty));
         toDate.setEditable(false);
 
-        loadBtn.setOnAction(event -> {});// TODO
+        loadBtn.setOnAction(event -> openLoadPane());
         searchBtn.setOnAction(event -> search(searchBox.getText()));
 
         Platform.runLater(() -> searchBox.requestFocus());
+    }
+
+    public void setApp(App app) {
+        this.app = app;
+    }
+
+    private void openLoadPane() {
+        app.openLoadScreen();
     }
 
     private void search(final @NotNull String query) {
@@ -190,6 +201,7 @@ public final class SearchPane {
     public @NotNull List<@NotNull WeatherData> getForecast(final @NotNull City city, final int offset, final int count) {
         return provider.get().getForecast(city, offset, count);
     }
+
 
     public @NotNull SaveFile load(final @NotNull String filename){
         return manager.get().load(filename);

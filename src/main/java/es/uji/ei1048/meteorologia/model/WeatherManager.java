@@ -5,6 +5,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import io.github.soc.directories.ProjectDirectories;
+import javafx.scene.control.Alert;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -36,7 +37,7 @@ public class WeatherManager {
         return INSTANCE;
     }
 
-    public boolean save(final @NotNull WeatherData data) {
+    public boolean save(final @NotNull WeatherData data) throws MaxFileDataExcededException {
         try {
             final @NotNull Path folder = Paths.get(dirs.dataDir)
                     .resolve(data.getCity().getCountry().toLowerCase(Locale.ENGLISH).trim())
@@ -69,6 +70,12 @@ public class WeatherManager {
             }
         } catch (final IOException e) {
             logger.error("Failed to save weather data", e); //NON-NLS
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error Dialog");
+            alert.setHeaderText(null);
+            alert.setContentText("No se ha podido guardar los datos.");
+
+            alert.showAndWait();
             return false;
         }
         return true;

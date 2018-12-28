@@ -42,7 +42,7 @@ public final class App extends Application {
         showSearchPane();
         showResultPane();
 
-        //showLoadScreen();
+        //openLoadScreen();
 
         rootController.sync();
 
@@ -70,7 +70,7 @@ public final class App extends Application {
             loader.setResources(ResourceBundle.getBundle("bundles/SearchPane")); //NON-NLS
             final @NotNull Parent root = loader.load();
             final @NotNull SearchPane controller = loader.getController();
-
+            controller.setApp(this);
             rootController.setSearchPane(root, controller);
         } catch (final @NotNull IOException e) {
             logger.error("Error loading search pane", e); //NON-NLS
@@ -90,7 +90,7 @@ public final class App extends Application {
         }
     }
 
-    public void showLoadScreen() {
+    public void openLoadScreen() {
         try {
             final FXMLLoader loader = new FXMLLoader();
             loader.setLocation(App.class.getResource("/views/LoadWeather.fxml"));
