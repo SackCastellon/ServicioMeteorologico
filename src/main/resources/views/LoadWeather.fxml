@@ -21,8 +21,8 @@
         <padding>
             <Insets left="10.0"/>
         </padding>
-        <Label alignment="CENTER" text="City name:"/>
-        <TextField fx:id="searchBox" prefHeight="6.0" prefWidth="216.0"/>
+        <Label alignment="CENTER" text="City:"/>
+        <ChoiceBox fx:id="cb_city" prefWidth="150.0"/>
     </HBox>
     <ListView fx:id="saveList" prefHeight="302.0" prefWidth="356.0"/>
     <ButtonBar prefHeight="56.0" prefWidth="388.0">

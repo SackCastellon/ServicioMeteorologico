@@ -13,12 +13,14 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -88,6 +90,29 @@ public class WeatherManager {
             return false;
         }
         return true;
+    }
+
+
+    public ArrayList<String> getSavedCities() {
+        try {
+
+            final @NotNull Path savesFolder = Paths.get(dirs.dataDir);
+            List<Path> countries = Files.walk(savesFolder, 5)
+                    .filter(Files::isRegularFile)
+                    .collect(Collectors.toList());
+            ArrayList<String> res = new ArrayList<>();
+            for (Path country : countries
+            ) {
+                System.out.println(country.toString());
+                System.out.println(File.separator);
+                String[] ls = country.toString().split(File.separator);
+                res.add(ls[ls.length - 1] + " " + ls[ls.length - 2]);
+            }
+            return res;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public @NotNull SaveFile load(final @NotNull String filename) {

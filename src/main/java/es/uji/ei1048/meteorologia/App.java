@@ -102,7 +102,7 @@ public final class App extends Application {
             final Scene scene = new Scene(page);
             dialogStage.setScene(scene);
             final LoadWeather controller = loader.getController();
-            controller.setDialogStage(dialogStage);
+            //controller.setDialogStage(dialogStage);
 
             dialogStage.showAndWait();
            /* SaveFile sel = controller.getSel();
