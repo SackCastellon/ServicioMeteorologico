@@ -2,6 +2,7 @@ package es.uji.ei1048.meteorologia.view;
 
 import es.uji.ei1048.meteorologia.App;
 import es.uji.ei1048.meteorologia.model.City;
+import es.uji.ei1048.meteorologia.model.ResultMode;
 import es.uji.ei1048.meteorologia.model.WeatherData;
 import es.uji.ei1048.meteorologia.model.WeatherManager;
 import es.uji.ei1048.meteorologia.model.converter.CityStringConverter;
@@ -23,6 +24,7 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -153,7 +155,11 @@ public final class SearchPane {
     }
 
     private void openLoadPane() {
-        app.openLoadScreen();
+        try{
+            app.openLoadScreen();
+        } catch (Exception e){
+            error.setText("No hay archivos guardados");
+        }
     }
 
     private void search(final @NotNull String query) {
@@ -205,8 +211,6 @@ public final class SearchPane {
     private @NotNull List<@NotNull City> getSuggestions(final @NotNull ISuggestionRequest suggestionRequest) {
         return provider.get().getSuggestedCities(suggestionRequest.getUserText());
     }
-
-    public enum ResultMode {BASIC, ADVANCED}
 
     private enum WeatherMode {CURRENT, FORECAST}
 

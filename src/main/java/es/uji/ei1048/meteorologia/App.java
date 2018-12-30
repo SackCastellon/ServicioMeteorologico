@@ -90,30 +90,27 @@ public final class App extends Application {
         }
     }
 
-    public void openLoadScreen() {
-        try {
-            final FXMLLoader loader = new FXMLLoader();
-            loader.setLocation(App.class.getResource("/views/LoadWeather.fxml"));
-            final VBox page = loader.load();
-            final Stage dialogStage = new Stage();
-            dialogStage.setTitle("Load weather results");
-            dialogStage.initModality(Modality.WINDOW_MODAL);
-            dialogStage.initOwner(primaryStage);
-            final Scene scene = new Scene(page);
-            dialogStage.setScene(scene);
-            final LoadWeather controller = loader.getController();
-            //controller.setDialogStage(dialogStage);
+    public void openLoadScreen() throws IOException {
 
-            dialogStage.showAndWait();
+        final FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(App.class.getResource("/views/LoadWeather.fxml"));
+        final VBox page = loader.load();
+        final Stage dialogStage = new Stage();
+        dialogStage.setTitle("Load weather results");
+        dialogStage.initModality(Modality.WINDOW_MODAL);
+        dialogStage.initOwner(primaryStage);
+        final Scene scene = new Scene(page);
+        dialogStage.setScene(scene);
+        final LoadWeather controller = loader.getController();
+        //controller.setDialogStage(dialogStage);
+
+        dialogStage.showAndWait();
            /* SaveFile sel = controller.getSel();
             if (sel != null) {
                 SaveFile sf = sw.load(sel);
                 addResult("Castellon", sf.getWd(), sf.isAdvanced());
             }
 */
-        } catch (final IOException e) {
-            e.printStackTrace();
 
-        }
     }
 }

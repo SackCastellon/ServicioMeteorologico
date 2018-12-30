@@ -15,10 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.*;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -105,7 +102,7 @@ public class WeatherManager {
                         return String.format("%s (%s)", WordUtils.capitalize(city), country.toUpperCase(Locale.ENGLISH)); //NON-NLS
                     }) //NON-NLS
                     .collect(Collectors.toList());
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.error("Failed to get saved cities list.", e);
             return Collections.emptyList();
         }
