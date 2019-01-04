@@ -118,8 +118,8 @@ public class WeatherManager {
         try {
             final @NotNull List<WeatherData> data;
             final String[] sep = query.split(" ");
-            final String city = sep[0];
-            final String country = sep[1].substring(1, 3);
+            final String city = sep[0].toLowerCase(Locale.ENGLISH);
+            final String country = sep[1].substring(1, 3).toLowerCase(Locale.ENGLISH);
             final Path filepath = DATA_DIR.resolve(country).resolve(city + ".json"); //NON-NLS
             try (final BufferedReader in = Files.newBufferedReader(filepath)) {
                 data = new Gson().fromJson(in, new ListTypeToken().getType());
