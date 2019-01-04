@@ -1,10 +1,10 @@
 package es.uji.ei1048.meteorologia.view;
 
 import es.uji.ei1048.meteorologia.model.MaxFileDataExceededException;
+import es.uji.ei1048.meteorologia.model.ResultMode;
 import es.uji.ei1048.meteorologia.model.WeatherData;
 import es.uji.ei1048.meteorologia.model.WeatherManager;
 import es.uji.ei1048.meteorologia.model.converter.CityStringConverter;
-import es.uji.ei1048.meteorologia.view.SearchPane.ResultMode;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.ObjectBinding;
 import javafx.beans.property.ListProperty;
@@ -38,8 +38,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static es.uji.ei1048.meteorologia.model.Temperature.Units.CELSIUS;
-import static es.uji.ei1048.meteorologia.view.SearchPane.ResultMode.ADVANCED;
-import static es.uji.ei1048.meteorologia.view.SearchPane.ResultMode.BASIC;
 import static java.lang.String.format;
 import static kotlin.collections.CollectionsKt.any;
 import static kotlin.collections.CollectionsKt.groupBy;
@@ -131,33 +129,33 @@ public final class ResultsPane {
     private @NotNull Tab createTab(final @NotNull WeatherData data) {
         final @NotNull HBox[] rows = {
                 createRow(
-                        resources.getString("data.date"), setOf(BASIC, ADVANCED),
+                        resources.getString("data.date"), setOf(ResultMode.BASIC, ResultMode.ADVANCED),
                         data.getDateTime().format(TIME_FORMATTER)
                 ),
                 createRow(
-                        resources.getString("data.weather"), setOf(BASIC, ADVANCED),
+                        resources.getString("data.weather"), setOf(ResultMode.BASIC, ResultMode.ADVANCED),
                         data.getWeather().getMain()
                 ),
                 createRow(
-                        resources.getString("data.temperature"), setOf(BASIC),
+                        resources.getString("data.temperature"), setOf(ResultMode.BASIC),
                         format(resources.getString("data.temperature.value"), data.getTemperature().convertTo(CELSIUS).getCurrent())
                 ),
                 createRow(
-                        resources.getString("data.temperature"), setOf(ADVANCED),
+                        resources.getString("data.temperature"), setOf(ResultMode.ADVANCED),
                         format(resources.getString("data.temperature.value.max"), data.getTemperature().convertTo(CELSIUS).getMax()),
                         format(resources.getString("data.temperature.value.current"), data.getTemperature().convertTo(CELSIUS).getCurrent()),
                         format(resources.getString("data.temperature.value.min"), data.getTemperature().convertTo(CELSIUS).getMin())
                 ),
                 createRow(
-                        resources.getString("data.humidity"), setOf(BASIC, ADVANCED),
+                        resources.getString("data.humidity"), setOf(ResultMode.BASIC, ResultMode.ADVANCED),
                         format(resources.getString("data.humidity.value"), data.getHumidity())
                 ),
                 createRow(
-                        resources.getString("data.wind"), setOf(ADVANCED),
+                        resources.getString("data.wind"), setOf(ResultMode.ADVANCED),
                         format(resources.getString("data.wind.value"), data.getWind().getSpeed(), data.getWind().getDegrees())
                 ),
                 createRow(
-                        resources.getString("data.pressure"), setOf(ADVANCED),
+                        resources.getString("data.pressure"), setOf(ResultMode.ADVANCED),
                         format(resources.getString("data.pressure.value"), data.getPressure())
                 )
         };
