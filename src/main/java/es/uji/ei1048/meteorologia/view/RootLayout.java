@@ -4,6 +4,7 @@ import es.uji.ei1048.meteorologia.service.AccuWeather;
 import es.uji.ei1048.meteorologia.service.OpenWeather;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
+import javafx.scene.control.Alert;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.ToggleGroup;
@@ -62,5 +63,14 @@ public final class RootLayout {
     public void sync() {
         resultsController.bindWeatherData(searchController.weatherDataProperty());
         resultsController.bindResultMode(searchController.resultModeProperty());
+    }
+
+    public void aboutPopup() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Acerca de");
+        alert.setHeaderText(null);
+        alert.setContentText("Programa realizado para la asignatura EI1048");
+
+        alert.showAndWait();
     }
 }

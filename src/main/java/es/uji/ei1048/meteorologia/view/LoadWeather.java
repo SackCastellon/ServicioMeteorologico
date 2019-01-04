@@ -3,7 +3,6 @@ package es.uji.ei1048.meteorologia.view;
 import es.uji.ei1048.meteorologia.model.ResultMode;
 import es.uji.ei1048.meteorologia.model.WeatherData;
 import es.uji.ei1048.meteorologia.model.WeatherManager;
-import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyListWrapper;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
@@ -59,7 +58,7 @@ public class LoadWeather {
         saveList.getItems().clear();
         for (WeatherData wd : data
         ) {
-            saveList.getItems().add("Dia: " + wd.getDateTime().toString());
+            saveList.getItems().add(wd.getDateTime().toString());
         }
     }
 

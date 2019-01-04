@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
-<?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.Pane?>
 <?import org.controlsfx.control.StatusBar?>
@@ -9,16 +8,6 @@
             fx:controller="es.uji.ei1048.meteorologia.view.RootLayout">
     <top>
         <MenuBar>
-            <Menu text="%menu.file">
-                <MenuItem text="%menu.file.close"/>
-            </Menu>
-            <Menu text="%menu.edit">
-                <MenuItem text="%menu.edit.copy">
-                    <accelerator>
-                        <KeyCodeCombination alt="UP" code="C" control="DOWN" meta="UP" shift="UP" shortcut="UP"/>
-                    </accelerator>
-                </MenuItem>
-            </Menu>
             <Menu text="%menu.service">
                 <RadioMenuItem fx:id="serviceOpenWeather" selected="true" text="%menu.service.openweather">
                     <toggleGroup>
@@ -30,12 +19,12 @@
                 <SeparatorMenuItem mnemonicParsing="false"/>
             </Menu>
             <Menu text="%menu.help">
-                <MenuItem text="%menu.help.about"/>
+                <MenuItem onAction="#aboutPopup" text="%menu.help.about"/>
             </Menu>
         </MenuBar>
     </top>
     <center>
-        <SplitPane fx:id="splitPane">
+        <SplitPane fx:id="splitPane" dividerPositions="0.5">
             <Pane/>
             <Pane/>
         </SplitPane>
