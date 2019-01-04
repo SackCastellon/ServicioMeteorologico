@@ -1,6 +1,7 @@
 package es.uji.ei1048.meteorologia.view;
 
 import es.uji.ei1048.meteorologia.App;
+import es.uji.ei1048.meteorologia.NoSavedCitiesException;
 import es.uji.ei1048.meteorologia.model.City;
 import es.uji.ei1048.meteorologia.model.ResultMode;
 import es.uji.ei1048.meteorologia.model.WeatherData;
@@ -24,7 +25,6 @@ import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -64,11 +64,11 @@ public final class SearchPane {
 
     private final @NotNull ObjectProperty<@NotNull IWeatherProvider> provider = new SimpleObjectProperty<>();
     private final @NotNull ObjectProperty<@NotNull WeatherManager> manager = new SimpleObjectProperty<>();
+    private final @NotNull StringProperty status = new SimpleStringProperty();
 
-    private final @NotNull ReadOnlyObjectWrapper<@NotNull ResultMode> resultMode = new ReadOnlyObjectWrapper<>(ResultMode.BASIC);
+    private final @NotNull ListProperty<@NotNull WeatherData> weatherData = new SimpleListProperty<>(FXCollections.observableArrayList());
+    private final @NotNull ObjectProperty<@NotNull ResultMode> resultMode = new SimpleObjectProperty<>(ResultMode.BASIC);
     private final @NotNull ObjectProperty<@NotNull WeatherMode> weatherMode = new SimpleObjectProperty<>(WeatherMode.CURRENT);
-
-    private final @NotNull ReadOnlyListWrapper<@NotNull WeatherData> weatherData = new ReadOnlyListWrapper<>(FXCollections.observableArrayList());
 
     private final @NotNull LocalDate minDate = LocalDate.now().plusDays(1L);
     private final @NotNull ObjectExpression<@NotNull LocalDate> maxForecastDayProperty =
@@ -105,6 +105,7 @@ public final class SearchPane {
     private Button loadBtn;
     @FXML
     private Button searchBtn;
+
     public @NotNull ObjectProperty<@NotNull IWeatherProvider> providerProperty() {
         return provider;
     }
@@ -112,12 +113,9 @@ public final class SearchPane {
     public @NotNull ObjectProperty<@NotNull WeatherManager> managerProperty() {
         return manager;
     }
-    public @NotNull ReadOnlyObjectProperty<@NotNull ResultMode> resultModeProperty() {
-        return resultMode.getReadOnlyProperty();
-    }
 
-    public @NotNull ObservableList<@NotNull WeatherData> weatherDataProperty() {
-        return weatherData.getReadOnlyProperty();
+    public @NotNull StringProperty statusProperty() {
+        return status;
     }
 
     @FXML
@@ -150,39 +148,42 @@ public final class SearchPane {
         Platform.runLater(() -> searchBox.requestFocus());
     }
 
-    public void setApp(App app) {
+    public void setApp(final @NotNull App app) {
         this.app = app;
     }
 
     private void openLoadPane() {
-        try{
-            app.openLoadScreen();
-        } catch (Exception e){
-            error.setText("No hay archivos guardados");
+        try {
+            app.showLoadWindow();
+        } catch (final NoSavedCitiesException e) {
+            error.setText(resources.getString("error.noSavedCities"));
         }
     }
 
     private void search(final @NotNull String query) {
         if (query.isEmpty()) {
-            error.setText(resources.getString("search.error.empty"));
+            error.setText(resources.getString("error.empty"));
         } else {
             final @NotNull Optional<City> city = provider.get().getCity(query);
             if (city.isPresent()) {
                 error.setText("");
                 search(city.get());
             } else {
-                error.setText(resources.getString("search.error.notFound"));
+                error.setText(resources.getString("error.notFound"));
             }
         }
     }
 
     private void search(final @NotNull City city) {
-        // TODO Show status in RootLayout status bar
+        //status.setValue(resources.getString("status.loading"));
         switch (weatherMode.get()) {
             case CURRENT:
                 executorService.execute(() -> {
                     final @NotNull WeatherData data = getWeather(city);
-                    Platform.runLater(() -> weatherData.setAll(data));
+                    Platform.runLater(() -> {
+                        weatherData.setAll(data);
+                        //status.setValue(resources.getString("status.loaded"));
+                    });
                 });
                 break;
             case FORECAST:
@@ -193,7 +194,10 @@ public final class SearchPane {
 
                 executorService.execute(() -> {
                     final @NotNull List<@NotNull WeatherData> data = getForecast(city, offset, count);
-                    Platform.runLater(() -> weatherData.setAll(data));
+                    Platform.runLater(() -> {
+                        weatherData.setAll(data);
+                        //status.setValue(resources.getString("status.loaded"));
+                    });
                 });
                 break;
         }
@@ -207,10 +211,19 @@ public final class SearchPane {
         return provider.get().getForecast(city, offset, count);
     }
 
-
     private @NotNull List<@NotNull City> getSuggestions(final @NotNull ISuggestionRequest suggestionRequest) {
         return provider.get().getSuggestedCities(suggestionRequest.getUserText());
     }
+
+
+    public void bindWeatherData(final @NotNull ObservableList<@NotNull WeatherData> list) {
+        weatherData.bindContentBidirectional(list);
+    }
+
+    public void bindResultMode(final @NotNull Property<@NotNull ResultMode> property) {
+        resultMode.bindBidirectional(property);
+    }
+
 
     private enum WeatherMode {CURRENT, FORECAST}
 

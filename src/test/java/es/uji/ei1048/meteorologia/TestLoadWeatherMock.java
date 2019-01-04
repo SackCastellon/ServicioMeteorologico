@@ -1,8 +1,7 @@
 package es.uji.ei1048.meteorologia;
 
-import es.uji.ei1048.meteorologia.service.NotFoundException;
-import es.uji.ei1048.meteorologia.model.SaveFile;
 import es.uji.ei1048.meteorologia.model.WeatherManager;
+import es.uji.ei1048.meteorologia.service.NotFoundException;
 import es.uji.ei1048.meteorologia.view.SearchPane;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
@@ -11,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -27,7 +26,7 @@ final class TestLoadWeatherMock {
 
     @Test
     void getLoadWeather_validCity_suc() {
-        when(manager.load(anyString())).thenReturn(any(SaveFile.class));
+        when(manager.load(anyString())).thenReturn(anyList());
 
         final @NotNull SearchPane controller = new SearchPane();
         controller.managerProperty().set(manager);

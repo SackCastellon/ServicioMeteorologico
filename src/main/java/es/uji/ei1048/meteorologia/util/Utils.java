@@ -1,7 +1,7 @@
 package es.uji.ei1048.meteorologia.util;
 
 import es.uji.ei1048.meteorologia.service.NotFoundException;
-import javafx.beans.binding.Bindings;
+import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.scene.control.ToggleGroup;
 import org.apache.http.StatusLine;
@@ -20,10 +20,21 @@ public final class Utils {
             final @NotNull Property<@NotNull T> property,
             final @NotNull ToggleGroup toggleGroup,
             final @NotNull String propertyName) {
-        property.bind(Bindings.createObjectBinding(
-                () -> (T) Objects.requireNonNull(toggleGroup).getSelectedToggle().getProperties().get(propertyName),
-                toggleGroup.selectedToggleProperty()
-        ));
+        property.addListener((observable, oldValue, newValue) -> {
+            if (oldValue != newValue) {
+                toggleGroup.getToggles().stream()
+                        .filter(it -> it.getProperties().get(propertyName) == newValue)
+                        .findFirst()
+                        .ifPresent(toggleGroup::selectToggle);
+            }
+        });
+        toggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            if (oldValue != newValue) {
+                property.setValue((T) Objects.requireNonNull(toggleGroup).getSelectedToggle().getProperties().get(propertyName));
+            }
+        });
+
+        Platform.runLater(() -> property.setValue((T) Objects.requireNonNull(toggleGroup).getSelectedToggle().getProperties().get(propertyName)));
     }
 
     /**

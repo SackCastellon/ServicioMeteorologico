@@ -12,7 +12,6 @@ import org.mockito.MockitoAnnotations;
 import java.time.LocalDateTime;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.when;
 
 final class TestSaveWeatherMock {

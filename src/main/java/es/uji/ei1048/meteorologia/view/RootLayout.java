@@ -1,7 +1,14 @@
 package es.uji.ei1048.meteorologia.view;
 
+import es.uji.ei1048.meteorologia.model.ResultMode;
+import es.uji.ei1048.meteorologia.model.WeatherData;
 import es.uji.ei1048.meteorologia.service.AccuWeather;
 import es.uji.ei1048.meteorologia.service.OpenWeather;
+import javafx.beans.property.ListProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleListProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.Alert;
@@ -12,6 +19,7 @@ import javafx.scene.layout.Pane;
 import org.controlsfx.control.StatusBar;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.ResourceBundle;
 
 import static es.uji.ei1048.meteorologia.util.Utils.bindToToggleGroup;
@@ -19,7 +27,8 @@ import static es.uji.ei1048.meteorologia.util.Utils.bindToToggleGroup;
 public final class RootLayout {
 
     private static final @NotNull String PROVIDER_PROPERTY = "providerProperty"; //NON-NLS
-
+    private final @NotNull ListProperty<@NotNull WeatherData> weatherData = new SimpleListProperty<>(FXCollections.observableArrayList());
+    private final @NotNull ObjectProperty<@NotNull ResultMode> resultMode = new SimpleObjectProperty<>();
     @FXML
     private ResourceBundle resources;
     @FXML
@@ -32,12 +41,13 @@ public final class RootLayout {
     private SplitPane splitPane;
     @FXML
     private StatusBar statusBar; // TODO
-
     private SearchPane searchController;
     private ResultsPane resultsController;
 
     @FXML
     private void initialize() {
+        statusBar.setText(resources.getString("status.loaded"));
+
         splitPane.getItems().setAll(new Pane(), new Pane());
 
         serviceOpenWeather.getProperties().put(PROVIDER_PROPERTY, OpenWeather.getInstance());
@@ -52,6 +62,7 @@ public final class RootLayout {
         splitPane.setDividerPositions(0.0);
 
         bindToToggleGroup(searchController.providerProperty(), groupProviders, PROVIDER_PROPERTY);
+        searchController.statusProperty().bindBidirectional(statusBar.textProperty());
     }
 
     public void setResultPane(final @NotNull Parent root, final @NotNull ResultsPane controller) {
@@ -61,15 +72,25 @@ public final class RootLayout {
     }
 
     public void sync() {
-        resultsController.bindWeatherData(searchController.weatherDataProperty());
-        resultsController.bindResultMode(searchController.resultModeProperty());
+        resultsController.bindWeatherData(weatherData);
+        resultsController.bindResultMode(resultMode);
+        searchController.bindWeatherData(weatherData);
+        searchController.bindResultMode(resultMode);
+    }
+
+    public void setWeatherData(final @NotNull List<@NotNull WeatherData> data) {
+        weatherData.setAll(data);
+    }
+
+    public void setResultMode(final @NotNull ResultMode mode) {
+        resultMode.set(mode);
     }
 
     public void aboutPopup() {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Acerca de");
+        final Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(resources.getString("alert.about.title"));
         alert.setHeaderText(null);
-        alert.setContentText("Programa realizado para la asignatura EI1048");
+        alert.setContentText(resources.getString("alert.about.content"));
 
         alert.showAndWait();
     }

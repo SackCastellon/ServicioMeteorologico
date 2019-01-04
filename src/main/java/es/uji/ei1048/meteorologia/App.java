@@ -8,7 +8,6 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
@@ -41,8 +40,6 @@ public final class App extends Application {
         initRootLayout();
         showSearchPane();
         showResultPane();
-
-        //openLoadScreen();
 
         rootController.sync();
 
@@ -90,27 +87,31 @@ public final class App extends Application {
         }
     }
 
-    public void openLoadScreen() throws IOException {
+    public void showLoadWindow() {
+        try {
+            final @NotNull FXMLLoader loader = new FXMLLoader(App.class.getResource("/views/LoadWeather.fxml")); //NON-NLS
+            final @NotNull ResourceBundle bundle = ResourceBundle.getBundle("bundles/LoadWeather"); //NON-NLS
+            loader.setResources(bundle); //NON-NLS
 
-        final FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(App.class.getResource("/views/LoadWeather.fxml"));
-        final VBox page = loader.load();
-        final Stage dialogStage = new Stage();
-        dialogStage.setTitle("Load weather results");
-        dialogStage.initModality(Modality.WINDOW_MODAL);
-        dialogStage.initOwner(primaryStage);
-        final Scene scene = new Scene(page);
-        dialogStage.setScene(scene);
-        final LoadWeather controller = loader.getController();
-        //controller.setDialogStage(dialogStage);
+            final @NotNull Stage stage = new Stage();
+            stage.setTitle(bundle.getString("title"));
+            stage.initModality(Modality.WINDOW_MODAL);
+            stage.initOwner(primaryStage);
 
-        dialogStage.showAndWait();
-           /* SaveFile sel = controller.getSel();
-            if (sel != null) {
-                SaveFile sf = sw.load(sel);
-                addResult("Castellon", sf.getWd(), sf.isAdvanced());
+            final @NotNull Scene scene = new Scene(loader.load());
+            stage.setScene(scene);
+
+            final @NotNull LoadWeather controller = loader.getController();
+            controller.setStage(stage);
+
+            stage.showAndWait();
+
+            if (controller.isSuccess()) {
+                rootController.setWeatherData(controller.getWeatherData());
+                rootController.setResultMode(controller.getResultMode());
             }
-*/
-
+        } catch (final @NotNull IOException e) {
+            logger.error("Error loading load pane", e); //NON-NLS
+        }
     }
 }

@@ -5,7 +5,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import es.uji.ei1048.meteorologia.model.*;
 import es.uji.ei1048.meteorologia.util.Utils;
-import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URIBuilder;
@@ -57,11 +57,11 @@ public final class AccuWeather extends AbstractWeatherProvider {
                     .build();
 
             final @NotNull HttpUriRequest request = new HttpGet(uri);
-            final @NotNull HttpResponse response = client.execute(request);
 
-            Utils.checkStatus(response.getStatusLine());
-
-            return EntityUtils.toString(response.getEntity());
+            try (final @NotNull CloseableHttpResponse response = client.execute(request)) {
+                Utils.checkStatus(response.getStatusLine());
+                return EntityUtils.toString(response.getEntity());
+            }
         } catch (final @NotNull URISyntaxException | IOException e) {
             throw new ConnectionFailedException(e.getMessage());
         }

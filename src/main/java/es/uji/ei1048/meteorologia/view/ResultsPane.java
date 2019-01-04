@@ -7,10 +7,7 @@ import es.uji.ei1048.meteorologia.model.WeatherManager;
 import es.uji.ei1048.meteorologia.model.converter.CityStringConverter;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.ObjectBinding;
-import javafx.beans.property.ListProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleListProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -57,6 +54,7 @@ public final class ResultsPane {
     private final @NotNull ObjectProperty<@NotNull WeatherManager> manager = new SimpleObjectProperty<>();
 
     private final @NotNull ObjectProperty<@Nullable WeatherData> selectedData = new SimpleObjectProperty<>();
+
     @FXML
     private ResourceBundle resources;
     @FXML
@@ -203,11 +201,11 @@ public final class ResultsPane {
     public boolean save(final @NotNull WeatherData data) {
         try {
             return manager.get().save(data);
-        } catch (MaxFileDataExceededException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error de guardado");
+        } catch (final MaxFileDataExceededException e) {
+            final Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle(resources.getString("error.save.title"));
             alert.setHeaderText(null);
-            alert.setContentText("Se ha alcanzado el numero maximo de estados guardados");
+            alert.setContentText(resources.getString("error.save.content.max"));
 
             alert.showAndWait();
             return false;
@@ -215,11 +213,11 @@ public final class ResultsPane {
     }
 
     public void bindWeatherData(final @NotNull ObservableList<@NotNull WeatherData> list) {
-        weatherData.bindContent(list);
+        weatherData.bindContentBidirectional(list);
     }
 
-    public void bindResultMode(final @NotNull ObservableValue<@NotNull ResultMode> property) {
-        resultMode.bind(property);
+    public void bindResultMode(final @NotNull Property<@NotNull ResultMode> property) {
+        resultMode.bindBidirectional(property);
     }
 
 }

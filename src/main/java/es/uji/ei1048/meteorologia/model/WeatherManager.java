@@ -15,12 +15,15 @@ import org.jetbrains.annotations.NotNull;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -70,20 +73,23 @@ public class WeatherManager {
 
             json.add(gson.toJsonTree(data, WeatherData.class));
 
-            if (json.size() >= MAX_DATA_PER_FILE)
+            if (json.size() > MAX_DATA_PER_FILE)
                 throw new MaxFileDataExceededException();
 
             try (final @NotNull BufferedWriter out = Files.newBufferedWriter(file, StandardOpenOption.CREATE, StandardOpenOption.WRITE)) {
                 gson.toJson(json, out);
-                logger.info(String.format("Saved weather data from %s (%s) at %s -> %s (Count: %d, Limit: %d)", //NON-NLS
+                logger.info(String.format("Saved weather data from: %s (%s) - %s -> %s (Count: %d, Limit: %d)", //NON-NLS
                         data.getCity().getName(), data.getCity().getCountry(), DATE_TIME_FORMATTER.format(data.getDateTime()), file, json.size(), MAX_DATA_PER_FILE));
             }
         } catch (final IOException e) {
             logger.error("Failed to save weather data", e); //NON-NLS
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error de guardado");
+
+            final @NotNull ResourceBundle resources = ResourceBundle.getBundle("bundles/LoadWeather");
+
+            final Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle(resources.getString("error.save.title"));
             alert.setHeaderText(null);
-            alert.setContentText("No se han podido guardar los datos.");
+            alert.setContentText(resources.getString("error.save.content.failed"));
 
             alert.showAndWait();
             return false;
@@ -102,8 +108,8 @@ public class WeatherManager {
                         return String.format("%s (%s)", WordUtils.capitalize(city), country.toUpperCase(Locale.ENGLISH)); //NON-NLS
                     }) //NON-NLS
                     .collect(Collectors.toList());
-        } catch (Exception e) {
-            logger.error("Failed to get saved cities list.", e);
+        } catch (final Exception e) {
+            logger.error("Failed to get saved cities list.", e); //NON-NLS
             return Collections.emptyList();
         }
     }
@@ -111,18 +117,20 @@ public class WeatherManager {
     public @NotNull List<WeatherData> load(final @NotNull String query) {
         try {
             final @NotNull List<WeatherData> data;
-            String[] sep = query.split(" ");
-            String city = sep[0];
-            String country = sep[1].substring(1, 3);
-            Path filepath = DATA_DIR.resolve(country).resolve(city + ".json");
+            final String[] sep = query.split(" ");
+            final String city = sep[0];
+            final String country = sep[1].substring(1, 3);
+            final Path filepath = DATA_DIR.resolve(country).resolve(city + ".json"); //NON-NLS
             try (final BufferedReader in = Files.newBufferedReader(filepath)) {
-                data = new Gson().fromJson(in, new TypeToken<List<WeatherData>>() {
-                }.getType());
+                data = new Gson().fromJson(in, new ListTypeToken().getType());
             }
             return data;
         } catch (final IOException e) {
             logger.error("Failed to load weather data", e); //NON-NLS
+            return Collections.emptyList();
         }
-        return new ArrayList<>();
+    }
+
+    private static class ListTypeToken extends TypeToken<List<WeatherData>> {
     }
 }
