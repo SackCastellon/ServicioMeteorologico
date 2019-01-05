@@ -19,16 +19,20 @@ final class TestSaveWeatherMock {
     @Mock
     private WeatherManager manager;
 
+    @NotNull
+    private ResultsPane controller;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
+        controller = new ResultsPane();
     }
 
     @Test
     void getSaveWeather_validSave_suc() {
         when(manager.save(any(WeatherData.class))).thenReturn(true);
 
-        final @NotNull ResultsPane controller = new ResultsPane();
+
         controller.managerProperty().set(manager);
 
         final @NotNull City city = new City(6359304L, "Madrid", "ES");
@@ -41,7 +45,7 @@ final class TestSaveWeatherMock {
                 10.0,
                 10.0
         );
-        Assertions.assertTrue(manager.save(wd));
+        Assertions.assertTrue(controller.save(wd));
     }
 
     @Test
@@ -61,6 +65,6 @@ final class TestSaveWeatherMock {
                 10.0,
                 10.0
         );
-        Assertions.assertFalse(manager.save(wd));
+        Assertions.assertFalse(controller.save(wd));
     }
 }

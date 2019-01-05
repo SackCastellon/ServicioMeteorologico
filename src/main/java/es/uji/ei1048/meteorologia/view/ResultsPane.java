@@ -205,6 +205,7 @@ public final class ResultsPane {
             final Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle(resources.getString("error.save.title"));
             alert.setHeaderText(null);
+
             alert.setContentText(resources.getString("error.save.content.max"));
 
             alert.showAndWait();

@@ -35,6 +35,11 @@ public class WeatherManager {
     private static final int MAX_DATA_PER_FILE = 7;
 
     private static final @NotNull ProjectDirectories dirs = ProjectDirectories.from(null, "UJI", "ServicioMeteorologico"); //NON-NLS
+
+    public static Path getDataDir() {
+        return DATA_DIR;
+    }
+
     private static final @NotNull Path DATA_DIR = Paths.get(dirs.dataDir);
 
     private static final @NotNull WeatherManager INSTANCE = new WeatherManager();
@@ -113,6 +118,7 @@ public class WeatherManager {
             return Collections.emptyList();
         }
     }
+
 
     public @NotNull List<WeatherData> load(final @NotNull String query) {
         try {
