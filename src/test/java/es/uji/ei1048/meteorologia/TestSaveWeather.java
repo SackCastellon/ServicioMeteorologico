@@ -23,7 +23,7 @@ final class TestSaveWeather {
         final ResultsPane controller = new ResultsPane();
         controller.managerProperty().set(manager);
 
-        final @NotNull City city = new City(6359304L, "Madrid", "ES");
+        final @NotNull City city = new City(6359304L, "Zaragoza", "ES");
         final @NotNull WeatherData wd = new WeatherData(
                 city,
                 LocalDateTime.now(),

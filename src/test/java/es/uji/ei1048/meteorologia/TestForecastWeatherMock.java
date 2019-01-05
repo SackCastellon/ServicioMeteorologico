@@ -26,7 +26,7 @@ final class TestForecastWeatherMock {
 
     @Test
     void getForecastWeather_validCity_suc() {
-        when(service.getForecast(any(City.class), anyInt())).thenReturn(anyList());
+        when(service.getForecast(any(City.class), anyInt(), anyInt())).thenReturn(anyList());
 
         final @NotNull SearchPane controller = new SearchPane();
         controller.providerProperty().set(service);
@@ -37,7 +37,7 @@ final class TestForecastWeatherMock {
 
     @Test
     void geForecastWeather_notValidCity_err() {
-        when(service.getForecast(any(City.class), anyInt())).thenThrow(NotFoundException.class);
+        when(service.getForecast(any(City.class), anyInt(), anyInt())).thenThrow(NotFoundException.class);
 
         final @NotNull SearchPane controller = new SearchPane();
         controller.providerProperty().set(service);
