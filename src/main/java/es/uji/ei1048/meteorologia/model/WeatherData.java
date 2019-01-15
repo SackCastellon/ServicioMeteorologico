@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.StringJoiner;
 
-public final class WeatherData {
+public class WeatherData {
 
     @NonNls
     private final @NotNull City city;

@@ -3,7 +3,6 @@ package es.uji.ei1048.meteorologia;
 import es.uji.ei1048.meteorologia.model.*;
 import es.uji.ei1048.meteorologia.view.ResultsPane;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -11,6 +10,8 @@ import org.mockito.MockitoAnnotations;
 
 import java.time.LocalDateTime;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -19,8 +20,7 @@ final class TestSaveWeatherMock {
     @Mock
     private WeatherManager manager;
 
-    @NotNull
-    private ResultsPane controller;
+    private @NotNull ResultsPane controller;
 
     @BeforeEach
     void setUp() {
@@ -45,7 +45,7 @@ final class TestSaveWeatherMock {
                 10.0,
                 10.0
         );
-        Assertions.assertTrue(controller.save(wd));
+        assertTrue(controller.save(wd));
     }
 
     @Test
@@ -65,6 +65,6 @@ final class TestSaveWeatherMock {
                 10.0,
                 10.0
         );
-        Assertions.assertFalse(controller.save(wd));
+        assertFalse(controller.save(wd));
     }
 }

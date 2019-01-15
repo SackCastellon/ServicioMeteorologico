@@ -32,7 +32,7 @@ public class WeatherManager {
 
     private static final @NotNull Logger logger = LogManager.getLogger(WeatherManager.class);
 
-    private static final int MAX_DATA_PER_FILE = 7;
+    public static final int MAX_DATA_PER_FILE = 7;
 
     private static final @NotNull ProjectDirectories dirs = ProjectDirectories.from(null, "UJI", "ServicioMeteorologico"); //NON-NLS
 
@@ -67,8 +67,10 @@ public class WeatherManager {
             final @NotNull Path file = folder.resolve(city + ".json"); //NON-NLS
 
             final @NotNull JsonArray json;
-            if (Files.notExists(file)) json = new JsonArray();
-            else try (final @NotNull BufferedReader in = Files.newBufferedReader(file)) {
+            if (Files.notExists(file)) {
+                Files.createFile(file);
+                json = new JsonArray();
+            } else try (final @NotNull BufferedReader in = Files.newBufferedReader(file)) {
                 json = new JsonParser().parse(in).getAsJsonArray();
             }
 
@@ -89,7 +91,7 @@ public class WeatherManager {
         } catch (final IOException e) {
             logger.error("Failed to save weather data", e); //NON-NLS
 
-            final @NotNull ResourceBundle resources = ResourceBundle.getBundle("bundles/LoadWeather");
+            final @NotNull ResourceBundle resources = ResourceBundle.getBundle("bundles/LoadWeather"); //NON-NLS
 
             final Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle(resources.getString("error.save.title"));
@@ -111,9 +113,9 @@ public class WeatherManager {
                         final @NotNull String country = path.getParent().getFileName().toString();
                         final @NotNull String city = path.getFileName().toString().split("\\.")[0];
                         return String.format("%s (%s)", WordUtils.capitalize(city), country.toUpperCase(Locale.ENGLISH)); //NON-NLS
-                    }) //NON-NLS
+                    })
                     .collect(Collectors.toList());
-        } catch (final Exception e) {
+        } catch (final IOException e) {
             logger.error("Failed to get saved cities list.", e); //NON-NLS
             return Collections.emptyList();
         }
@@ -122,18 +124,18 @@ public class WeatherManager {
 
     public @NotNull List<WeatherData> load(final @NotNull String query) {
         try {
-            final @NotNull List<WeatherData> data;
             final String[] sep = query.split(" ");
             final String city = sep[0].toLowerCase(Locale.ENGLISH);
             final String country = sep[1].substring(1, 3).toLowerCase(Locale.ENGLISH);
             final Path filepath = DATA_DIR.resolve(country).resolve(city + ".json"); //NON-NLS
             try (final BufferedReader in = Files.newBufferedReader(filepath)) {
-                data = new Gson().fromJson(in, new ListTypeToken().getType());
+                return new Gson().fromJson(in, new ListTypeToken().getType());
             }
-            return data;
         } catch (final IOException e) {
             logger.error("Failed to load weather data", e); //NON-NLS
             return Collections.emptyList();
+        } catch (final Exception e) {
+            throw new IllegalArgumentException("Failed to process query", e);
         }
     }
 

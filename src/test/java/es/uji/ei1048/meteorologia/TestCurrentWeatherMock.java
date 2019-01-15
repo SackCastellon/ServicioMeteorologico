@@ -6,13 +6,15 @@ import es.uji.ei1048.meteorologia.service.IWeatherProvider;
 import es.uji.ei1048.meteorologia.service.NotFoundException;
 import es.uji.ei1048.meteorologia.view.SearchPane;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 final class TestCurrentWeatherMock {
@@ -27,13 +29,14 @@ final class TestCurrentWeatherMock {
 
     @Test
     void getCurrentWeather_validCity_suc() {
-        when(service.getWeather(any(City.class))).thenReturn(any(WeatherData.class));
+        final @NotNull WeatherData data = mock(WeatherData.class);
+        when(service.getWeather(any(City.class))).thenReturn(data);
 
         final @NotNull SearchPane controller = new SearchPane();
         controller.providerProperty().set(service);
 
         final @NotNull City validCity = new City(6359304L, "Madrid", "ES");
-        Assertions.assertNotNull(controller.getWeather(validCity));
+        assertNotNull(controller.getWeather(validCity));
     }
 
     @Test
@@ -43,7 +46,7 @@ final class TestCurrentWeatherMock {
         final @NotNull SearchPane controller = new SearchPane();
         controller.providerProperty().set(service);
 
-        final @NotNull City invalidCity = new City(-1L, "Wakanda", "XX");
-        Assertions.assertThrows(NotFoundException.class, () -> controller.getWeather(invalidCity));
+        final @NotNull City invalidCity = new City(-1L, "Wakanda", "MCU");
+        assertThrows(NotFoundException.class, () -> controller.getWeather(invalidCity));
     }
 }

@@ -3,7 +3,6 @@ package es.uji.ei1048.meteorologia;
 import es.uji.ei1048.meteorologia.model.*;
 import es.uji.ei1048.meteorologia.view.ResultsPane;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,6 +13,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.Comparator;
+
+import static es.uji.ei1048.meteorologia.model.WeatherManager.MAX_DATA_PER_FILE;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 final class TestSaveWeather {
 
@@ -29,13 +32,13 @@ final class TestSaveWeather {
 
     @BeforeEach
     void deleteSaves() {
-        Path path = WeatherManager.getDataDir();
+        final Path path = WeatherManager.getDataDir();
         try {
             Files.walk(path)
                     .sorted(Comparator.reverseOrder())
                     .map(Path::toFile)
                     .forEach(File::delete);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
         }
     }
@@ -53,13 +56,13 @@ final class TestSaveWeather {
                 10.0,
                 10.0
         );
-        Assertions.assertTrue(manager.save(wd));
+        assertTrue(manager.save(wd));
     }
 
     @Test
     void getSaveWeather_notValidSave_err() {
         final @NotNull City city = new City(6359304L, "Madrid", "ES");
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < MAX_DATA_PER_FILE; i++) {
             controller.save(new WeatherData(
                     city,
                     LocalDateTime.now(),
@@ -69,7 +72,7 @@ final class TestSaveWeather {
                     10.0,
                     10.0));
         }
-        Assertions.assertThrows(ExceptionInInitializerError.class, () -> controller.save(new WeatherData(
+        assertThrows(ExceptionInInitializerError.class, () -> controller.save(new WeatherData(
                 city,
                 LocalDateTime.now(),
                 new Weather(1, "Viento", "mucho frio"),

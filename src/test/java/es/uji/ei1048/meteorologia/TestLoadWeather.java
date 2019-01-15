@@ -1,12 +1,13 @@
 package es.uji.ei1048.meteorologia;
 
 import es.uji.ei1048.meteorologia.model.WeatherManager;
-import es.uji.ei1048.meteorologia.service.NotFoundException;
 import es.uji.ei1048.meteorologia.view.SearchPane;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 final class TestLoadWeather {
 
@@ -22,8 +23,8 @@ final class TestLoadWeather {
         final SearchPane controller = new SearchPane();
         controller.managerProperty().set(manager);
 
-        final @NotNull String file = "Madrid.txt";
-        Assertions.assertDoesNotThrow(() -> manager.load(file));
+        final @NotNull String query = "Madrid (ES)";
+        assertDoesNotThrow(() -> manager.load(query));
     }
 
     @Test
@@ -31,8 +32,8 @@ final class TestLoadWeather {
         final SearchPane controller = new SearchPane();
         controller.managerProperty().set(manager);
 
-        final @NotNull String file = "Wakanda.txt";
-        Assertions.assertThrows(NotFoundException.class, () -> manager.load(file));
+        final @NotNull String query = "Wakanda";
+        assertThrows(IllegalArgumentException.class, () -> manager.load(query));
     }
 
 }

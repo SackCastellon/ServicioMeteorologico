@@ -6,9 +6,11 @@ import es.uji.ei1048.meteorologia.service.NotFoundException;
 import es.uji.ei1048.meteorologia.service.OpenWeather;
 import es.uji.ei1048.meteorologia.view.SearchPane;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 final class TestForecastWeather {
 
@@ -25,7 +27,7 @@ final class TestForecastWeather {
         controller.providerProperty().set(service);
 
         final @NotNull City validCity = new City(6359304L, "Madrid", "ES");
-        Assertions.assertNotNull(controller.getForecast(validCity, 3, 1));
+        assertNotNull(controller.getForecast(validCity, 3, 1));
     }
 
     @Test
@@ -33,7 +35,7 @@ final class TestForecastWeather {
         final SearchPane controller = new SearchPane();
         controller.providerProperty().set(service);
 
-        final @NotNull City invalidCity = new City(-1L, "Wakanda", "XX");
-        Assertions.assertThrows(NotFoundException.class, () -> controller.getForecast(invalidCity, 3, 1));
+        final @NotNull City invalidCity = new City(-1L, "Wakanda", "MCU");
+        assertThrows(NotFoundException.class, () -> controller.getForecast(invalidCity, 3, 1));
     }
 }

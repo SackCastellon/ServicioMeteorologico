@@ -5,12 +5,13 @@ import es.uji.ei1048.meteorologia.service.IWeatherProvider;
 import es.uji.ei1048.meteorologia.service.NotFoundException;
 import es.uji.ei1048.meteorologia.view.SearchPane;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
@@ -32,7 +33,7 @@ final class TestForecastWeatherMock {
         controller.providerProperty().set(service);
 
         final @NotNull City validCity = new City(6359304L, "Madrid", "ES");
-        Assertions.assertNotNull(controller.getForecast(validCity, anyInt(), anyInt()));
+        assertNotNull(controller.getForecast(validCity, anyInt(), anyInt()));
     }
 
     @Test
@@ -42,7 +43,7 @@ final class TestForecastWeatherMock {
         final @NotNull SearchPane controller = new SearchPane();
         controller.providerProperty().set(service);
 
-        final @NotNull City invalidCity = new City(-1L, "Wakanda", "XX");
-        Assertions.assertThrows(NotFoundException.class, () -> controller.getForecast(invalidCity, 3, 1));
+        final @NotNull City invalidCity = new City(-1L, "Wakanda", "MCU");
+        assertThrows(NotFoundException.class, () -> controller.getForecast(invalidCity, 3, 1));
     }
 }
