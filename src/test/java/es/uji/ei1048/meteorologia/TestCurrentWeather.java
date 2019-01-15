@@ -15,26 +15,24 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 final class TestCurrentWeather {
 
     private static IWeatherProvider service;
+    private static SearchPane controller;
 
     @BeforeAll
     static void setUp() {
         service = OpenWeather.getInstance();
+        controller = new SearchPane();
     }
 
     @Test
     void getCurrentWeather_validCity_suc() {
-        final @NotNull SearchPane controller = new SearchPane();
         controller.providerProperty().set(service);
-
         final @NotNull City validCity = new City(6359304L, "Madrid", "ES");
         assertNotNull(controller.getWeather(validCity));
     }
 
     @Test
     void getCurrentWeather_notValidCity_err() {
-        final @NotNull SearchPane controller = new SearchPane();
         controller.providerProperty().set(service);
-
         final @NotNull City invalidCity = new City(-1L, "Wakanda", "MCU");
         assertThrows(NotFoundException.class, () -> controller.getWeather(invalidCity));
     }

@@ -38,7 +38,7 @@ import static es.uji.ei1048.meteorologia.util.Utils.bindToToggleGroup;
 import static java.time.temporal.ChronoUnit.DAYS;
 import static org.controlsfx.control.textfield.AutoCompletionBinding.ISuggestionRequest;
 
-public final class SearchPane {
+public class SearchPane {
 
     private static final @NotNull String ENUM_PROPERTY = "enumProperty"; //NON-NLS
 

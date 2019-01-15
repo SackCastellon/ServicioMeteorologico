@@ -40,7 +40,7 @@ import static kotlin.collections.CollectionsKt.any;
 import static kotlin.collections.CollectionsKt.groupBy;
 import static kotlin.collections.SetsKt.setOf;
 
-public final class ResultsPane {
+public class ResultsPane {
 
     private static final double OFFSET = 7.0;
     private static final double INSETS = 20.0;

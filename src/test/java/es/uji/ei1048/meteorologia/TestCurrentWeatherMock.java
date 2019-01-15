@@ -4,6 +4,7 @@ import es.uji.ei1048.meteorologia.model.City;
 import es.uji.ei1048.meteorologia.model.WeatherData;
 import es.uji.ei1048.meteorologia.service.IWeatherProvider;
 import es.uji.ei1048.meteorologia.service.NotFoundException;
+import es.uji.ei1048.meteorologia.service.OpenWeather;
 import es.uji.ei1048.meteorologia.view.SearchPane;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,33 +20,28 @@ import static org.mockito.Mockito.when;
 
 final class TestCurrentWeatherMock {
 
+
+
     @Mock
-    private IWeatherProvider service;
+    private SearchPane controller;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
+
     }
 
     @Test
     void getCurrentWeather_validCity_suc() {
         final @NotNull WeatherData data = mock(WeatherData.class);
-        when(service.getWeather(any(City.class))).thenReturn(data);
-
-        final @NotNull SearchPane controller = new SearchPane();
-        controller.providerProperty().set(service);
-
+        when(controller.getWeather(any(City.class))).thenReturn(data);
         final @NotNull City validCity = new City(6359304L, "Madrid", "ES");
         assertNotNull(controller.getWeather(validCity));
     }
 
     @Test
     void getCurrentWeather_notValidCity_err() {
-        when(service.getWeather(any(City.class))).thenThrow(NotFoundException.class);
-
-        final @NotNull SearchPane controller = new SearchPane();
-        controller.providerProperty().set(service);
-
+        when(controller.getWeather(any(City.class))).thenThrow(NotFoundException.class);
         final @NotNull City invalidCity = new City(-1L, "Wakanda", "MCU");
         assertThrows(NotFoundException.class, () -> controller.getWeather(invalidCity));
     }

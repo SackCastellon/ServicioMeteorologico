@@ -18,7 +18,7 @@ import static org.mockito.Mockito.when;
 final class TestForecastWeatherMock {
 
     @Mock
-    private IWeatherProvider service;
+    private SearchPane controller;
 
     @BeforeEach
     void setUp() {
@@ -27,22 +27,14 @@ final class TestForecastWeatherMock {
 
     @Test
     void getForecastWeather_validCity_suc() {
-        when(service.getForecast(any(City.class), anyInt(), anyInt())).thenReturn(anyList());
-
-        final @NotNull SearchPane controller = new SearchPane();
-        controller.providerProperty().set(service);
-
+        when(controller.getForecast(any(City.class), anyInt(), anyInt())).thenReturn(anyList());
         final @NotNull City validCity = new City(6359304L, "Madrid", "ES");
         assertNotNull(controller.getForecast(validCity, anyInt(), anyInt()));
     }
 
     @Test
     void geForecastWeather_notValidCity_err() {
-        when(service.getForecast(any(City.class), anyInt(), anyInt())).thenThrow(NotFoundException.class);
-
-        final @NotNull SearchPane controller = new SearchPane();
-        controller.providerProperty().set(service);
-
+        when(controller.getForecast(any(City.class), anyInt(), anyInt())).thenThrow(NotFoundException.class);
         final @NotNull City invalidCity = new City(-1L, "Wakanda", "MCU");
         assertThrows(NotFoundException.class, () -> controller.getForecast(invalidCity, 3, 1));
     }

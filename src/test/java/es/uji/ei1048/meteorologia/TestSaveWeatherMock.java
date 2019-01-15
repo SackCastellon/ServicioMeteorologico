@@ -17,24 +17,18 @@ import static org.mockito.Mockito.when;
 
 final class TestSaveWeatherMock {
 
-    @Mock
-    private WeatherManager manager;
 
-    private @NotNull ResultsPane controller;
+    @Mock
+    private ResultsPane controller;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        controller = new ResultsPane();
     }
 
     @Test
     void getSaveWeather_validSave_suc() {
-        when(manager.save(any(WeatherData.class))).thenReturn(true);
-
-
-        controller.managerProperty().set(manager);
-
+        when(controller.save(any(WeatherData.class))).thenReturn(true);
         final @NotNull City city = new City(6359304L, "Madrid", "ES");
         final @NotNull WeatherData wd = new WeatherData(
                 city,
@@ -50,11 +44,7 @@ final class TestSaveWeatherMock {
 
     @Test
     void getSaveWeather_notValidSave_err() {
-        when(manager.save(any(WeatherData.class))).thenReturn(false);
-
-        final @NotNull ResultsPane controller = new ResultsPane();
-        controller.managerProperty().set(manager);
-
+        when(controller.save(any(WeatherData.class))).thenReturn(false);
         final @NotNull City city = new City(6359304L, "Madrid", "ES");
         final @NotNull WeatherData wd = new WeatherData(
                 city,

@@ -31,18 +31,9 @@ final class TestSaveWeather {
     }
 
     @BeforeEach
-    void deleteSaves() {
-        final Path path = WeatherManager.getDataDir();
-        try {
-            Files.walk(path)
-                    .sorted(Comparator.reverseOrder())
-                    .map(Path::toFile)
-                    .forEach(File::delete);
-        } catch (final IOException e) {
-            e.printStackTrace();
-        }
+    void delete(){
+        manager.deleteAll();
     }
-
 
     @Test
     void getSaveWeather_validSave_suc() {

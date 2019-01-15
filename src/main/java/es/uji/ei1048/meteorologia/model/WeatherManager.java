@@ -14,16 +14,14 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -136,6 +134,18 @@ public class WeatherManager {
             return Collections.emptyList();
         } catch (final Exception e) {
             throw new IllegalArgumentException("Failed to process query", e);
+        }
+    }
+
+    public void deleteAll() {
+        final Path path = WeatherManager.getDataDir();
+        try {
+            Files.walk(path)
+                    .sorted(Comparator.reverseOrder())
+                    .map(Path::toFile)
+                    .forEach(File::delete);
+        } catch (final IOException e) {
+            e.printStackTrace();
         }
     }
 

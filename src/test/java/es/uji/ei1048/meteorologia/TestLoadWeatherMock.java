@@ -2,6 +2,7 @@ package es.uji.ei1048.meteorologia;
 
 import es.uji.ei1048.meteorologia.model.WeatherManager;
 import es.uji.ei1048.meteorologia.service.NotFoundException;
+import es.uji.ei1048.meteorologia.view.LoadWeather;
 import es.uji.ei1048.meteorologia.view.SearchPane;
 import kotlin.collections.CollectionsKt;
 import org.jetbrains.annotations.NotNull;
@@ -19,7 +20,7 @@ import static org.mockito.Mockito.when;
 final class TestLoadWeatherMock {
 
     @Mock
-    private WeatherManager manager;
+    private LoadWeather controller;
 
     @BeforeEach
     void setUp() {
@@ -28,26 +29,16 @@ final class TestLoadWeatherMock {
 
     @Test
     void getLoadWeather_validCity_suc() {
-        CollectionsKt.listOf();
-
-        when(manager.load(anyString())).thenReturn(anyList());
-
-        final @NotNull SearchPane controller = new SearchPane();
-        controller.managerProperty().set(manager);
-
-        final @NotNull String file = "Madrid (ES)";
-        assertDoesNotThrow(() -> manager.load(file));
+        when(controller.getSavedCities(anyString())).thenReturn(anyList());
+        final @NotNull String query = "Madrid (ES)";
+        assertDoesNotThrow(() -> controller.getSavedCities(query));
     }
 
     @Test
     void getCurrentWeather_notValidCity_err() {
-        when(manager.load(anyString())).thenThrow(NotFoundException.class);
-
-        final @NotNull SearchPane controller = new SearchPane();
-        controller.managerProperty().set(manager);
-
-        final @NotNull String file = "Wakanda";
-        assertThrows(NotFoundException.class, () -> manager.load(file));
+        when(controller.getSavedCities(anyString())).thenThrow(IllegalArgumentException.class);
+        final @NotNull String query = "Wakanda";
+        assertThrows(IllegalArgumentException.class, () -> controller.getSavedCities(query));
     }
 
 }

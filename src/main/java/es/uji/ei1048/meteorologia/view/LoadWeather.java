@@ -21,7 +21,7 @@ import java.util.ResourceBundle;
 
 import static es.uji.ei1048.meteorologia.util.Utils.bindToToggleGroup;
 
-public final class LoadWeather {
+public class LoadWeather {
 
     private static final @NotNull String ENUM_PROPERTY = "enumProperty"; //NON-NLS
     private static final @NotNull DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm dd/MM/yyyy"); //NON-NLS
@@ -73,7 +73,11 @@ public final class LoadWeather {
     }
 
     private void loadSavedCities(final @NotNull String query) {
-        saveList.getItems().setAll(weatherManager.load(query));
+        saveList.getItems().setAll(getSavedCities(query));
+    }
+
+    public List<WeatherData> getSavedCities(final @NotNull String query){
+        return weatherManager.load(query);
     }
 
     public void setStage(final @NotNull Stage stage) {
